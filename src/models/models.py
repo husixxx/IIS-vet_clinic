@@ -21,7 +21,8 @@ class Animal(db.Model):
     history = db.Column(db.Text)  # Informace o nalezení
     medical_records = db.relationship('MedicalRecord', backref='animal', lazy=True)
     status = db.Column(db.String(50))  # Stav (k dispozici, zapůjčené)
-    
+
+    caretaker_id = db.Column(db.Integer, db.ForeignKey('caretakers.id'))  # cizí klíč na pečovatele
     def __repr__(self):
         return f'<Animal {self.name} ({self.species})>'
 
