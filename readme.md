@@ -1,0 +1,1 @@
+### for start of database locally instal docker and thes write docker-compose up -d

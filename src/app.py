@@ -6,9 +6,10 @@ import os
 app = Flask(__name__)
 
 # SQLite database
-DATABASE_URI = 'sqlite:///my_database.db'
+DATABASE_URI = 'postgresql://husic:husic@localhost:5432/iis'
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 
 # Init app
 db.init_app(app)
