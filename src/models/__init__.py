@@ -4,4 +4,3 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 # IDK about this import
-from .models import Person, Animal 
