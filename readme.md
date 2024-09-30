@@ -1,12 +1,15 @@
-### for start of database locally instal docker and thes write 
+### To start database on docker 
 `docker-compose up -d`
 
-### for db dump
-`sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -`
-`sudo apt install postgresql-17`
-`sudo apt install postgresql-client-17`
+### To intialize enviroment
 
-### apply dump
+`python3 -m venv venv` <- create it in root directory
 
-`psql -U husic/myuser -d iis -f iis_dump.sql`
+`source venv/bin/activate`  <- activate enviroment
+
+`pip install -r requirements.txt`  <- download requierments for project
+
+###  Run program
+You need to be in source directory and run 
+`python(your version) app.py`
+
