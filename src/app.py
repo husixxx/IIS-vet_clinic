@@ -1,5 +1,5 @@
 from flask import Flask
-from models import db
+from backend.models import db
 import os
 
 
@@ -18,8 +18,8 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
 
-
 @app.route('/')
+
 def hello_world():
     return 'Hello, World!'
 

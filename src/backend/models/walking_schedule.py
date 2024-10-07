@@ -6,7 +6,9 @@ class WalkingSchedule(db.Model):
     animal_id = db.Column(db.Integer, db.ForeignKey('animals.id'), nullable=False)
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
-    volunteer_id = db.Column(db.Integer, db.ForeignKey('volunteers.id'), nullable=False)
+    volunteer_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    volunteer = db.relationship('User', backref='walking_schedules', lazy=True)
+    
     status = db.Column(db.String(20))
 
     def __repr__(self):
