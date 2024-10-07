@@ -1,4 +1,4 @@
-from . import db
+from backend import db
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -8,8 +8,8 @@ class User(db.Model):
     password = db.Column(db.String(100), nullable=False)
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))  # ForeignKey to Role
     role = db.relationship('Role', back_populates='users')
+    verified = db.Column(db.Boolean, default=False)
 
-    
 
     def __repr__(self):
         return f'<User {self.name}>'
