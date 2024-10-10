@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="layout-container">
     <!-- Navbar placed at the top (header) -->
     <header>
       <MyMenubar />  <!-- Navbar component -->
@@ -23,25 +23,41 @@ import Footer from '../components/Footer.vue';
 </script>
 
 <style scoped>
-/* Make the header fixed at the top and ensure it spans the full width */
+/* Layout container that uses flexbox to organize header, main, and footer */
+.layout-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Header styling, fixed at the top */
 header {
-position: fixed;
-top: 0;
-left: 0;
-width: 100%;
-padding: 0;
-z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  padding: 0;
 }
 
-/* Make sure the main content doesn't go behind the fixed header */
+/* Main content styling, flex-grow ensures it takes up available space */
 main {
-margin-top: 30px;  /* Adjust based on the header's height */
+  flex-grow: 1;
+  padding-top: 60px;   /* Space for the header */
+  padding-bottom: 60px; /* Space for the footer */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
+/* Footer styling, fixed at the bottom */
 footer {
-   position:fixed;
-   left:0px;
-   bottom:0px;
-   width:100%;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  padding: 10px 0;
+  text-align: center;
+  z-index: 1000;
 }
 </style>

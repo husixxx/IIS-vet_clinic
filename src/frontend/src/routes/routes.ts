@@ -3,6 +3,9 @@ import MainLayout from '../layouts/Mainlayout.vue';  // Import your layout
 import Home from '../views/Home.vue';
 import About from '../views/About.vue';
 import Signin from '../views/Signin_view.vue';
+import Animal_info from '../views/Animalinfo_view.vue';
+import Signup from '../views/Signup_view.vue';
+
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -23,6 +26,16 @@ const routes: Array<RouteRecordRaw> = [
         path: 'signin',
         name: 'Sign',
         component: Signin,
+      },
+      {
+        path: 'signup',
+        name: 'Signup',
+        component: Signup,
+      },
+      {
+        path: 'animalinfo',
+        name: 'Animalinfo',
+        component: Animal_info,
       },
     ],
   },
