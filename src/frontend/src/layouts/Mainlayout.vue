@@ -2,12 +2,12 @@
   <div class="layout-container">
     <!-- Navbar placed at the top (header) -->
     <header>
-      <MyMenubar />  <!-- Navbar component -->
+      <MyMenubar /> <!-- Navbar component -->
     </header>
 
     <!-- Main content area where routed views are displayed -->
     <main>
-      <router-view />  <!-- Inject the page-specific content here -->
+      <router-view /> <!-- Inject the page-specific content here -->
     </main>
 
     <!-- Optional footer -->
@@ -23,8 +23,6 @@ import Footer from '../components/Footer.vue';
 </script>
 
 <style scoped>
-/* Layout container that uses flexbox to organize header, main, and footer */
-
 
 /* Header styling, fixed at the top */
 header {
@@ -34,26 +32,26 @@ header {
   width: 100%;
   z-index: 1000;
   padding: 0;
-  background-color: black;
 }
 
 /* Main content styling, flex-grow ensures it takes up available space */
 main {
-  padding-top: 100px;   /* Space for the header */
+  padding-top: 100px; /* Space for the header */
   padding-bottom: 100px; /* Space for the footer */
-  width: 100%;                /* Ensure main takes up full width */
+  width: 100%; /* Ensure main takes up full width */
+  flex-grow: 1; /* Ensures the main content takes available space */
+  color: white; /* Ensure the text is visible */
 }
 
 /* Footer styling, fixed at the bottom */
 footer {
-  position: fixed;      /* Optional: only if you want the footer fixed like the navbar */
-  bottom: 0;            /* Aligns it at the bottom */
-  left: 0;              /* Aligns it to the left edge of the viewport */
-  width: 100%;          /* Ensures it takes up the full viewport width */
-  background: #000;     /* Match the navbar's background for consistency */
-  color: #fff;          /* Ensuring text is visible */
-  text-align: center;   /* Center the text inside the footer */
-  padding: 10px 0;      /* Similar padding to the navbar for visual symmetry */
-  z-index: 1000;        /* Ensures it stays on top of other content if overlapping occurs */
+  position: fixed; /* Optional: only if you want the footer fixed like the navbar */
+  bottom: 0; /* Aligns it at the bottom */
+  left: 0; /* Aligns it to the left edge of the viewport */
+  width: 100%; /* Ensures it takes up the full viewport width */
+  color: white; /* Ensuring text is visible */
+  text-align: center; /* Center the text inside the footer */
+  padding: 10px 0; /* Similar padding to the navbar for visual symmetry */
+  z-index: 1000; /* Ensures it stays on top of other content if overlapping occurs */
 }
 </style>
