@@ -7,3 +7,5 @@ db = SQLAlchemy()
 from backend.models import *
 # Importovanie use cases
 from backend.usecases import *
+
+from backend.endpoints import *
