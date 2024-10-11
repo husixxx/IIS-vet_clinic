@@ -6,7 +6,9 @@ def seed_roles():
     roles = [
         {'name': 'volunteer'},
         {'name': 'veterinarian'},
-        {'name': 'caretaker'}
+        {'name': 'caretaker'},
+        {'name': 'admin'},
+        {'name': 'registered'}
     ]
     
     # Check if roles already exist to avoid duplication
