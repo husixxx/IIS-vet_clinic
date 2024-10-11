@@ -1,6 +1,6 @@
 <template>
     <div class="card">
-        <Menubar :model="items" />
+        <Menubar :model="items"/>
     </div>
   </template>
   
