@@ -13,7 +13,8 @@
           <!-- Password Input -->
           <div class="p-field input-group">
             <label for="password" class="input-label">Password</label>
-            <Password id="password" v-model="password" placeholder="Enter your password" toggleMask class="input-text" />
+            <Password id="password" v-model="password" placeholder="Enter your password" toggleMask
+              class="input-text" />
           </div>
 
           <!-- Sign In Button -->
@@ -23,7 +24,7 @@
 
           <!-- Redirect to Sign Up -->
           <div class="p-field sign-up-redirect">
-            <p class="sign-up-text">Don't have an account yet? 
+            <p class="sign-up-text">Don't have an account yet?
               <Button label="Create one" link @click="redirectToSignUp" />
             </p>
           </div>
@@ -33,13 +34,14 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';  // Import the router for navigation
 import Card from 'primevue/card';
 import InputText from 'primevue/inputtext';
 import Password from 'primevue/password';
 import Button from 'primevue/button';
+import apiClient from '../api';
 
 const email = ref('');
 const password = ref('');
@@ -48,16 +50,21 @@ const password = ref('');
 const router = useRouter();
 
 // Handle sign in logic (mockup for now)
-const handleSignIn = () => {
-  console.log('Sign in clicked');
-  console.log('Email:', email.value);
-  console.log('Password:', password.value);
+const handleSignIn = async () => {
+  var { data, error } = await apiClient.POST('/authorization/sign_in', { params: { query: { username: '', password: '' } } });
+  if (error !== undefined) {
+    console.log(error);
+  }
+  else {
+    console.log(data);
+  }
 };
 
 // Redirect to Sign Up using named route
 const redirectToSignUp = () => {
   router.push({ name: 'Signup' });  // Use the named route 'Signup'
 };
+
 </script>
 
 <style scoped>
