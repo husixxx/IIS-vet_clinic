@@ -1,6 +1,10 @@
-from flask_sqlalchemy import SQLAlchemy
+# backend/models/__init__.py
+from .animal import Animal
+from .user import User
+from .medical_record import MedicalRecord
+from .walking_schedule import WalkingSchedule
+from .role import Role
+# Pridajte ďalšie modely podľa potreby
 
-# Create Instance for db
-db = SQLAlchemy()
-
-# IDK about this import
+# Možno je dobré mať aj prístup k db
+from backend import db

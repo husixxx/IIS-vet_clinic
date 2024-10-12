@@ -1,4 +1,4 @@
-from . import db
+from backend import db
 
 class WalkingSchedule(db.Model):
     __tablename__ = 'walking_schedules'
@@ -8,7 +8,6 @@ class WalkingSchedule(db.Model):
     end_time = db.Column(db.DateTime, nullable=False)
     volunteer_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     volunteer = db.relationship('User', backref='walking_schedules', lazy=True)
-    
     status = db.Column(db.String(20))
 
     def __repr__(self):

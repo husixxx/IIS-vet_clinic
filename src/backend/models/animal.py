@@ -1,5 +1,4 @@
-from . import db
-from .medical_record import MedicalRecord
+from backend import db
 
 class Animal(db.Model):
     __tablename__ = 'animals'

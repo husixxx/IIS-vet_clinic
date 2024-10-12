@@ -1,10 +1,19 @@
 from typing import TypeVar, Generic, List, Type, Optional
-from app import db
+from backend import db
 
 # Define a TypeVar to represent any SQLAlchemy model type
 T = TypeVar('T')
 
 class Repository(Generic[T]):
+    
+    _instances = {}
+
+    def __new__(cls, model: Type[T]):
+        if model not in cls._instances:
+            cls._instances[model] = super(Repository, cls).__new__(cls)
+            # Iniciuj potrebné komponenty
+        return cls._instances[model]
+    
     def __init__(self, model: Type[T]):
         self.model = model
 
