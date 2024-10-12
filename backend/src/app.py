@@ -18,11 +18,6 @@ def create_app():
   app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
   app.secret_key = 'husic'  # Tajný klíč pro session
 
-
-
-
-
-
   db.init_app(app)
   swagger = Swagger(app)
 
@@ -40,6 +35,7 @@ def create_app():
   # Create tables
   with app.app_context():
     db.create_all()
+    seed_roles()
 
   # Register blueprints(endpoints)
   app.register_blueprint(create_caretaker_bp)
@@ -50,6 +46,24 @@ def create_app():
 
   return app
       
-      
+
+def seed_roles():
+  # Define the roles to be created
+  roles = [
+    {'name': 'volunteer'},
+    {'name': 'veterinarian'},
+    {'name': 'caretaker'},
+    {'name': 'admin'},
+    {'name': 'registered'}
+  ]
+  
+  # Check if roles already exist to avoid duplication
+  with db.session.begin():  # Using a context manager for the session
+    for role in roles:
+      existing_role = Role.query.filter_by(name=role['name']).first()
+      if not existing_role:
+        new_role = Role(name=role['name'])
+        db.session.add(new_role)
+    db.session.commit()  # Save the changes
 
 
