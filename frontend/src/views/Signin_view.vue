@@ -51,7 +51,7 @@ const router = useRouter();
 
 // Handle sign in logic (mockup for now)
 const handleSignIn = async () => {
-  var { data, error } = await apiClient.POST('/authorization/sign_in', { params: { query: { username: '', password: '' } } });
+  var { data, error } = await apiClient.POST('/authorization/sign_in', { params: { query: { username: 'username', password: 'password' } } });
   if (error !== undefined) {
     console.log(error);
   }
