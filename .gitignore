@@ -5,6 +5,8 @@ ipk-sniffer
 /venv
 __pycache__
 instance
+.vscode
+node_modules
 
 ### C++ ###
 # Prerequisites

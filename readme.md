@@ -13,3 +13,7 @@
 You need to be in source directory and run 
 `python(your version) app.py`
 
+### Seed Roles
+You need to run script to seed roles
+`python src/seed_roles.py`
+
