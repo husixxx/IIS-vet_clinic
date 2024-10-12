@@ -1,0 +1,258 @@
+{
+  "openapi": "3.0.0",
+  "definitions": {},
+  "info": {
+    "description": "powered by Flasgger",
+    "termsOfService": "/tos",
+    "title": "A swagger API",
+    "version": "3.0.0"
+  },
+  "paths": {
+    "/admin/caretaker": {
+      "post": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "email",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Caretaker created"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "409": {
+            "description": "User with this email already exists"
+          }
+        },
+        "summary": "Create a new caretaker."
+      }
+    },
+    "/authorization/sign_in": {
+      "post": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "username",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "password",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sign in successful",
+            "schema": {
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "role_id": {
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "400": {
+            "description": "Not found"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "summary": "Sign in"
+      }
+    },
+    "/authorization/sign_up": {
+      "post": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "username",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "email",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "password",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Sign up successful",
+            "schema": {
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "role_id": {
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        },
+        "summary": "Sign up"
+      }
+    },
+    "/caretaker/animal": {
+      "post": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "species",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "age",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "photo",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "history",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "caretaker_id",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Animal created"
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        },
+        "summary": "Create a new animal."
+      }
+    },
+    "/caretaker/walking_schedule": {
+      "post": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "animal_id",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "volunteer_id",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "start_time",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "end_time",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Walking schedule created successfully",
+            "schema": {
+              "properties": {
+                "animal_id": {
+                  "type": "integer"
+                },
+                "end_time": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "start_time": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "volunteer_id": {
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        },
+        "summary": "Create a walking schedule"
+      }
+    }
+  }
+}
