@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from backend import UnregisteredUseCase
+from src.usecases import UnregisteredUseCase
 
 sign_up_bp = Blueprint('sign_up', __name__)
 

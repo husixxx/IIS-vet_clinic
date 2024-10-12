@@ -1,5 +1,5 @@
-from backend.models import Animal, User
-from backend.repository import Repository
+from src.models import Animal, User
+from src.repository import Repository
 
 class AdminUseCase:
     

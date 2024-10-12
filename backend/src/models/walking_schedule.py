@@ -1,4 +1,4 @@
-from backend import db
+from src import db
 
 class WalkingSchedule(db.Model):
     __tablename__ = 'walking_schedules'

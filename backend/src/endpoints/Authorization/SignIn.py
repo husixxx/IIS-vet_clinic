@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from werkzeug.security import check_password_hash
 from flask_login import login_user
-from backend import User
+from src.models import User
 
 sign_in_bp = Blueprint('sign_in', __name__)
 

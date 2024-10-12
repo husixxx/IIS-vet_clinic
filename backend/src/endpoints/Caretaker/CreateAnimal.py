@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from backend import CaretakerUseCase
+from src.usecases import CaretakerUseCase
 
 create_animal_bp = Blueprint('create_animal', __name__)
 

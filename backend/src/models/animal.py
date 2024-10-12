@@ -1,4 +1,4 @@
-from backend import db
+from src import db
 
 class Animal(db.Model):
     __tablename__ = 'animals'

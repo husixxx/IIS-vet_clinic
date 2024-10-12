@@ -1,5 +1,5 @@
 from typing import TypeVar, Generic, List, Type, Optional
-from backend import db
+from src import db
 
 # Define a TypeVar to represent any SQLAlchemy model type
 T = TypeVar('T')

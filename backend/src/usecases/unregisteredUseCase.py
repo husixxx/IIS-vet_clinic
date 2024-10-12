@@ -1,5 +1,5 @@
-from backend.models import User
-from backend.repository import Repository
+from src.models import User
+from src.repository import Repository
 from werkzeug.security import generate_password_hash
 
 class UnregisteredUseCase:

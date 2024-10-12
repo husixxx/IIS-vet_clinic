@@ -6,5 +6,3 @@ from .walking_schedule import WalkingSchedule
 from .role import Role
 # Pridajte ďalšie modely podľa potreby
 
-# Možno je dobré mať aj prístup k db
-from backend import db

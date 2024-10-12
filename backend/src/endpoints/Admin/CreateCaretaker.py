@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from backend import AdminUseCase
+from src.usecases import AdminUseCase
 
 create_caretaker_bp = Blueprint('create_caretaker', __name__)
 

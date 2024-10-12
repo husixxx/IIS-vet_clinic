@@ -1,5 +1,5 @@
-from backend.models import WalkingSchedule, Animal
-from backend.repository import Repository
+from src.models import WalkingSchedule, Animal
+from src.repository import Repository
 
 class CaretakerUseCase:
     
