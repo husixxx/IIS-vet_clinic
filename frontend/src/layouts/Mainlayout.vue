@@ -32,6 +32,7 @@ header {
   width: 100%;
   z-index: 1000;
   padding: 0;
+  --p-menubar-border-radius: 0px;
 }
 
 /* Main content styling, flex-grow ensures it takes up available space */
