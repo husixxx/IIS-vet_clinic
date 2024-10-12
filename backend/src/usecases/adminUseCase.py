@@ -1,5 +1,6 @@
 from src.models import Animal, User
 from src.repository import Repository
+from werkzeug.security import generate_password_hash
 
 class AdminUseCase:
     
@@ -21,7 +22,7 @@ class AdminUseCase:
         self.animal_repository.add(new_animal)
         return new_animal
     
-    def create_caretaker(self, name: str, email: str) -> User:
+    def create_caretaker(self, name: str, email: str, username: str, password: str) -> User:
         # Zkontrolování existence osoby
         existing_person = User.query.filter_by(name=name, email=email).first()
 
@@ -29,7 +30,7 @@ class AdminUseCase:
             # Pokud osoba existuje, můžete vrátit její ID nebo provést jinou akci
             raise ValueError("User with this email already exists")
 
-        new_user = User(name=name, email=email, role_id=3, password="password")
+        new_user = User(name=name, email=email, username=username, role_id=3, password=generate_password_hash(password), verified=True)
         
         self.user_repository.add(new_user)
         return new_user

@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_login import LoginManager
 from flasgger import Swagger
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from . import db
 
@@ -12,8 +13,16 @@ def create_app():
   app = Flask(__name__)
 
 
+
+  CORS(app, resources={
+    r"/*": {  # Allow all routes
+        "origins": ["http://127.0.0.1:5173", "http://localhost:5342", "http://localhost:5000"],
+        "supports_credentials": True
+      }
+  })
+  
   # Database
-  DATABASE_URI = 'postgresql://husic:husic@postgres:5432/iis'
+  DATABASE_URI = 'postgresql://husic:husic@localhost:5432/iis'
   app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
   app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
   app.secret_key = 'husic'  # Tajný klíč pro session

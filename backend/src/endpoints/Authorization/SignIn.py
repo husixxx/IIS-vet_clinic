@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from werkzeug.security import check_password_hash
+from werkzeug.security import *
 from flask_login import login_user
 from src.models import User
 
@@ -39,8 +39,11 @@ def sign_in():
     password = request.args.get('password')
 
     user = User.query.filter_by(username=username).first()
-    if user is None or not check_password_hash(user.password, password):
-        return jsonify({'error': 'Not found'}), 400
+    if user is None:
+      return jsonify({'error': 'Not found222'}), 400
+    if not check_password_hash(user.password, password):
+      return jsonify({'error': 'Password bad'}), 400
+      
     
     if not user.verified:
         return jsonify({'error': 'Unauthorized'}), 401
