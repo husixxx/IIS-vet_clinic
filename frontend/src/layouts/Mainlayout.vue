@@ -52,5 +52,6 @@ footer {
   color: white; /* Ensuring text is visible */
   text-align: center; /* Center the text inside the footer */
   z-index: 1000; /* Ensures it stays on top of other content if overlapping occurs */
+  --p-card-border-radius: 0px;
 }
 </style>
