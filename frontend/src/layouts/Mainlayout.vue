@@ -51,7 +51,6 @@ footer {
   width: 100%; /* Ensures it takes up the full viewport width */
   color: white; /* Ensuring text is visible */
   text-align: center; /* Center the text inside the footer */
-  padding: 10px 0; /* Similar padding to the navbar for visual symmetry */
   z-index: 1000; /* Ensures it stays on top of other content if overlapping occurs */
 }
 </style>
