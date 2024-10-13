@@ -11,9 +11,11 @@
   "dependencies": {
     "@primevue/themes": "^4.1.0",
     "openapi-fetch": "^0.12.2",
+    "pinia": "^2.2.4",
     "primevue": "^4.1.0",
     "vue": "^3.5.10",
-    "vue-router": "^4.0.13"
+    "vue-router": "^4.0.13",
+    "vuex": "^4.0.2"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.1.4",
