@@ -19,6 +19,14 @@ def create_app():
         "supports_credentials": True
       }
   })
+  app.config['SWAGGER'] = {
+    "openapi": "3.0.3",  # Nastav verziu OpenAPI
+    "info": {
+        "title": "Husic API",
+        "description": "API documentation with OpenAPI 3.0.3",
+        "version": "1.0.0"
+    }
+  }
   # Database
   DATABASE_URI = 'postgresql://husic:husic@postgres:5432/iis'
   app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI

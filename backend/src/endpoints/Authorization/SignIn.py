@@ -48,7 +48,9 @@ def sign_in():
     login_user(user)
     
     return jsonify({
+      'properties': {
         'id': user.id,
         'email': user.email,
         'role_id': user.role_id
-    }), 200
+        }
+      }), 200
