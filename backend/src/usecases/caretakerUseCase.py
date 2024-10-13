@@ -22,14 +22,13 @@ class CaretakerUseCase:
         self.animal_repository.add(new_animal)
         return new_animal
     
-    def create_walking_schedule(self, animal_id: int, volunteer_id: int, start_time: str, end_time: str, status: str) -> WalkingSchedule:
+    def create_walking_schedule(self, animal_id: int, start_time: str, end_time: str) -> WalkingSchedule:
+        
         
         walking_schedule = WalkingSchedule(
             animal_id = animal_id,
-            volunteer_id = volunteer_id,
             start_time = start_time,
             end_time = end_time,
-            status = status
         )
         
         self.schedule_repository.add(walking_schedule)
@@ -45,6 +44,36 @@ class CaretakerUseCase:
         volunteer.role_id = 3
         self.user_repository.update(volunteer)
         return volunteer
+    
+    def get_all_animals(self) -> list:
+        return self.animal_repository.get_all()
+    
+    def get_all_schedules(self) -> list:
+        return self.schedule_repository.get_all()
+    
+    def remove_animal(self, animal_id: int):
+        animal = self.animal_repository.get_by_id(animal_id)
+        if animal is None:
+            raise Exception('Animal not found.')
+        try:
+            self.animal_repository.delete(animal)
+        except:
+            raise Exception('Animal has walking schedules.')
+        
+        
+    def create_request(self, animal_id: int, caretaker_id: int):
+        animal = self.animal_repository.get_by_id(animal_id)
+        if animal is None:
+            raise Exception('Animal not found.')
+        animal.status = 'requested'
+        animal.caretaker_id = caretaker_id
+        self.animal_repository.update(animal)
+            
+            
+    
+    
+    
+    
         
         
         

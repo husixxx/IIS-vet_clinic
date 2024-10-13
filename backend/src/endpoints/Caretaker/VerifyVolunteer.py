@@ -5,11 +5,10 @@ verify_volunteer_bp = Blueprint('verify_volunteer', __name__)
 
 @verify_volunteer_bp.route('/caretaker/verify_volunteer', methods=['POST'])
 def verify_volunteer():
-    """
-    Verify a volunteers account.
+    """Verify a volunteers account
     ---
     parameters:
-      - username: username 
+      - name: username 
         required: true
         type: string
         in: query
@@ -17,9 +16,7 @@ def verify_volunteer():
         200:
             description: Volunteer verified
         400:
-            description: User not found/User already validated.
-        
-            
+            description: User not found/User already validated. 
     """
     
     
