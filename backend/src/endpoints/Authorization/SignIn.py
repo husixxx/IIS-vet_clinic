@@ -40,18 +40,17 @@ def sign_in():
 
     user = User.query.filter_by(username=username).first()
     if user is None:
-      return jsonify({'error': 'Not found222'}), 400
+      return jsonify({'error': 'Not found'}), 400
     if not check_password_hash(user.password, password):
       return jsonify({'error': 'Password bad'}), 400
-      
     
     if not user.verified:
-        return jsonify({'error': 'Unauthorized'}), 401
+      return jsonify({'error': 'Unauthorized'}), 401
     
     login_user(user)
     
     return jsonify({
-        'id': user.id,
-        'email': user.email,
-        'role_id': user.role_id
-    }), 200
+      'id': user.id,
+      'email': user.email,
+      'role_id': user.role_id
+    })

@@ -61,6 +61,6 @@ def create_animal():
             'history': animal.history,
             'status': animal.status,
             'caretaker_id': animal.caretaker_id
-        }), 201
+        }), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 400

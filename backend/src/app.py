@@ -11,8 +11,14 @@ from .endpoints import *
 
 def create_app():
   app = Flask(__name__)
-
-
+  app.config['SWAGGER'] = {
+    "openapi": "3.0.0",  # Nastav verziu OpenAPI
+    "info": {
+        "title": "Husic API",
+        "description": "API documentation with OpenAPI 3.0.3",
+        "version": "1.0.0"
+    }
+  }
 
   CORS(app, resources={
     r"/*": {  # Allow all routes
@@ -52,6 +58,7 @@ def create_app():
   app.register_blueprint(create_animal_bp)
   app.register_blueprint(sign_in_bp)
   app.register_blueprint(sign_up_bp)
+  app.register_blueprint(verify_volunteer_bp)
 
   return app
       
