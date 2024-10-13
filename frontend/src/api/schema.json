@@ -1,12 +1,13 @@
 {
-  "openapi": "3.0.0",
-  "definitions": {},
-  "info": {
-    "description": "powered by Flasgger",
-    "termsOfService": "/tos",
-    "title": "A swagger API",
-    "version": "3.0.0"
+  "components": {
+    "schemas": {}
   },
+  "info": {
+    "description": "API documentation with OpenAPI 3.0.3",
+    "title": "Husic API",
+    "version": "1.0.0"
+  },
+  "openapi": "3.0.3",
   "paths": {
     "/admin/caretaker": {
       "post": {
