@@ -59,6 +59,7 @@ def create_app():
   app.register_blueprint(sign_in_bp)
   app.register_blueprint(sign_up_bp)
   app.register_blueprint(verify_volunteer_bp)
+  
 
   return app
       

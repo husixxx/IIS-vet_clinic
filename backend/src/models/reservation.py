@@ -7,7 +7,7 @@ class Reservation(db.Model):
     volunteer_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
-    status = db.Column(db.Enum('pending','approved','completed'), default='pending')
+    status = db.Column(db.Enum('pending','approved','completed', default='pending', name='reservation_status'))
     
     
     volunteer = db.relationship('User', backref='reservations', lazy=True)
