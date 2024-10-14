@@ -54,16 +54,22 @@ def create_app():
     db.create_all()
     seed_roles()
 
-  # Register blueprints(endpoints)
+  # Admin
   app.register_blueprint(create_caretaker_bp)
   app.register_blueprint(create_veterinarian_bp)
-  app.register_blueprint(create_walking_schedule_bp)
-  app.register_blueprint(create_animal_bp)
+  app.register_blueprint(get_all_users_bp)
+  # Authorization
   app.register_blueprint(sign_in_bp)
   app.register_blueprint(sign_up_bp)
+  
+  # Caretaker
+  app.register_blueprint(create_walking_schedule_bp)
+  app.register_blueprint(create_animal_bp)
   app.register_blueprint(verify_volunteer_bp)
   app.register_blueprint(create_vet_request_bp)
   
+  # public
+  app.register_blueprint(get_all_unverified_volunteers_bp)
 
   return app
       
@@ -77,6 +83,8 @@ def seed_roles():
     {'name': 'admin'},
     {'name': 'registered'}
   ]
+  
+  
   
   # Check if roles already exist to avoid duplication
   with db.session.begin():  # Using a context manager for the session

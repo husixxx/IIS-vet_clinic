@@ -47,3 +47,6 @@ class AdminUseCase:
         
         self.user_repository.add(new_user)
         return new_user
+    
+    def get_all_users(self) -> list:
+        return self.user_repository.get_all()

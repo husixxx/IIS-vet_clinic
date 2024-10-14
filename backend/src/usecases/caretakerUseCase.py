@@ -79,6 +79,9 @@ class CaretakerUseCase:
         self.request_repository.add(new_request)
         return new_request
     
+    def get_all_unverified_volunteers(self) -> list:
+        return self.user_repository.get_unverified_volunteers()
+    
             
     
     
