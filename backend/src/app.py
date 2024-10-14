@@ -12,13 +12,6 @@ from flask_cors import *
 
 def create_app():
   app = Flask(__name__)
-
-  CORS(app, resources={
-    r"/*": {  # Allow all routes
-        "origins": ["http://127.0.0.1:5173", "http://localhost:5342", "http://localhost:5000"],
-        "supports_credentials": True
-      }
-  })
   app.config['SWAGGER'] = {
     "openapi": "3.0.3",  # Nastav verziu OpenAPI
     "info": {
@@ -27,6 +20,14 @@ def create_app():
         "version": "1.0.0"
     }
   }
+
+  CORS(app, resources={
+    r"/*": {  # Allow all routes
+        "origins": ["http://127.0.0.1:5173", "http://localhost:5342", "http://localhost:5000"],
+        "supports_credentials": True
+      }
+  })
+  
   # Database
   DATABASE_URI = 'postgresql://husic:husic@postgres:5432/iis'
   app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
