@@ -28,6 +28,7 @@
               <Button label="Create one" link @click="redirectToSignUp" />
             </p>
           </div>
+
         </div>
       </template>
     </Card>
@@ -41,29 +42,35 @@ import Card from 'primevue/card';
 import InputText from 'primevue/inputtext';
 import Password from 'primevue/password';
 import Button from 'primevue/button';
-import axiosClient from '../api/api';
+import axiosClient from '../api/api';  // Ensure the axiosClient is correctly imported
+import { useAuthStore } from '../store/Authstore';  // Ensure correct import of your AuthStore
 
 const email = ref('');
 const password = ref('');
 const router = useRouter();
+const authStore = useAuthStore();
 
 // Handle sign in logic
 const handleSignIn = async () => {
-  try 
-  {
-    const response = await axiosClient.post("/authorization/sign_in", null, 
-    {
-      params: {
-        username: email.value,   // Poslat jako query parametr
-        password: password.value // Poslat jako query parametr
-      }
-    });
-    // process response
-    console.log(response);
-  } 
-  catch (error) 
-  {
+  try {
+    const response = await axiosClient.post(`/authorization/sign_in?username=${email.value}&password=${password.value}`);
+    
+    // handle success
+    const user = {
+      email: response.data.properties.email,
+      id: response.data.properties.id,
+      role_id: response.data.properties.role_id,
+    };
+
+    authStore.login(user);  // Save user in Pinia store
+    alert("Login successful");
+    
+    // Optionally, redirect to another page after login
+    // router.push({ name: 'Home' });
+  } catch (error) {
+    // handle error
     console.log(error);
+    alert("Something went wrong");
   }
 };
 
@@ -72,6 +79,7 @@ const redirectToSignUp = () => {
   router.push({ name: 'Signup' });  // Use the named route 'Signup'
 };
 </script>
+
 
 <style scoped>
 .sign-in-container {
