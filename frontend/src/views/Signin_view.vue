@@ -50,6 +50,7 @@ const password = ref('');
 const router = useRouter();
 const authStore = useAuthStore();
 
+
 // Handle sign in logic
 const handleSignIn = async () => {
   try {
@@ -63,8 +64,10 @@ const handleSignIn = async () => {
     };
 
     authStore.login(user);  // Save user in Pinia store
+    password.value = '';
+    email.value = '';
     alert("Login successful");
-    
+    router.push({ name: 'Home' });  // Use the named route 'Signup'
     // Optionally, redirect to another page after login
     // router.push({ name: 'Home' });
   } catch (error) {
