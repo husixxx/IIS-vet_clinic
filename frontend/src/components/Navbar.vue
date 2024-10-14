@@ -41,7 +41,7 @@ const items = computed(() => {
             2: [{ label: 'Requests', command: () => {} }],
             3: [
                 { label: 'Volunteer Approving', command: () => {} },
-                { label: 'Create Animal', command: () => {} },
+                { label: 'Create Animal', command: () => { router.push({ name: "CreateAnimal" }) } },
                 { label: 'Vet Request', command: () => {} },
                 { label: 'Reservation Approving', command: () => {} }
             ],
