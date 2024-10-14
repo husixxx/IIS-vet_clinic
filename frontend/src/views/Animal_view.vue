@@ -39,7 +39,7 @@ const numberOfCards = 5; // Adjust number based on your requirement or dynamic d
   display: flex;
   flex-wrap: wrap; /* Allows cards to wrap onto the next line */
   gap: 10px; /* Spacing between cards */
-  margin-bottom: 100px;
+  margin-bottom: 115px;
 }
 
 card {
