@@ -32,6 +32,7 @@ header {
   width: 100%;
   z-index: 1000;
   padding: 0;
+  --p-menubar-border-radius: 0px;
 }
 
 /* Main content styling, flex-grow ensures it takes up available space */
@@ -51,7 +52,7 @@ footer {
   width: 100%; /* Ensures it takes up the full viewport width */
   color: white; /* Ensuring text is visible */
   text-align: center; /* Center the text inside the footer */
-  padding: 10px 0; /* Similar padding to the navbar for visual symmetry */
   z-index: 1000; /* Ensures it stays on top of other content if overlapping occurs */
+  --p-card-border-radius: 0px;
 }
 </style>

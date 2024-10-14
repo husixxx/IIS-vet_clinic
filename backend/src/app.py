@@ -10,6 +10,8 @@ from .models import *
 from .usecases import *
 from .endpoints import *
 
+from flask_cors import *
+
 def create_app():
   app = Flask(__name__)
   app.config['SWAGGER'] = {
@@ -27,7 +29,6 @@ def create_app():
         "supports_credentials": True
       }
   })
-  
   # Database
   DATABASE_URI = 'postgresql://husic:husic@localhost:5432/iis'
   app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
