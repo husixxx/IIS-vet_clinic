@@ -24,6 +24,10 @@ import Footer from '../components/Footer.vue';
 
 <style scoped>
 
+.layout-container {
+  height: 100%;
+}
+
 /* Header styling, fixed at the top */
 header {
   position: fixed;
@@ -40,6 +44,7 @@ main {
   padding-top: 100px; /* Space for the header */
   padding-bottom: 100px; /* Space for the footer */
   width: 100%; /* Ensure main takes up full width */
+  height: 100%;
   flex-grow: 1; /* Ensures the main content takes available space */
   color: white; /* Ensure the text is visible */
 }
