@@ -3,6 +3,7 @@ from flask_login import LoginManager
 from flasgger import Swagger
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from . import db
 
 from .models import *
@@ -33,6 +34,7 @@ def create_app():
   app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
   app.secret_key = 'husic'  # Tajný klíč pro session
 
+  migrate = Migrate(app, db)
   db.init_app(app)
   swagger = Swagger(app)
 
@@ -54,11 +56,13 @@ def create_app():
 
   # Register blueprints(endpoints)
   app.register_blueprint(create_caretaker_bp)
+  app.register_blueprint(create_veterinarian_bp)
   app.register_blueprint(create_walking_schedule_bp)
   app.register_blueprint(create_animal_bp)
   app.register_blueprint(sign_in_bp)
   app.register_blueprint(sign_up_bp)
   app.register_blueprint(verify_volunteer_bp)
+  app.register_blueprint(create_vet_request_bp)
   
 
   return app

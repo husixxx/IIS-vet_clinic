@@ -1,4 +1,4 @@
-from src.models import WalkingSchedule, Animal, User
+from src.models import WalkingSchedule, Animal, User, Request
 from src.repository import Repository
 
 class CaretakerUseCase:
@@ -7,21 +7,24 @@ class CaretakerUseCase:
         self.schedule_repository = Repository(WalkingSchedule)
         self.animal_repository = Repository(Animal)
         self.user_repository = Repository(User)
+        self.request_repository = Repository(Request)
     
-    def create_animal(self, name: str, species: str, age: int = None, photo: str = None, history: str = None, caretaker_id: int = None) -> Animal:
+    ### Create Animal ###
+    def create_animal(self, name: str, breed: str, age: int, photo: str, history: str, description: str, sex: str) -> Animal:
         new_animal = Animal(
             name=name,
-            species=species,
+            breed=breed,
             age=age,
             photo=photo,
             history=history,
-            status='available',  # predpokladaný predvolený status
-            caretaker_id=caretaker_id
+            description=description,
+            sex=sex
         )
         
         self.animal_repository.add(new_animal)
         return new_animal
     
+    ### Create Walking Schedule ###
     def create_walking_schedule(self, animal_id: int, start_time: str, end_time: str) -> WalkingSchedule:
         
         
@@ -60,15 +63,22 @@ class CaretakerUseCase:
         except:
             raise Exception('Animal has walking schedules.')
         
+    def create_vet_request(self, animal_id: int, veterinarian_username: str, request_date: str, description: str):
         
-    def create_request(self, animal_id: int, caretaker_id: int):
-        animal = self.animal_repository.get_by_id(animal_id)
-        if animal is None:
-            raise Exception('Animal not found.')
-        animal.status = 'requested'
-        animal.caretaker_id = caretaker_id
-        self.animal_repository.update(animal)
-            
+        veterinarian = self.user_repository.get_by_username(veterinarian_username)
+        
+        if veterinarian is None:
+            raise Exception('Veterinarian not found.')        
+        new_request = Request(
+            animal_id = animal_id,
+            veterinarian_id = veterinarian.id,
+            request_date = request_date,
+            description = description
+        )
+        
+        self.request_repository.add(new_request)
+        return new_request
+    
             
     
     

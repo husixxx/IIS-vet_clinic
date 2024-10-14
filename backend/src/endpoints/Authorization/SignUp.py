@@ -54,5 +54,6 @@ def sign_up():
     return jsonify({
         'id': user.id,
         'email': user.email,
-        'role_id': user.role_id
+        'role_id': user.role_id,
+        'verified': user.verified
     }), 201
