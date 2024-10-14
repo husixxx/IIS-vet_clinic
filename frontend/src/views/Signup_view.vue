@@ -16,10 +16,10 @@
             <InputText id="lastName" v-model="lastName" placeholder="Enter your last name" class="input-text" />
           </div>
 
-          <!-- Phone Number Input -->
+          <!-- Username Input -->
           <div class="p-field input-group">
-            <label for="phone" class="input-label">Phone</label>
-            <InputText id="phone" type="tel" v-model="phone" placeholder="Enter your phone number" class="input-text" />
+            <label for="username" class="input-label">Username</label>
+            <InputText id="username" v-model="username" placeholder="Enter your username" class="input-text" />
           </div>
 
           <!-- Email Input -->
@@ -52,31 +52,49 @@
   </div>
 </template>
 
+
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';  // Import the router for navigation
 import Card from 'primevue/card';
 import InputText from 'primevue/inputtext';
 import Password from 'primevue/password';
 import Button from 'primevue/button';
+import axiosClient from '../api/api';  // Ensure the axiosClient is correctly imported
 
 const firstName = ref('');
 const lastName = ref('');
-const phone = ref('');
+const username = ref('');
 const email = ref('');
 const password = ref('');
+
+// Combine first name and last name into one string
+const fullName = computed(() => `${firstName.value} ${lastName.value}`);
 
 // Using router to navigate
 const router = useRouter();
 
-// Handle sign up logic (mockup for now)
-const handleSignUp = () => {
-  console.log('Sign up clicked');
-  console.log('First Name:', firstName.value);
-  console.log('Last Name:', lastName.value);
-  console.log('Phone:', phone.value);
-  console.log('Email:', email.value);
-  console.log('Password:', password.value);
+const handleSignUp = async () => 
+{
+  try 
+  {
+    const response = await axiosClient.post(`/authorization/sign_up?username=${username.value}&email=${email.value}&password=${password.value}&name=${fullName.value}`);
+
+    // Reset form fields after successful sign-up
+    firstName.value = '';
+    lastName.value = '';
+    username.value = '';
+    email.value = '';
+    password.value = '';
+
+    alert("Your volunteer account has to be approved by caretaker");
+  } 
+  catch (error) 
+  {
+    // handle error
+    console.log(error);
+    alert("Something went wrong");
+  }
 };
 
 // Redirect to Sign In using named route
