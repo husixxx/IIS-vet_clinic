@@ -30,7 +30,7 @@ def create_app():
       }
   })
   # Database
-  DATABASE_URI = 'postgresql://husic:husic@localhost:5432/iis'
+  DATABASE_URI = 'postgresql://husic:husic@postgres:5432/iis'
   app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
   app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
   app.secret_key = 'husic'  # Tajný klíč pro session
