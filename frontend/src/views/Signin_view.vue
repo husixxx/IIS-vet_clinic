@@ -41,29 +41,36 @@ import Card from 'primevue/card';
 import InputText from 'primevue/inputtext';
 import Password from 'primevue/password';
 import Button from 'primevue/button';
-// import apiClient from '../api';
 import axiosClient from '../api/api';
 
 const email = ref('');
 const password = ref('');
-
-// Using router to navigate
 const router = useRouter();
 
-// Handle sign in logic (mockup for now)
+// Handle sign in logic
 const handleSignIn = async () => {
-  
-  axiosClient.post('/authorization/sign_in')
-  .then((res) => { 
-    email.value = res.data.email
-  })
+  try 
+  {
+    const response = await axiosClient.post("/authorization/sign_in", null, 
+    {
+      params: {
+        username: email.value,   // Poslat jako query parametr
+        password: password.value // Poslat jako query parametr
+      }
+    });
+    // process response
+    console.log(response);
+  } 
+  catch (error) 
+  {
+    console.log(error);
+  }
 };
 
 // Redirect to Sign Up using named route
 const redirectToSignUp = () => {
   router.push({ name: 'Signup' });  // Use the named route 'Signup'
 };
-
 </script>
 
 <style scoped>
