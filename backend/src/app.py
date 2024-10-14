@@ -1,7 +1,9 @@
 from flask import Flask, request, jsonify
 from flask_login import LoginManager
 from flasgger import Swagger
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from . import db
 
 from .models import *
@@ -27,13 +29,13 @@ def create_app():
         "supports_credentials": True
       }
   })
-
   # Database
-  DATABASE_URI = 'postgresql://husic:husic@postgres:5432/iis'
+  DATABASE_URI = 'postgresql://husic:husic@localhost:5432/iis'
   app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
   app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
   app.secret_key = 'husic'  # Tajný klíč pro session
 
+  migrate = Migrate(app, db)
   db.init_app(app)
   swagger = Swagger(app)
 
@@ -53,12 +55,22 @@ def create_app():
     db.create_all()
     seed_roles()
 
-  # Register blueprints(endpoints)
+  # Admin
   app.register_blueprint(create_caretaker_bp)
-  app.register_blueprint(create_walking_schedule_bp)
-  app.register_blueprint(create_animal_bp)
+  app.register_blueprint(create_veterinarian_bp)
+  app.register_blueprint(get_all_users_bp)
+  # Authorization
   app.register_blueprint(sign_in_bp)
   app.register_blueprint(sign_up_bp)
+  
+  # Caretaker
+  app.register_blueprint(create_walking_schedule_bp)
+  app.register_blueprint(create_animal_bp)
+  app.register_blueprint(verify_volunteer_bp)
+  app.register_blueprint(create_vet_request_bp)
+  
+  # public
+  app.register_blueprint(get_all_unverified_volunteers_bp)
 
   return app
       
@@ -72,6 +84,8 @@ def seed_roles():
     {'name': 'admin'},
     {'name': 'registered'}
   ]
+  
+  
   
   # Check if roles already exist to avoid duplication
   with db.session.begin():  # Using a context manager for the session

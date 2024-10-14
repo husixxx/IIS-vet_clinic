@@ -8,14 +8,22 @@ def create_caretaker():
     """Create a new caretaker.
     ---
     parameters:
-      - name: name
-        required: true
-        type: string
+      - name: username
         in: query
+        type: string
+        required: true
       - name: email
-        required: true
-        type: string
         in: query
+        type: string
+        required: true
+      - name: password
+        in: query
+        type: string
+        required: true
+      - name: name
+        in: query
+        type: string
+        required: true
     responses:
       201:
         description: Caretaker created
@@ -27,6 +35,8 @@ def create_caretaker():
     # Získanie parametrov z requestu
     name = request.args.get('name')
     email = request.args.get('email')
+    username = request.args.get('username')
+    password = request.args.get('password')
 
 
 
@@ -34,7 +44,7 @@ def create_caretaker():
     use_case = AdminUseCase()
 
     try:
-        caretaker = use_case.create_caretaker(name, email)
+        caretaker = use_case.create_caretaker(name, email, username, password)
         return jsonify({
             'id': caretaker.id,
             'name': caretaker.name,
