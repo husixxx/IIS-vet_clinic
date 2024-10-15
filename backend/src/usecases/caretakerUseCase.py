@@ -49,17 +49,6 @@ class CaretakerUseCase:
         self.user_repository.update(volunteer)
         return volunteer
     
-    def unverify_volunteer(self, id: int) -> User:
-        volunteer = self.user_repository.get_by_id(id)
-        if volunteer is None:
-            raise Exception('User not found.')
-        if volunteer.role_id != 1:
-            raise Exception('User is unverified.')
-        volunteer.verified = False
-        volunteer.role_id = 5
-        self.user_repository.update(volunteer)
-        return volunteer
-    
     def get_all_animals(self) -> list:
         return self.animal_repository.get_all()
     
