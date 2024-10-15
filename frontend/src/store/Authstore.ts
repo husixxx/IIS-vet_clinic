@@ -1,5 +1,13 @@
 import { defineStore } from 'pinia';
 
+export enum UserRole {
+  Volunteer = 1,
+  Veterinarian,
+  Caretaker,
+  Admin,
+  UnverifVolunteer
+}
+
 // Define the structure of your user object
 interface User {
   email: string;
