@@ -58,9 +58,9 @@ const handleSignIn = async () => {
     
     // handle success
     const user = {
-      email: response.data.properties.email,
-      id: response.data.properties.id,
-      role_id: response.data.properties.role_id,
+      email: response.data.email,
+      id: response.data.id,
+      role_id: response.data.role_id,
     };
 
     authStore.login(user);  // Save user in Pinia store
