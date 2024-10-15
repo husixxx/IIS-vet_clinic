@@ -42,7 +42,7 @@ const items = computed(() => {
             [UserRole.Caretaker]: [
                 { label: 'Volunteer Approving', command: () => { router.push({ name: "ApproveVolunteer" }) } },
                 { label: 'Create Animal', command: () => { router.push({ name: "CreateAnimal" }) } },
-                { label: 'Vet Request', command: () => {} },
+                { label: 'Create request for veterinarian', command: () => { router.push({ name: "CreateVetRequest" }) } },
                 { label: 'Reservation Approving', command: () => {} }
             ],
             [UserRole.Admin]: [
