@@ -49,18 +49,7 @@ const routes: Array<RouteRecordRaw> = [
         path: 'createanimal',
         name: 'CreateAnimal',
         component: Create_animal,
-        beforeEnter: (to, from, next) => {  // Correct use of `next` function
-          const authStore = useAuthStore();  // Access the AuthStore
-          const user = authStore.getUser;  // Get the logged-in user
-          
-          // Check if the user exists and has the correct role
-          if (user && user.role_id === 3) {
-            next();  // User has access, allow navigation
-          } else {
-            alert("You do not have permission to access this page.");  // Show alert or handle the error
-            next({ name: 'Home' });  // Redirect to Home or Signin
-          }
-        }
+        meta: { requiresAuth: true, role: 3 }  // Only allow access for role 3
       }
     ],
   },
@@ -70,5 +59,23 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
 });
+
+// Navigation Guard
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore();
+
+  // Check if the route requires authentication and role
+  if (to.meta.requiresAuth) {
+    if (!authStore.isLoggedIn) {
+      // If user is not logged in, redirect to Sign In
+      return next({ name: 'Sign' });
+    } else if (to.meta.role && authStore.getRoleId !== to.meta.role) {
+      // If user's role doesn't match, redirect to Home
+      return next({ name: 'Home' });
+    }
+  }
+  next();  // Allow access if no restrictions
+});
+
 
 export default router;
