@@ -45,13 +45,13 @@ def create_animal():
       description: Invalid input
   """
   # Získanie parametrov z requestu
-  name = request.args.get('name')
-  breed = request.args.get('breed')
-  age = request.args.get('age', type=int)
-  photo = request.files.get('photo')
-  history = request.args.get('history')
-  description = request.args.get('description')
-  sex = request.args.get('sex')
+  name = request.form.get('name')
+  breed = request.form.get('breed')
+  age = request.form.get('age', type=int)
+  photo = request.files.get('photo')  # File upload
+  history = request.form.get('history')
+  description = request.form.get('description')
+  sex = request.form.get('sex')
 
   # Vytvorenie use case a zvieraťa
   use_case = CaretakerUseCase()
