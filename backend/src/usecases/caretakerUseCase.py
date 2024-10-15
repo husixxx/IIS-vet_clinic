@@ -1,4 +1,4 @@
-from src.models import WalkingSchedule, Animal, User, Request
+from src.models import WalkingSchedule, Animal, User, Request, Reservation
 from src.repository import Repository
 
 class CaretakerUseCase:
@@ -8,6 +8,7 @@ class CaretakerUseCase:
         self.animal_repository = Repository(Animal)
         self.user_repository = Repository(User)
         self.request_repository = Repository(Request)
+        self.reservation_repository = Repository(Reservation)
     
     ### Create Animal ###
     def create_animal(self, name: str, breed: str, age: int, photo: str, history: str, description: str, sex: str) -> Animal:
@@ -37,14 +38,25 @@ class CaretakerUseCase:
         self.schedule_repository.add(walking_schedule)
         return walking_schedule
     
-    def verify_volunteer(self, username: str) -> User:
-        volunteer = self.user_repository.get_by_username(username)
+    def verify_volunteer(self, id: int) -> User:
+        volunteer = self.user_repository.get_by_id(id)
         if volunteer is None:
             raise Exception('User not found.')
         if volunteer.role_id != 5:
-            raise Exception('User is validated.')
+            raise Exception('User is verified.')
         volunteer.verified = True
-        volunteer.role_id = 3
+        volunteer.role_id = 1
+        self.user_repository.update(volunteer)
+        return volunteer
+    
+    def unverify_volunteer(self, id: int) -> User:
+        volunteer = self.user_repository.get_by_id(id)
+        if volunteer is None:
+            raise Exception('User not found.')
+        if volunteer.role_id != 1:
+            raise Exception('User is unverified.')
+        volunteer.verified = False
+        volunteer.role_id = 5
         self.user_repository.update(volunteer)
         return volunteer
     
@@ -81,6 +93,25 @@ class CaretakerUseCase:
     
     def get_all_unverified_volunteers(self) -> list:
         return self.user_repository.get_unverified_volunteers()
+    
+    def accept_reservation(self, request_id: int):
+        request = self.reservation_repository.get_by_id(request_id) 
+        if request is None:
+            raise Exception('reservation not found.')
+        request.accepted = True
+        self.reservation_repository.update(request)
+        return request
+    
+    def decline_reservation(self, request_id: int):
+        request = self.reservation_repository.get_by_id(request_id) 
+        if request is None:
+            raise Exception('reservation not found.')
+        request.accepted = False
+        self.reservation_repository.update(request)
+        return request
+    
+    def get_all_reservations(self) -> list:
+        return self.reservation_repository.get_all()
     
             
     

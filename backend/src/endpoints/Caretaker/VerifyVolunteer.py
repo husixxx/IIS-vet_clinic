@@ -8,9 +8,9 @@ def verify_volunteer():
     """Verify a volunteers account
     ---
     parameters:
-      - name: username 
+      - name: id 
         required: true
-        type: string
+        type: int
         in: query
     responses:
         200:
@@ -20,10 +20,10 @@ def verify_volunteer():
     """
     
     
-    username = request.args.get('username')
+    id = request.args.get('id')
     use_case = CaretakerUseCase()
     try:
-        volunteer = use_case.verify_volunteer(username)
+        volunteer = use_case.verify_volunteer(id)
         return jsonify({
             'id': volunteer.id,
             'username': volunteer.username,
