@@ -109,27 +109,34 @@ const handleUpload = (event) => {
 // Handle cancel action (clears the file selection)
 const handleCancel = () => {
   photoFile.value = null;  // Clear the stored file
-  alert('Photo upload canceled.');
-};
-
-// Custom upload handler
-const uploadHandler = ({ files, options }) => {
-  // Handle the custom file upload logic here
-  const uploadedFile = files[0];
-  photoFile.value = uploadedFile;
-  alert('Photo file ready for submission.');
 };
 
 // Handle create animal logic
 const handleCreateAnimal = async () => {
   try {
+    // Prepare form data with the animal details
+    const formData = new FormData();
+    formData.append('name', name.value);
+    formData.append('breed', breed.value);
+    formData.append('age', age.value);
+    formData.append('sex', sex.value);
+    formData.append('history', history.value);
+    formData.append('description', description.value);
     
-    console.log(sex.value);
-    // Send form data using POST request
-    const response = await axiosClient.post(`/authorization/sign_in?name=${name.value}&breed=${breed.value}&breed=${breed.value}&age=${age.value}&photo=${photo.value}&history=${history.value}&description=${description.value}`)
+    // Append the photo file if available
+    if (photoFile.value) {
+      formData.append('photo', photoFile.value);
+    }
 
-    if (response.status === 200) 
-    {
+    // Send form data using POST request
+    const response = await axiosClient.post('/caretaker/animal', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    if (response.status === 200) {
+      // Reset form fields
       name.value = '';
       breed.value = '';
       age.value = null;
@@ -139,7 +146,6 @@ const handleCreateAnimal = async () => {
       photoFile.value = null;
 
       alert('Animal created successfully!');
-      router.push({ name: 'Home' });  // Redirect after creation
     }
   } catch (error) {
     console.error('Error creating animal:', error);
