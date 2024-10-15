@@ -100,20 +100,20 @@ const sexOptions = [
 ];
 
 // Handle file upload
-const handleUpload = (event) => {
+const handleUpload = async (event) => {
   const uploadedFile = event.files[0];  // Get the first uploaded file
   photoFile.value = uploadedFile;  // Store it in the reactive variable
   alert('Photo uploaded successfully!');
 };
 
 // Handle cancel action (clears the file selection)
-const handleCancel = () => {
+const handleCancel = async () => {
   photoFile.value = null;  // Clear the stored file
   // Remove the alert here; no need for a cancellation message.
 };
 
 // Custom upload handler
-const uploadHandler = ({ files, options }) => {
+const uploadHandler = async ({ files, options }) => {
   // Handle the custom file upload logic here
   const uploadedFile = files[0];
   photoFile.value = uploadedFile;
