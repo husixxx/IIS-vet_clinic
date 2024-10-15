@@ -11,7 +11,7 @@ class CaretakerUseCase:
         self.reservation_repository = Repository(Reservation)
     
     ### Create Animal ###
-    def create_animal(self, name: str, breed: str, age: int, photo: str, history: str, description: str, sex: str) -> Animal:
+    def create_animal(self, name: str, breed: str, age: int, photo: bytes, history: str, description: str, sex: str) -> Animal:
         new_animal = Animal(
             name=name,
             breed=breed,

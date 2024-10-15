@@ -6,7 +6,7 @@ class Animal(db.Model):
     name = db.Column(db.String(50), nullable=False)
     breed = db.Column(db.String(50), nullable=False)
     age = db.Column(db.Integer)
-    photo = db.Column(db.Text)
+    photo = db.Column(db.LargeBinary)
     history = db.Column(db.Text)
     description = db.Column(db.Text)
     medical_records = db.relationship('MedicalRecord', backref='animal', lazy=True)
