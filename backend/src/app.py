@@ -54,6 +54,7 @@ def create_app():
   with app.app_context():
     db.create_all()
     seed_roles()
+    seed_admin()
 
   # Admin
   app.register_blueprint(create_caretaker_bp)
@@ -89,8 +90,6 @@ def seed_roles():
     {'name': 'registered'}
   ]
   
-  
-  
   # Check if roles already exist to avoid duplication
   with db.session.begin():  # Using a context manager for the session
     for role in roles:
@@ -98,6 +97,12 @@ def seed_roles():
       if not existing_role:
         new_role = Role(name=role['name'])
         db.session.add(new_role)
-    db.session.commit()  # Save the changes
+    db.session.commit()
 
+def seed_admin():
+  existing_admin = User.query.filter_by(username='admin').first()
+  if not existing_admin:
+    Admin = User(name='admin',email='admin@admin.sk',username='admin',password=generate_password_hash("admin"), role_id=4, verified=True)
+    db.session.add(Admin)
+    db.session.commit()
 
