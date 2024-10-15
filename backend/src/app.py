@@ -25,7 +25,7 @@ def create_app():
 
   CORS(app, resources={
     r"/*": {  # Allow all routes
-        "origins": ["http://127.0.0.1:5173", "http://localhost:5342", "http://localhost:5000"],
+        "origins": ["http://127.0.0.1:5173", "http://localhost:5342", "http://localhost:5000", "http://localhost:5173"],
         "supports_credentials": True
       }
   })
