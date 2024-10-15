@@ -36,6 +36,7 @@ import axiosClient from '../api/api';
 // Reactive reference to hold volunteer data
 const volunteers = ref([]);
 
+// Fetch volunteers on component mount
 onMounted(async () => {
     try {
         // Make a GET request to the Flask API to fetch unverified volunteers
@@ -50,10 +51,8 @@ onMounted(async () => {
 // Function to verify a volunteer
 const verifyVolunteer = async (volunteer) => {
     try {
-        // Call the verification endpoint
-        const response = await axiosClient.post('/caretaker/verify_volunteer', null, {
-            params: { username: volunteer.name },
-        });
+        // Call the updated verification endpoint with the correct query parameter 'id'
+        const response = await axiosClient.post(`/caretaker/verify_volunteer?id=${volunteer.id}`);
 
         if (response.data.verified) {
             // Update the local role_id to 1 if verified successfully
