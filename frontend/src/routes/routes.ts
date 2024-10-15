@@ -57,6 +57,12 @@ const routes: Array<RouteRecordRaw> = [
         name: 'ApproveVolunteer',
         component: Approve_volunteer,
         meta: { requiresAuth: true, role: UserRole.Caretaker }  // Only allow access for Caretaker
+      },
+      {
+        path: 'createvetrequest',
+        name: 'CreateVetRequest',
+        component: Create_vet_request,
+        meta: { requiresAuth: true, role: UserRole.Caretaker }  // Only allow access for Caretaker
       }
     ],
   },
