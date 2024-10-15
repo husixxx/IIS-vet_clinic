@@ -7,7 +7,7 @@ import Animal_info from '../views/Animalinfo_view.vue';
 import Signup from '../views/Signup_view.vue';
 import Animal from '../views/Animal_view.vue';
 import Create_animal from '../views/CreateAnimal_view.vue'
-import { useAuthStore } from '../store/Authstore';  // Import AuthStore to access user data
+import { useAuthStore, UserRole } from '../store/Authstore';  // Import AuthStore to access user data
 import Approve_volunteer from '../views/ApproveVolunteer_view.vue'
 
 
@@ -50,13 +50,13 @@ const routes: Array<RouteRecordRaw> = [
         path: 'createanimal',
         name: 'CreateAnimal',
         component: Create_animal,
-        meta: { requiresAuth: true, role: 3 }  // Only allow access for role 3
+        meta: { requiresAuth: true, role: UserRole.Caretaker }  // Only allow access for Caretaker
       },
       {
         path: 'approvevolunteer',
         name: 'ApproveVolunteer',
         component: Approve_volunteer,
-        meta: { requiresAuth: true, role: 3 }  // Only allow access for role 3
+        meta: { requiresAuth: true, role: UserRole.Caretaker }  // Only allow access for Caretaker
       }
     ],
   },

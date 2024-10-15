@@ -8,7 +8,7 @@
 import { ref, computed } from "vue";
 import { useRouter } from 'vue-router';  // Import the Vue Router hook
 import Menubar from 'primevue/menubar';
-import { useAuthStore } from '../store/Authstore';  // Import AuthStore
+import { useAuthStore, UserRole } from '../store/Authstore';  // Import AuthStore
 
 const router = useRouter();  // Use Vue Router for navigation
 const authStore = useAuthStore();  // Access the AuthStore
@@ -35,17 +35,17 @@ const items = computed(() => {
     ];
 
     // Add "Actions" dropdown based on role_id
-    if (user && [1, 2, 3, 4].includes(user.role_id)) {
+    if (user && [UserRole.Volunteer, UserRole.Veterinarian, UserRole.Caretaker, UserRole.Admin].includes(user.role_id)) {
         const actions = {
-            1: [{ label: 'Request', command: () => {} }],
-            2: [{ label: 'Requests', command: () => {} }],
-            3: [
+            [UserRole.Volunteer]: [{ label: 'Request', command: () => {} }],
+            [UserRole.Veterinarian]: [{ label: 'Requests', command: () => {} }],
+            [UserRole.Caretaker]: [
                 { label: 'Volunteer Approving', command: () => { router.push({ name: "ApproveVolunteer" }) } },
                 { label: 'Create Animal', command: () => { router.push({ name: "CreateAnimal" }) } },
                 { label: 'Vet Request', command: () => {} },
                 { label: 'Reservation Approving', command: () => {} }
             ],
-            4: [
+            [UserRole.Admin]: [
                 { label: 'Create Caretaker', command: () => {} },
                 { label: 'Create Vet', command: () => {} },
                 { label: 'Edit User', command: () => {} }
