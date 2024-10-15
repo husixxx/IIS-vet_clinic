@@ -44,7 +44,7 @@ class CaretakerUseCase:
         if volunteer.role_id != 5:
             raise Exception('User is validated.')
         volunteer.verified = True
-        volunteer.role_id = 3
+        volunteer.role_id = 1
         self.user_repository.update(volunteer)
         return volunteer
     
