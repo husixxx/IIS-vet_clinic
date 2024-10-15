@@ -69,76 +69,6 @@
     </Card>
   </div>
 </template>
-  <div class="sign-up-container">
-    <Card class="centered-card">
-      <template #title>
-        <div class="title-center">Create Animal</div>
-      </template>
-      <template #content>
-        <div class="p-fluid">
-          <!-- Form inputs -->
-          <div class="p-field input-group">
-            <label for="name" class="input-label">Name</label>
-            <InputText id="name" v-model="name" placeholder="Enter the animal's name" class="input-text" />
-          </div>
-
-          <div class="p-field input-group">
-            <label for="breed" class="input-label">Breed</label>
-            <InputText id="breed" v-model="breed" placeholder="Enter the breed" class="input-text" />
-          </div>
-
-          <div class="p-field input-group">
-            <label for="age" class="input-label">Age</label>
-            <InputNumber id="age" v-model="age" placeholder="Enter the age" class="input-text" />
-          </div>
-
-          <div class="p-field input-group">
-            <label for="sex" class="input-label">Sex</label>
-            <Dropdown
-              v-model="sex"
-              :options="sexOptions"
-              optionLabel="label"
-              optionValue="value"
-              placeholder="Select sex"
-              class="input-text"
-            />
-          </div>
-
-          <!-- File Upload for Animal Photo -->
-          <div class="p-field input-group">
-            <label for="photo" class="input-label">Photo</label>
-            <FileUpload
-              name="photo"
-              customUpload
-              :auto="false"
-              chooseLabel="Choose Photo"
-              uploadLabel="Upload"
-              cancelLabel="Cancel"
-              @upload="handleUpload"
-              @clear="handleCancel"
-              :uploadHandler="uploadHandler"
-            />
-          </div>
-
-          <div class="p-field input-group">
-            <label for="history" class="input-label">History</label>
-            <Textarea id="history" v-model="history" placeholder="Enter animal's history" class="input-text" rows="5" />
-          </div>
-
-          <div class="p-field input-group">
-            <label for="description" class="input-label">Description</label>
-            <Textarea id="description" v-model="description" placeholder="Enter description" class="input-text" rows="5" />
-          </div>
-
-          <!-- Submit Button -->
-          <div class="p-field sign-up-button">
-            <Button label="Create Animal" icon="pi pi-check" @click="handleCreateAnimal" class="w-full" />
-          </div>
-        </div>
-      </template>
-    </Card>
-  </div>
-</template>
 
 <script setup>
 import { ref } from 'vue';
@@ -149,8 +79,6 @@ import Dropdown from 'primevue/dropdown';
 import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
-import FileUpload from 'primevue/fileupload';
-import axiosClient from '../api/api';  // Ensure correct path to your API client
 import FileUpload from 'primevue/fileupload';
 import axiosClient from '../api/api';  // Ensure correct path to your API client
 
@@ -164,12 +92,9 @@ const sex = ref('');
 const history = ref('');
 const description = ref('');
 const photoFile = ref(null);  // To store the uploaded photo file
-const photoFile = ref(null);  // To store the uploaded photo file
 
 // Options for the sex dropdown
 const sexOptions = [
-  { label: 'Male', value: 'Male' },
-  { label: 'Female', value: 'Female' }
   { label: 'Male', value: 'Male' },
   { label: 'Female', value: 'Female' }
 ];
@@ -184,6 +109,15 @@ const handleUpload = (event) => {
 // Handle cancel action (clears the file selection)
 const handleCancel = () => {
   photoFile.value = null;  // Clear the stored file
+  // Remove the alert here; no need for a cancellation message.
+};
+
+// Custom upload handler
+const uploadHandler = ({ files, options }) => {
+  // Handle the custom file upload logic here
+  const uploadedFile = files[0];
+  photoFile.value = uploadedFile;
+  alert('Photo file ready for submission.');
 };
 
 // Handle create animal logic
@@ -221,10 +155,9 @@ const handleCreateAnimal = async () => {
       photoFile.value = null;
 
       alert('Animal created successfully!');
+      router.push({ name: 'Home' });  // Redirect after creation
     }
   } catch (error) {
-    console.error('Error creating animal:', error);
-    alert('Failed to create animal.');
     console.error('Error creating animal:', error);
     alert('Failed to create animal.');
   }
@@ -241,7 +174,6 @@ const handleCreateAnimal = async () => {
 }
 
 .title-center {
-  text-align: center;
   text-align: center;
   font-size: 1.5rem;
 }
