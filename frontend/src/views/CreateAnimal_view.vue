@@ -144,7 +144,7 @@ const handleCreateAnimal = async () => {
       },
     });
 
-    if (response.status === 200) {
+    if (response.status === 201) {
       // Reset form fields
       name.value = '';
       breed.value = '';
