@@ -37,6 +37,7 @@ import Textarea from 'primevue/textarea';
 const veterinarians = ref([]);
 const filteredVeterinarians = ref([]);
 const selectedVeterinarian = ref(null);
+const animalId = ref(7); // TODO CHANGE IT!!!
 
 onMounted(async () => {
     try {
@@ -57,6 +58,16 @@ const searchVeterinarians = (event) => {
     vet.name.toLowerCase().includes(query) || vet.username.toLowerCase().includes(query)
   );
 };
+
+function getCurrentDate() {
+  const today = new Date();
+
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+
+  return  `${year}-${month}-${day}`;
+}
 
 </script>
 
