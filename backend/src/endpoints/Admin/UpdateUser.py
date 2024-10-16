@@ -1,4 +1,4 @@
-from flask import Blueprint, request, argsify
+from flask import Blueprint, request, jsonify
 from src.usecases import AdminUseCase
 
 update_user_bp = Blueprint('update_user', __name__)
@@ -36,18 +36,28 @@ def update_user():
       required: true
       type: integer
       in: query
+  responses:
+    200:
+      description: Updated
+    400:
+      description: Invalid input      
   """
   user_id = request.args.get('user_id')
   name = request.args.get('name')
   email = request.args.get('email')
   username = request.args.get('username')
   password = request.args.get('password')
-  verified = request.args.get('verified')
+  if password is None:
+    password = ""
+  verified_str = request.args.get('verified').lower()
+  verified = verified_str == 'true'
+  
   role_id = request.args.get('role_id')
-
+  
   use_case = AdminUseCase()
   try:
     use_case.update_user(user_id, name, email, username, password, verified, role_id)
-    return argsify({'message': 'User updated'}), 200
+    return jsonify({'message': 'User updated'}), 200
   except Exception as e:
-    return argsify({'error': str(e)}), 400
+    return jsonify({'error': str(e)}), 400
+  
