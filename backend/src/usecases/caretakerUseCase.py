@@ -64,6 +64,9 @@ class CaretakerUseCase:
         except:
             raise Exception('Animal has walking schedules.')
         
+    def get_all_veterinarians(self) -> list:
+        return self.user_repository.model.query.filter_by(role_id=2).all()
+        
     def create_vet_request(self, animal_id: int, veterinarian_username: str, request_date: str, description: str):
         
         veterinarian = self.user_repository.get_by_username(veterinarian_username)
