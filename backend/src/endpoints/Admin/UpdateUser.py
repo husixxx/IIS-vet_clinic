@@ -1,4 +1,4 @@
-from flask import Blueprint, request, argsify
+from flask import Blueprint, request, jsonify
 from src.usecases import AdminUseCase
 
 update_user_bp = Blueprint('update_user', __name__)
@@ -48,6 +48,6 @@ def update_user():
   use_case = AdminUseCase()
   try:
     use_case.update_user(user_id, name, email, username, password, verified, role_id)
-    return argsify({'message': 'User updated'}), 200
+    return jsonify({'message': 'User updated'}), 200
   except Exception as e:
-    return argsify({'error': str(e)}), 400
+    return jsonify({'error': str(e)}), 400
