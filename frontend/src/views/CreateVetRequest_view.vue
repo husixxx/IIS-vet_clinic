@@ -12,6 +12,10 @@
                           :virtualScrollerOptions="{ itemSize: 50 }"
                           optionLabel="nameAndUsername" dropdown />
           </div>
+          <div class="p-field input-group">
+            <label for="description" class="input-label">Description</label>
+            <Textarea id="description" v-model="description" placeholder="Enter request's description" class="input-text" rows="5" />
+          </div>
           <div class="p-field send-vet-request">
             <Button label="Send request" @click="handleSendVetRequest" class="w-full" />
           </div>
@@ -28,6 +32,7 @@ import Card from 'primevue/card';
 import Button from 'primevue/button';
 import axiosClient from '../api/api';
 import AutoComplete  from 'primevue/autocomplete';
+import Textarea from 'primevue/textarea';
 
 const veterinarians = ref([]);
 const filteredVeterinarians = ref([]);
