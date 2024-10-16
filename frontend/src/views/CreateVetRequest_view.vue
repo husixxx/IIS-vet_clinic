@@ -38,6 +38,7 @@ const veterinarians = ref([]);
 const filteredVeterinarians = ref([]);
 const selectedVeterinarian = ref(null);
 const animalId = ref(7); // TODO CHANGE IT!!!
+const description = ref('');
 
 onMounted(async () => {
     try {
@@ -67,6 +68,27 @@ function getCurrentDate() {
   const day = String(today.getDate()).padStart(2, '0');
 
   return  `${year}-${month}-${day}`;
+}
+
+const handleSendVetRequest = async () => {
+  try {
+    const response = await axiosClient.post(
+      `/caretaker/vet_request?animal_id=${encodeURIComponent(animalId.value)}` + 
+      `&veterinarian_username=${encodeURIComponent(selectedVeterinarian.value.username)}` +
+      `&request_date=${encodeURIComponent(getCurrentDate())}&description=${encodeURIComponent(description.value)}`
+    );
+
+    if(response.status === 200) {
+      selectedVeterinarian.value = '';
+      description.value = '';
+
+      alert('Veterinarian request created successfully!');
+    }
+
+  } catch (error) {
+    console.error('Error sending vet request:', error);
+    alert('Failed to send vet request.');
+  }
 }
 
 </script>
