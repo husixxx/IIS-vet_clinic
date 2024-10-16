@@ -60,6 +60,7 @@ def create_app():
   app.register_blueprint(create_caretaker_bp)
   app.register_blueprint(create_veterinarian_bp)
   app.register_blueprint(get_all_users_bp)
+  app.register_blueprint(update_user_bp)
   # Authorization
   app.register_blueprint(sign_in_bp)
   app.register_blueprint(sign_up_bp)
