@@ -1,0 +1,60 @@
+:root {
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+  
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    overflow-y: scroll;
+  }
+
+:root, #app, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+.create-vet-request-container, .sign-up-container, .sign-in-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+  padding: 20px;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.input-label {
+  width: 90px;
+  margin-right: 10px;
+  font-size: 1rem;
+  text-align: left;
+}
+
+.sign-up-button, .sign-in-button, .send-vet-request {
+  margin-top: 10px;
+}
+
+.sign-in-text {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.sign-in-redirect button {
+  font-size: 1rem;
+  margin-left: 5px;
+}
+
+.input-text {
+  flex-grow: 1;
+}
+

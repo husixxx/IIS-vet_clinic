@@ -6,6 +6,17 @@
 </template>
 
 <style scoped>
+
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+}
+
 .welcome-text {
   font-size: 2.5rem; /* Large font size for the welcome message */
   font-weight: bold; /* Bold font for emphasis */

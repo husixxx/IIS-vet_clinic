@@ -1,43 +1,82 @@
 <template>
     <div class="card">
-        <Menubar :model="items"/>
+        <Menubar :model="items" />
     </div>
-  </template>
-  
+</template>
+
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useRouter } from 'vue-router';  // Import the Vue Router hook
 import Menubar from 'primevue/menubar';
+import { useAuthStore, UserRole } from '../store/Authstore';  // Import AuthStore
 
 const router = useRouter();  // Use Vue Router for navigation
+const authStore = useAuthStore();  // Access the AuthStore
 
-const items = ref([
-{
-    label: 'Home',
-    icon: 'pi pi-home',
-    command: () => { router.push({name: "Home"}) }  // Route to Home
-},
-{
-    label: 'Animals',
-    icon: 'pi pi-paw',
-    command: () => { router.push({name: "Animal"}) }  // Route to Animals
-},
-{
-    label: 'About Us',
-    icon: 'pi pi-info-circle',
-    command: () => { router.push({name: "About"}) }  // Route to About Us
-},
-{
-    label: 'Contact Us',
-    icon: 'pi pi-envelope',
-    command: () => { router.push({name: "Contact"}) }  // Route to Contact Us
-},
-{
-    label: 'Sign In',
-    icon: 'pi pi-sign-in',
-    command: () => { router.push({name: "Sign"}) }  // Route to Sign In
-}
-]);
+// Base menu items for all users
+const items = computed(() => {
+    // Get the current user from the store
+    const user = authStore.getUser;
+
+    // Base menu items that are always present
+    const baseItems = [
+        {
+            label: 'Home',
+            command: () => { router.push({ name: "Home" }) }
+        },
+        {
+            label: 'Animals',
+            command: () => { router.push({ name: "Animal" }) }
+        },
+        {
+            label: 'About Us',
+            command: () => { router.push({ name: "About" }) }
+        }
+    ];
+
+    // Add "Actions" dropdown based on role_id
+    if (user && [UserRole.Volunteer, UserRole.Veterinarian, UserRole.Caretaker, UserRole.Admin].includes(user.role_id)) {
+        const actions = {
+            [UserRole.Volunteer]: [{ label: 'Request', command: () => {} }],
+            [UserRole.Veterinarian]: [{ label: 'Requests', command: () => {} }],
+            [UserRole.Caretaker]: [
+                { label: 'Volunteer Approving', command: () => { router.push({ name: "ApproveVolunteer" }) } },
+                { label: 'Create Animal', command: () => { router.push({ name: "CreateAnimal" }) } },
+                { label: 'Create request for veterinarian', command: () => { router.push({ name: "CreateVetRequest" }) } },
+                { label: 'Reservation Approving', command: () => {} }
+            ],
+            [UserRole.Admin]: [
+                { label: 'Create Caretaker', command: () => { router.push({ name: "CreateCaretaker" }) } },
+                { label: 'Create Vet', command: () => { router.push({ name: "CreateVet" }) } },
+                { label: 'Edit User', command: () => { router.push({ name: "EditUser" }) } }
+            ]
+        };
+        
+        // Add the "Actions" dropdown to baseItems
+        baseItems.push({
+            label: 'Actions',
+            items: actions[user.role_id] || []  // Dynamically add items based on role_id
+        });
+    }
+    
+    // Check if user is logged in
+    if (user) {
+        // Add the Logout button when user is logged in
+        baseItems.push({
+            label: 'Logout',
+            command: () => {
+                authStore.logout();  // Clear user from AuthStore
+                router.push({ name: "Sign" });  // Redirect to Sign In page
+            }
+        });
+    } else {
+        // Add the Sign In button when user is not logged in
+        baseItems.push({
+            label: 'Sign In',
+            command: () => { router.push({ name: "Sign" }) }
+        });
+    }
+    return baseItems;
+});
+
 </script>
-
-  

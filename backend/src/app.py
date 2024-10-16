@@ -10,6 +10,8 @@ from .models import *
 from .usecases import *
 from .endpoints import *
 
+from flask_cors import *
+
 def create_app():
   app = Flask(__name__)
   app.config['SWAGGER'] = {
@@ -23,13 +25,12 @@ def create_app():
 
   CORS(app, resources={
     r"/*": {  # Allow all routes
-        "origins": ["http://127.0.0.1:5173", "http://localhost:5342", "http://localhost:5000"],
+        "origins": ["http://127.0.0.1:5173", "http://localhost:5342", "http://localhost:5000", "http://localhost:5173"],
         "supports_credentials": True
       }
   })
-  
   # Database
-  DATABASE_URI = 'postgresql://husic:husic@localhost:5432/iis'
+  DATABASE_URI = 'postgresql://husic:husic@postgres:5432/iis'
   app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
   app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
   app.secret_key = 'husic'  # Tajný klíč pro session
@@ -53,6 +54,7 @@ def create_app():
   with app.app_context():
     db.create_all()
     seed_roles()
+    seed_admin()
 
   # Admin
   app.register_blueprint(create_caretaker_bp)
@@ -71,6 +73,8 @@ def create_app():
   app.register_blueprint(decline_reservation_bp)
   app.register_blueprint(accept_reservation_bp)
   app.register_blueprint(get_all_reservations_bp)
+  app.register_blueprint(get_all_veterinarians_bp)
+  app.register_blueprint(get_all_animals_bp)
   
   # public
   app.register_blueprint(get_all_unverified_volunteers_bp)
@@ -88,8 +92,6 @@ def seed_roles():
     {'name': 'registered'}
   ]
   
-  
-  
   # Check if roles already exist to avoid duplication
   with db.session.begin():  # Using a context manager for the session
     for role in roles:
@@ -97,6 +99,12 @@ def seed_roles():
       if not existing_role:
         new_role = Role(name=role['name'])
         db.session.add(new_role)
-    db.session.commit()  # Save the changes
+    db.session.commit()
 
+def seed_admin():
+  existing_admin = User.query.filter_by(username='admin').first()
+  if not existing_admin:
+    Admin = User(name='admin',email='admin@admin.sk',username='admin',password=generate_password_hash("admin"), role_id=4, verified=True)
+    db.session.add(Admin)
+    db.session.commit()
 

@@ -36,9 +36,24 @@
   
 <style scoped>
 
+.about-us {
+  display: flex;
+  flex-direction: column;
+  align-items: center;  /* Center the fieldsets horizontally */
+  margin-bottom: 120px;
+  margin-left: 50px;
+  margin-right: 50px;
+}
+
 fieldset {
-width: 100%;               /* Ensure each fieldset takes up the full width */
-margin-bottom: 20px;        /* Add spacing between each fieldset */
+  width: 100%;              /* Ensure fieldset takes full width of the container */
+  max-width: 800px;          /* Set a maximum width to limit stretching on large screens */
+  margin-bottom: 20px;       /* Add spacing between fieldsets */
+}
+
+p {
+  text-align: justify;       /* Optional: Makes text justify for a neat appearance */
+  line-height: 1.6;          /* Add some line spacing for better readability */
 }
 </style>
   

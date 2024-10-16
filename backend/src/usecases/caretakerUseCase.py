@@ -49,17 +49,6 @@ class CaretakerUseCase:
         self.user_repository.update(volunteer)
         return volunteer
     
-    def unverify_volunteer(self, id: int) -> User:
-        volunteer = self.user_repository.get_by_id(id)
-        if volunteer is None:
-            raise Exception('User not found.')
-        if volunteer.role_id != 1:
-            raise Exception('User is unverified.')
-        volunteer.verified = False
-        volunteer.role_id = 5
-        self.user_repository.update(volunteer)
-        return volunteer
-    
     def get_all_animals(self) -> list:
         return self.animal_repository.get_all()
     
@@ -74,6 +63,9 @@ class CaretakerUseCase:
             self.animal_repository.delete(animal)
         except:
             raise Exception('Animal has walking schedules.')
+        
+    def get_all_veterinarians(self) -> list:
+        return self.user_repository.model.query.filter_by(role_id=2).all()
         
     def create_vet_request(self, animal_id: int, veterinarian_username: str, request_date: str, description: str):
         
