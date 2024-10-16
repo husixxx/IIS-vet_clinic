@@ -14,6 +14,7 @@ from .Caretaker.UnverifyVolunteer import unverify_volunteer_bp
 from .Caretaker.DeclineReservation import decline_reservation_bp
 from .Caretaker.AcceptReservation import accept_reservation_bp
 from .Caretaker import get_all_reservations_bp
+from .Admin import update_user_bp
 from .Caretaker import get_all_veterinarians_bp
 from .Caretaker import get_all_animals_bp
 __all__ = [
@@ -31,5 +32,6 @@ __all__ = [
     'verify_volunteer_bp',
     'create_vet_request_bp',
     'get_all_veterinarians_bp',
-    'get_all_animals_bp'
+    'get_all_animals_bp',
+    'update_user_bp'
 ]
