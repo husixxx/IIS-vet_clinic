@@ -1,9 +1,6 @@
 <template>
   <div class="edit-users-container">
     <Card class="full-width-card">
-      <template #title>
-        <div class="title-center">Edit Users</div>
-      </template>
       <template #content>
         <div class="p-fluid">
           <!-- DataTable for displaying users -->
@@ -82,10 +79,10 @@ const verifiedOptions = [
 
 // Options for role_id field
 const roleOptions = [
-  { label: 'Admin', value: 1 },
-  { label: 'Caretaker', value: 2 },
-  { label: 'Volunteer', value: 3 },
-  { label: 'Veterinarian', value: 4 },
+  { label: 'Admin', value: 4 },
+  { label: 'Caretaker', value: 3 },
+  { label: 'Volunteer', value: 1 },
+  { label: 'Veterinarian', value: 2 },
   { label: 'Unverified User', value: 5 }
 ];
 
@@ -109,33 +106,32 @@ onMounted(async () => {
   }
 });
 
-const openEditModal = (user) => {
+const openEditModal = async (user) => {
   selectedUser.id = user.id;
   selectedUser.name = user.name;
   selectedUser.email = user.email;
   selectedUser.username = user.username;
   selectedUser.password = ''; // Leave password empty for security
 
-  // Set the verified value based on the user's verified status
-  const verifiedOption = verifiedOptions.find(option => option.value === user.verified);
-  selectedUser.verified = verifiedOption ? verifiedOption.label : null;
+  // Set the verified value directly as a boolean
+  selectedUser.verified = user.verified;
 
-  // Set the role based on the user's role_id
-  const roleOption = roleOptions.find(option => option.value === user.role_id);
-  selectedUser.role_id = roleOption ? roleOption.label : null;
+  // Set the role_id directly as an integer
+  selectedUser.role_id = user.role_id;
 
   showEditDialog.value = true;
 };
+
 
 // Function to close the edit modal
 const closeEditModal = async () => {
   showEditDialog.value = false;
 };
 
-// Function to handle updating the user
 const updateUser = async () => {
   try {
-    const response = await axiosClient.put(`/admin/update_user?user_id=${selectedUser.id}&name=${selectedUser.name}&email=${selectedUser.email}&username=${selectedUser.username}&password=${selectedUser.password}&verified=${selectedUser.verified}&role_id=${selectedUser.role_id}`);
+    // Format the request properly, ensuring verified is a boolean and role_id is an integer
+    const response = await axiosClient.put(`/admin/update_user?user_id=${selectedUser.id}&name=${selectedUser.name}&email=${selectedUser.email}&username=${selectedUser.username}&password=${selectedUser.password}&verified=${selectedUser.verified.value}&role_id=${selectedUser.role_id.value}`);
     if (response.status === 200) {
       alert('User updated successfully!');
       closeEditModal();
