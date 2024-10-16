@@ -12,6 +12,7 @@ import Approve_volunteer from '../views/ApproveVolunteer_view.vue'
 import Create_caretaker from '../views/CreateCaretaker_view.vue'
 import Create_vet from '../views/CreateVet_view.vue'
 import Edit_user from '../views/EditUser_view.vue'
+import Create_vet_request from '../views/CreateVetRequest_view.vue'
 
 
 const routes: Array<RouteRecordRaw> = [
@@ -59,6 +60,12 @@ const routes: Array<RouteRecordRaw> = [
         path: 'approvevolunteer',
         name: 'ApproveVolunteer',
         component: Approve_volunteer,
+        meta: { requiresAuth: true, role: UserRole.Caretaker }  // Only allow access for Caretaker
+      },
+      {
+        path: 'createvetrequest',
+        name: 'CreateVetRequest',
+        component: Create_vet_request,
         meta: { requiresAuth: true, role: UserRole.Caretaker }  // Only allow access for Caretaker
       },
       {
