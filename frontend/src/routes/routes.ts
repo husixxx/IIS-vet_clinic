@@ -9,7 +9,7 @@ import Animal from '../views/Animal_view.vue';
 import Create_animal from '../views/CreateAnimal_view.vue'
 import { useAuthStore, UserRole } from '../store/Authstore';  // Import AuthStore to access user data
 import Approve_volunteer from '../views/ApproveVolunteer_view.vue'
-
+import Create_vet_request from '../views/CreateVetRequest_view.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {

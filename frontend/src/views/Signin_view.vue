@@ -85,47 +85,9 @@ const redirectToSignUp = () => {
 
 
 <style scoped>
-.sign-in-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 80vh;
-  padding: 20px;
-}
-
-/* Flexbox to align labels and inputs properly */
-.input-group {
-  display: flex;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.input-label {
-  width: 90px;
-  margin-right: 10px;
-  font-size: 1rem;
-  text-align: left;
-}
-
-.input-text {
-  flex-grow: 1;
-}
-
-.sign-in-button {
-  margin-top: 10px;
-}
 
 .w-full {
   width: 100%;
 }
 
-.sign-up-text {
-  text-align: center;
-  margin-top: 10px;
-}
-
-.sign-up-redirect button {
-  font-size: 1rem;
-  margin-left: 5px;
-}
 </style>

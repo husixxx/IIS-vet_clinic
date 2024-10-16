@@ -165,51 +165,14 @@ const handleCreateAnimal = async () => {
 </script>
 
 <style scoped>
-.sign-up-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 80vh;
-  padding: 20px;
-}
 
 .title-center {
   text-align: center;
   font-size: 1.5rem;
 }
 
-.input-group {
-  display: flex;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.input-label {
-  width: 90px;
-  margin-right: 10px;
-  font-size: 1rem;
-  text-align: left;
-}
-
-.input-text {
-  flex-grow: 1;
-}
-
-.sign-up-button {
-  margin-top: 10px;
-}
-
 .w-full {
   width: 100%;
 }
 
-.sign-in-text {
-  text-align: center;
-  margin-top: 10px;
-}
-
-.sign-in-redirect button {
-  font-size: 1rem;
-  margin-left: 5px;
-}
 </style>
