@@ -15,4 +15,21 @@ from .Caretaker.DeclineReservation import decline_reservation_bp
 from .Caretaker.AcceptReservation import accept_reservation_bp
 from .Caretaker import get_all_reservations_bp
 from .Caretaker import get_all_veterinarians_bp
-__all__ = ['get_all_reservations_bp','decline_reservation_bp','accept_reservation_bp','unverify_volunteer_bp','get_all_users_bp','get_all_unverified_volunteers_bp','create_caretaker_bp','create_veterinarian_bp', 'create_walking_schedule_bp', 'create_animal_bp', 'sign_in_bp', 'sign_up_bp', 'verify_volunteer_bp', 'create_vet_request_bp', 'get_all_veterinarians_bp']
+from .Caretaker import get_all_animals_bp
+__all__ = [
+    'get_all_reservations_bp',
+    'decline_reservation_bp',
+    'accept_reservation_bp',
+    'unverify_volunteer_bp','get_all_users_bp',
+    'get_all_unverified_volunteers_bp',
+    'create_caretaker_bp',
+    'create_veterinarian_bp',
+    'create_walking_schedule_bp',
+    'create_animal_bp',
+    'sign_in_bp',
+    'sign_up_bp',
+    'verify_volunteer_bp',
+    'create_vet_request_bp',
+    'get_all_veterinarians_bp',
+    'get_all_animals_bp'
+]

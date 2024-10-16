@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, jsonify
 from src.usecases import CaretakerUseCase
 
 get_all_veterinarians_bp = Blueprint('get_all_veterinarians', __name__)
