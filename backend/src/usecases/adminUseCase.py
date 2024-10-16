@@ -50,3 +50,16 @@ class AdminUseCase:
     
     def get_all_users(self) -> list:
         return self.user_repository.get_all()
+    
+    def update_user(self, user_id: int, name: str, email: str, username: str, password: str, verified: bool, role_id: int):
+        user = self.user_repository.get_by_id(user_id)
+        if not user:
+            raise ValueError("User not found")
+        user.name = name
+        user.email = email
+        user.username = username
+        user.password = generate_password_hash(password)
+        user.verified = verified
+        user.role_id = role_id
+        self.user_repository.update(user)
+    

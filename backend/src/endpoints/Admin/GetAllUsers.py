@@ -16,12 +16,14 @@ def get_all_users():
   use_case = AdminUseCase()
   
   try:
-      users = use_case.get_all_users()
-      return jsonify([{
-          'id': user.id,
-          'name': user.name,
-          'email': user.email,
-          'role_id': user.role_id
-      } for user in users]), 200
+    users = use_case.get_all_users()
+    return jsonify([{
+      'id': user.id,
+      'name': user.name,
+      'email': user.email,
+      'verified': user.verified,
+      'role': user.role.name,
+      'username': user.username
+    } for user in users]), 200
   except Exception as e:
-      return jsonify({'error': str(e)}), 400
+    return jsonify({'error': str(e)}), 400
