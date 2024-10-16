@@ -46,9 +46,9 @@ const items = computed(() => {
                 { label: 'Reservation Approving', command: () => {} }
             ],
             [UserRole.Admin]: [
-                { label: 'Create Caretaker', command: () => {} },
-                { label: 'Create Vet', command: () => {} },
-                { label: 'Edit User', command: () => {} }
+                { label: 'Create Caretaker', command: () => { router.push({ name: "CreateCaretaker" }) } },
+                { label: 'Create Vet', command: () => { router.push({ name: "CreateVet" }) } },
+                { label: 'Edit User', command: () => { router.push({ name: "EditUser" }) } }
             ]
         };
         

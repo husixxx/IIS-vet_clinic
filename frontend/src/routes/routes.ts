@@ -9,7 +9,10 @@ import Animal from '../views/Animal_view.vue';
 import Create_animal from '../views/CreateAnimal_view.vue'
 import { useAuthStore, UserRole } from '../store/Authstore';  // Import AuthStore to access user data
 import Approve_volunteer from '../views/ApproveVolunteer_view.vue'
-import Create_vet_request from '../views/CreateVetRequest_view.vue'
+import Create_caretaker from '../views/CreateCaretaker_view.vue'
+import Create_vet from '../views/CreateVet_view.vue'
+import Edit_user from '../views/EditUser_view.vue'
+
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -59,10 +62,22 @@ const routes: Array<RouteRecordRaw> = [
         meta: { requiresAuth: true, role: UserRole.Caretaker }  // Only allow access for Caretaker
       },
       {
-        path: 'createvetrequest',
-        name: 'CreateVetRequest',
-        component: Create_vet_request,
-        meta: { requiresAuth: true, role: UserRole.Caretaker }  // Only allow access for Caretaker
+        path: 'createcaretaker',
+        name: 'CreateCaretaker',
+        component: Create_caretaker,
+        meta: { requiresAuth: true, role: UserRole.Admin }  // Only allow access for Caretaker
+      },
+      {
+        path: 'createvet',
+        name: 'CreateVet',
+        component: Create_vet,
+        meta: { requiresAuth: true, role: UserRole.Admin }  // Only allow access for Caretaker
+      },
+      {
+        path: 'edituser',
+        name: 'EditUser',
+        component: Edit_user,
+        meta: { requiresAuth: true, role: UserRole.Admin }  // Only allow access for Caretaker
       }
     ],
   },
