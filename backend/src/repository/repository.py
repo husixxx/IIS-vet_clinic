@@ -46,4 +46,3 @@ class Repository(Generic[T]):
         """Delete an entity."""
         db.session.delete(entity)
         db.session.commit()
-    
