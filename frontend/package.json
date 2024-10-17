@@ -13,6 +13,7 @@
     "axios": "^1.7.7",
     "openapi-fetch": "^0.12.2",
     "pinia": "^2.2.4",
+    "primeicons": "^7.0.0",
     "primevue": "^4.1.0",
     "vue": "^3.5.10",
     "vue-router": "^4.0.13",
