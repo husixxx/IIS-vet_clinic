@@ -1,22 +1,42 @@
 <template>
   <div>
-    <h1 id="main-title">GeeksforGeeks</h1> <!-- Center the title above the boxes -->
+    <h1 id="main-title">Animals in our shelter</h1>
     <div id="boxes">
       <div id="leftbox">
         <FilterPanel />
       </div>
       <div id="cards">
-        <card v-for="n in numberOfCards" :key="n"/>
+        <Animalcard
+          v-for="animal in animals"
+          :key="animal.name"
+          :name="animal.name"
+          :breed="animal.breed"
+          :age="animal.age"
+          :description="animal.description"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import FilterPanel from '../components/Sidepanel.vue'; // Adjust path if necessary
-import card from '../components/Animalcard.vue'; // Adjust path if necessary
+import { ref, onMounted } from 'vue';
+import axiosClient from '../api/api';
+import FilterPanel from '../components/Sidepanel.vue';
+import Animalcard from '../components/Animalcard.vue';
 
-const numberOfCards = 5; // Adjust number based on your requirement or dynamic data
+const animals = ref([]);
+
+// Fetch all animal data from the backend
+onMounted(async () => {
+  try {
+    const response = await axiosClient.get('/caretaker/animals');
+    animals.value = response.data;  // Assign the array of animals
+    console.log(animals.value);
+  } catch (error) {
+    console.error('Error fetching animal data:', error);
+  }
+});
 </script>
 
 <style scoped>
@@ -27,24 +47,25 @@ const numberOfCards = 5; // Adjust number based on your requirement or dynamic d
 
 #boxes {
   display: flex;
-  align-items: flex-start; /* Align items at the start of the flex container */
+  align-items: flex-start;
 }
 
 #leftbox {
-  width: 25%; /* Adjust width as needed */
-  min-width: 200px; /* Minimum width to ensure usability */
+  width: 25%;
+  min-width: 200px;
 }
 
 #cards {
   display: flex;
-  flex-wrap: wrap; /* Allows cards to wrap onto the next line */
-  gap: 10px; /* Spacing between cards */
+  flex-wrap: wrap;
+  gap: 10px;
   margin-bottom: 115px;
+  margin-left: 20px; /* Add margin to the left of the cards to create space from the side panel */
 }
 
-card {
-  flex: 1 0 120px; /* Each card can grow but starts with 120px base width */
-  height: 200px; /* Adjust height as necessary */
-  background-color: lightgrey; /* Example color, adjust as necessary */
+#Animalcard {
+  flex: 1 0 120px;
+  height: auto;
+  background-color: lightgrey;
 }
 </style>

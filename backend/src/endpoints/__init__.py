@@ -17,6 +17,8 @@ from .Caretaker import get_all_reservations_bp
 from .Admin import update_user_bp
 from .Caretaker import get_all_veterinarians_bp
 from .Caretaker import get_all_animals_bp
+from .Volunteer import create_reservation_bp
+from .Public import get_animal_info_by_id_bp
 __all__ = [
     'get_all_reservations_bp',
     'decline_reservation_bp',
@@ -33,5 +35,7 @@ __all__ = [
     'create_vet_request_bp',
     'get_all_veterinarians_bp',
     'get_all_animals_bp',
-    'update_user_bp'
-]
+    'update_user_bp',
+    'create_reservation_bp',
+    'get_animal_info_by_id_bp'
+    ]

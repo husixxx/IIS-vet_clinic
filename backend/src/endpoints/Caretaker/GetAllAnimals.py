@@ -18,9 +18,11 @@ def get_all_animals():
     try:
         animals = use_case.get_all_animals()
         return jsonify([{
-            'id': animal.id,
             'name': animal.name,
-            'breed': animal.breed
+            'breed': animal.breed,
+            'age': animal.age,
+            'photo': animal.photo,
+            'description': animal.description,
         } for animal in animals]), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 400

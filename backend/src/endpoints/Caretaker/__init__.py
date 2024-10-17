@@ -21,5 +21,6 @@ __all__ = [
     'create_vet_request_bp',
     'get_all_unverified_volunteers_bp',
     'get_all_veterinarians_bp',
-    'get_all_animals_bp'
+    'get_all_animals_bp',
+    ''
 ]
