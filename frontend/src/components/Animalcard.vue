@@ -1,14 +1,11 @@
 <template>
     <Card style="width: 25rem; overflow: hidden">
-        <template #header>
-            <img alt="user header" src="https://primefaces.org/cdn/primevue/images/usercard.png" />
-        </template>
-        <template #title>Advanced Card</template>
-        <template #subtitle>Card subtitle</template>
+        <template #title>{{ name }}</template>
+        <template #subtitle>Breed: {{ breed }}</template>
         <template #content>
             <p class="m-0">
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
-                quas!
+                Age: {{ age }}<br />
+                {{ description }}
             </p>
         </template>
         <template #footer>
@@ -21,9 +18,17 @@
 
 <script setup>
 import Card from 'primevue/card';
-import Button from 'primevue/button';  // Make sure to import the Button component
+import Button from 'primevue/button';
+
+// Props passed to the card
+const props = defineProps({
+  name: String,
+  breed: String,
+  age: Number,
+  description: String,
+});
 </script>
 
-<style>
+<style scoped>
 /* Optional: Add custom styles here */
 </style>
