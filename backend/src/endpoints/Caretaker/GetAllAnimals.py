@@ -18,6 +18,7 @@ def get_all_animals():
     try:
         animals = use_case.get_all_animals()
         return jsonify([{
+            'id': animal.id,
             'name': animal.name,
             'breed': animal.breed,
             'age': animal.age,
