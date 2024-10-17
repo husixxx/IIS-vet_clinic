@@ -9,6 +9,7 @@
         <Animalcard
           v-for="animal in animals"
           :key="animal.name"
+          :id="animal.id"
           :name="animal.name"
           :breed="animal.breed"
           :age="animal.age"

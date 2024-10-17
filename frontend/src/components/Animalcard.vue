@@ -26,11 +26,15 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router';
 import { computed } from 'vue';
 import Card from 'primevue/card';
 
+const router = useRouter();
+
 // Props passed to the card
 const props = defineProps({
+  id: Number,
   name: String,
   breed: String,
   age: Number,
@@ -49,7 +53,9 @@ const animalPhoto = computed(() => {
 // Handle the card click
 const handleCardClick = () => {
   // You can redirect to another page or handle any action here
-  alert(`You clicked on ${props.name}`);
+  alert(`You clicked on ${props.name} with id ${props.id}`);
+
+  router.push({ name: 'Animalinfo', params: { id: props.id } });
 };
 </script>
 
