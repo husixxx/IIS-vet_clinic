@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 id="main-title">Animal Information</h1>
+    <h1 id="main-title">Animals in our shelter</h1>
     <div id="boxes">
       <div id="leftbox">
         <FilterPanel />
@@ -8,11 +8,10 @@
       <div id="cards">
         <Animalcard
           v-for="animal in animals"
-          :key="animal.id"
+          :key="animal.name"
           :name="animal.name"
           :breed="animal.breed"
           :age="animal.age"
-          :photo="animal.photo"
           :description="animal.description"
         />
       </div>
@@ -28,11 +27,11 @@ import Animalcard from '../components/Animalcard.vue';
 
 const animals = ref([]);
 
-// Fetch all animal data from backend
+// Fetch all animal data from the backend
 onMounted(async () => {
   try {
-    const response = await axiosClient.get('/animal/info');
-    animals.value = response.data;
+    const response = await axiosClient.get('/caretaker/animals');
+    animals.value = response.data;  // Assign the array of animals
     console.log(animals.value);
   } catch (error) {
     console.error('Error fetching animal data:', error);
@@ -61,9 +60,10 @@ onMounted(async () => {
   flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 115px;
+  margin-left: 20px; /* Add margin to the left of the cards to create space from the side panel */
 }
 
-Animalcard {
+#Animalcard {
   flex: 1 0 120px;
   height: auto;
   background-color: lightgrey;
