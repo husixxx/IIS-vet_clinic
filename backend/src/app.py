@@ -13,9 +13,11 @@ from .endpoints import *
 from flask_cors import *
 
 def create_app():
+  
   app = Flask(__name__)
+  
   app.config['SWAGGER'] = {
-    "openapi": "3.0.0",  # Nastav verziu OpenAPI
+    "openapi": "3.0.0",  # open api version
     "info": {
         "title": "Husic API",
         "description": "API documentation with OpenAPI 3.0.3",
@@ -33,11 +35,14 @@ def create_app():
   DATABASE_URI = 'postgresql://husic:husic@postgres:5432/iis'
   app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
   app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-  app.secret_key = 'husic'  # Tajný klíč pro session
+  app.secret_key = 'husic'  # session secret key
 
-  migrate = Migrate(app, db)
+  # not sure if this is needed
+  Migrate(app, db)
+  
   db.init_app(app)
-  swagger = Swagger(app)
+  # Swagger documentation
+  Swagger(app)
 
   login_manager = LoginManager()
   login_manager.init_app(app)
@@ -46,10 +51,7 @@ def create_app():
   def load_user(user_id):
     return User.query.get(int(user_id))
 
-  # login_manager.login_view = 'sign in'
-
-
-
+  
   # Create tables
   with app.app_context():
     db.create_all()
@@ -79,7 +81,10 @@ def create_app():
   
   # public
   app.register_blueprint(get_all_unverified_volunteers_bp)
+  app.register_blueprint(get_animal_info_by_id_bp)
 
+  # Volunteer
+  app.register_blueprint(create_reservation_bp)
   return app
       
 
