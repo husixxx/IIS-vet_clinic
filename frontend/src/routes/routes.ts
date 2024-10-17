@@ -40,15 +40,21 @@ const routes: Array<RouteRecordRaw> = [
         name: 'Signup',
         component: Signup,
       },
-      {
-        path: 'animalinfo',
-        name: 'Animalinfo',
-        component: Animal_info,
-      },
+      // {
+      //   path: 'animalinfo',
+      //   name: 'Animalinfo',
+      //   component: Animal_info,
+      // },
       {
         path: 'animal',
         name: 'Animal',
         component: Animal,
+      },
+      {
+        path: '/animal/:id',
+        name: 'Animalinfo',
+        component: Animal_info,
+        // props: true
       },
       {
         path: 'createanimal',
