@@ -10,8 +10,8 @@
       <Column header="Status">
         <template #body="slotProps">
           <div>
-            <!-- Default status text -->
-            <span>{{ slotProps.data.status }}</span>
+            <!-- Check if status is a string or an object -->
+            <span>{{ typeof slotProps.data.status === 'string' ? slotProps.data.status : slotProps.data.status.value }}</span>
             <Button label="Edit" icon="pi pi-pencil" class="p-button-text p-button-sm" @click="openEditModal(slotProps.data)" />
           </div>
         </template>
@@ -51,10 +51,10 @@ const reservations = ref([]);
 
 // Status options for the dropdown
 const statusOptions = [
-  { label: 'Pending', value: 'pending' },
-  { label: 'Approved', value: 'approved' },
-  { label: 'Cancelled', value: 'cancelled' },
-  { label: 'Completed', value: 'completed' }
+  { label: 'pending', value: 'pending' },
+  { label: 'approved', value: 'approved' },
+  { label: 'canceled', value: 'canceled' },
+  { label: 'completed', value: 'completed' }
 ];
 
 // State to control the edit dialog visibility
@@ -75,7 +75,7 @@ onMounted(async () => {
         volunteer_username: reservation.volunteer_username, // Update volunteer ID to username
         start_time: new Date(reservation.start_time).toLocaleString(),
         end_time: new Date(reservation.end_time).toLocaleString(),
-        status: reservation.status || 'N/A',
+        status: reservation.status || 'N/A', // Initial status from DB
         newStatus: reservation.status // Store the initial status
       }));
     }
@@ -102,7 +102,7 @@ const saveStatus = async () => {
     const response = await axiosClient.post(`/caretaker/change_reservation_status`, null, {
       params: {
         id: selectedReservation.value.id,
-        status: selectedReservation.value.newStatus
+        status: selectedReservation.value.newStatus.value
       }
     });
     if (response.status === 200) {
