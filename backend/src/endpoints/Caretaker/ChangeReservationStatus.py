@@ -24,16 +24,16 @@ def change_reservation_status():
     """
     
     
-    id = request.args.get('id')
+    reservation_id = request.args.get('id')
     status = request.args.get('status')
     use_case = CaretakerUseCase()
     try:
-      request = use_case.change_reservation_status(id, status)
+      reservation = use_case.change_reservation_status(reservation_id=reservation_id, status=status)
       return jsonify({
-        'id': request.id,
-        'status': request.status,
-        'volunteer_id': request.volunteer_id,
-        'animal_id': request.animal_id
+        'id': reservation.id,
+        'status': reservation.status,
+        'volunteer_id': reservation.volunteer_id,
+        'animal_id': reservation.animal_id
       })
     except Exception as e:
       return jsonify({
