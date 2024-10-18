@@ -1,22 +1,33 @@
 <template>
   <div class="reservations-container">
     <h1>All Reservations</h1>
-    <DataTable :value="reservations" class="p-datatable-striped">
-      <Column field="id" header="ID"></Column>
-      <Column field="animal_id" header="Animal ID"></Column>
-      <Column field="volunteer_username" header="Volunteer Username"></Column>
-      <Column field="start_time" header="Start Time"></Column>
-      <Column field="end_time" header="End Time"></Column>
-      <Column header="Status">
-        <template #body="slotProps">
-          <div>
-            <!-- Check if status is a string or an object -->
-            <span>{{ typeof slotProps.data.status === 'string' ? slotProps.data.status : slotProps.data.status.value }}</span>
-            <Button label="Edit" icon="pi pi-pencil" class="p-button-text p-button-sm" @click="openEditModal(slotProps.data)" />
-          </div>
-        </template>
-      </Column>
-    </DataTable>
+
+    <!-- Check if there are reservations -->
+    <template v-if="reservations.length > 0">
+      <DataTable :value="reservations" class="p-datatable-striped">
+        <Column field="id" header="ID"></Column>
+        <Column field="animal_id" header="Animal ID"></Column>
+        <Column field="volunteer_username" header="Volunteer Username"></Column>
+        <Column field="start_time" header="Start Time"></Column>
+        <Column field="end_time" header="End Time"></Column>
+        <Column header="Status">
+          <template #body="slotProps">
+            <div>
+              <!-- Check if status is a string or an object -->
+              <span>{{ typeof slotProps.data.status === 'string' ? slotProps.data.status : slotProps.data.status.value }}</span>
+              <Button label="Edit" icon="pi pi-pencil" class="p-button-text p-button-sm" @click="openEditModal(slotProps.data)" />
+            </div>
+          </template>
+        </Column>
+      </DataTable>
+    </template>
+
+    <!-- Display a message when there are no reservations -->
+    <template v-else>
+      <div class="no-reservations-message">
+        No reservations waiting for approval.
+      </div>
+    </template>
 
     <!-- Dialog (pop-up) for editing status -->
     <Dialog v-model:visible="editDialogVisible" header="Edit Reservation Status">
@@ -132,6 +143,13 @@ h1 {
 .p-datatable {
   width: 100%;
   margin-top: 20px;
+}
+
+.no-reservations-message {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #777;
+  padding: 40px;
 }
 
 .p-button-sm {
