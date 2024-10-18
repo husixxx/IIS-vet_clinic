@@ -34,8 +34,8 @@ class PublicRepository():
         
         schedule = self.db_session.query(WalkingSchedule).filter(
             WalkingSchedule.animal_id == animal_id,
-            WalkingSchedule.start_time == end_time,
-            WalkingSchedule.end_time == start_time
+            WalkingSchedule.start_time == start_time,
+            WalkingSchedule.end_time == end_time
         ).first()
         
         if not schedule:
