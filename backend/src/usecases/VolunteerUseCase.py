@@ -25,7 +25,8 @@ class VolunteerUseCase:
             animal_id=animal_id,
             volunteer_id=volunteer_id,
             start_time=start_time_dt,
-            end_time=end_time_dt
+            end_time=end_time_dt,
+            status='pending'
         )
         
         self.reservation_repository.add(new_reservation)
