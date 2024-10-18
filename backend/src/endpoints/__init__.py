@@ -11,8 +11,7 @@ from .Caretaker.VerifyVolunteer import verify_volunteer_bp
 from .Caretaker.CreateVetRequest import create_vet_request_bp
 from .Caretaker.GetAllUnverifiedVolunteers import get_all_unverified_volunteers_bp
 from .Caretaker.UnverifyVolunteer import unverify_volunteer_bp
-from .Caretaker.DeclineReservation import decline_reservation_bp
-from .Caretaker.AcceptReservation import accept_reservation_bp
+from .Caretaker.ChangeReservationStatus import change_reservation_status_bp
 from .Caretaker import get_all_reservations_bp
 from .Admin import update_user_bp
 from .Caretaker import get_all_veterinarians_bp
@@ -22,8 +21,7 @@ from .Public import get_animal_info_by_id_bp
 from .Caretaker.FilterAnimals import filter_animals_bp
 __all__ = [
     'get_all_reservations_bp',
-    'decline_reservation_bp',
-    'accept_reservation_bp',
+    'change_reservation_status_bp',
     'unverify_volunteer_bp','get_all_users_bp',
     'get_all_unverified_volunteers_bp',
     'create_caretaker_bp',

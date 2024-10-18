@@ -88,19 +88,13 @@ class CaretakerUseCase:
     def get_all_unverified_volunteers(self) -> list:
         return self.user_repository.get_unverified_volunteers()
     
-    def accept_reservation(self, request_id: int):
-        request = self.reservation_repository.get_by_id(request_id) 
-        if request is None:
-            raise Exception('reservation not found.')
-        request.status = "approved"
-        self.reservation_repository.update(request)
-        return request
-    
-    def decline_reservation(self, request_id: int):
-        reservation = self.reservation_repository.get_by_id(request_id) 
+    def change_reservation_status(self, reservation_id: int, status: str):
+        reservation = self.reservation_repository.get_by_id(reservation_id) 
         if reservation is None:
             raise Exception('reservation not found.')
-        reservation.status = "canceled"
+        if status not in ['pending','approved','canceled','completed']:
+            raise Exception('Invalid status.')
+        reservation.status = status
         self.reservation_repository.update(reservation)
         return reservation
     
