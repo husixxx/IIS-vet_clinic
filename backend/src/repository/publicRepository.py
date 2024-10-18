@@ -44,14 +44,24 @@ class PublicRepository():
         if schedule:
             return to_dict(schedule)
     
-    def filter_animals(self, animal_type: str, breed: str, age: int):
-        animals = db.session.query(Animal).filter(
-            Animal.animal_type == animal_type,
-            Animal.breed == breed,
-            Animal.age == age
-        ).all()
+    def filter_animals(self, name: str, age: int, breed: str, date: str):
+        animals = self.db_session.query(Animal)
+       
+        if name:
+            animals = animals.filter(Animal.name == name)
+        
+        if age is not None:
+            animals = animals.filter(Animal.age == age)
+            
+        if breed:
+            animals = animals.filter(Animal.breed == breed)
+        
+        animals = animals.all()
         
         if not animals:
             raise ValueError("No animals found")
         
         return [to_dict(animal) for animal in animals]
+        
+    
+        

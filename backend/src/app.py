@@ -78,6 +78,7 @@ def create_app():
   app.register_blueprint(get_all_reservations_bp)
   app.register_blueprint(get_all_veterinarians_bp)
   app.register_blueprint(get_all_animals_bp)
+  app.register_blueprint(filter_animals_bp)
   
   # public
   app.register_blueprint(get_all_unverified_volunteers_bp)

@@ -18,8 +18,9 @@ def get_all_reservations():
   try:
     reservations = use_case.get_all_reservations()
     return jsonify([{
+      'id' : reservation.id,
       'animal_id' : reservation.animal_id,
-      'volunteer_id' : reservation.volunteer_id,
+      'volunteer_username' : reservation.volunteer.username,
       'start_time' : reservation.start_time,
       'end_time' : reservation.end_time,
       'status' : reservation.status,
