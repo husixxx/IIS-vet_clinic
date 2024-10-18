@@ -2,9 +2,13 @@ from typing import TypeVar, Generic, List, Type, Optional
 from src import db
 from ..models import WalkingSchedule, MedicalRecord, Animal
 from .tools import to_dict
+import logging
 
 class PublicRepository():
+    def __init__(self):
+        self.db_session = db.session
     def get_animal_info(self, animal_id: int):
+        
         animal = db.session.query(Animal).filter(
             Animal.id == animal_id
         ).first()
@@ -15,11 +19,11 @@ class PublicRepository():
         schedules = db.session.query(WalkingSchedule).filter(
             WalkingSchedule.animal_id == animal_id
         ).all()
-        
+           
         medical_records = db.session.query(MedicalRecord).filter(
             MedicalRecord.animal_id == animal_id
         ).all()
-        
+                
         return {
             "animal": to_dict(animal),
             "schedules": [to_dict(schedule) for schedule in schedules],
@@ -34,4 +38,20 @@ class PublicRepository():
             WalkingSchedule.end_time == start_time
         ).first()
         
-        return to_dict(schedule)
+        if not schedule:
+            raise ValueError("No schedule found")
+        
+        if schedule:
+            return to_dict(schedule)
+    
+    def filter_animals(self, animal_type: str, breed: str, age: int):
+        animals = db.session.query(Animal).filter(
+            Animal.animal_type == animal_type,
+            Animal.breed == breed,
+            Animal.age == age
+        ).all()
+        
+        if not animals:
+            raise ValueError("No animals found")
+        
+        return [to_dict(animal) for animal in animals]
