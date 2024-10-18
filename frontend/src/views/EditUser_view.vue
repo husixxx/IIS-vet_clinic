@@ -1,8 +1,9 @@
 <template>
+  <h1>Edit users</h1>
   <div class="edit-users-container">
     <Card class="full-width-card">
       <template #content>
-        <div class="p-fluid">
+        <div class="p-fluid no-padding">
           <!-- DataTable for displaying users -->
           <DataTable :value="users" class="full-width-table" tableStyle="width: 100%">
             <Column field="id" header="ID" style="width: 10%;"></Column>
@@ -149,9 +150,9 @@ const updateUser = async () => {
 .edit-users-container {
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: 80vh;
-  padding: 20px;
+  align-items: flex-start; /* Align items to the top instead of center */
+  padding-left: 20px;
+  padding-right: 20px;
   width: 100%;
 }
 
@@ -159,9 +160,12 @@ const updateUser = async () => {
   width: 100%;
 }
 
-.title-center {
+h1 {
   text-align: center;
-  font-size: 1.5rem;
+}
+
+.no-padding {
+  padding: 0 !important; /* Remove padding from around the DataTable */
 }
 
 .full-width-table {

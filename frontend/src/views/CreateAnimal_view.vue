@@ -37,16 +37,11 @@
           <!-- File Upload for Animal Photo -->
           <div class="p-field input-group">
             <label for="photo" class="input-label">Photo</label>
-            <FileUpload
-              name="photo"
-              customUpload
-              :auto="false"
-              chooseLabel="Choose Photo"
-              uploadLabel="Upload"
-              cancelLabel="Cancel"
-              @upload="handleUpload"
-              @clear="handleCancel"
-              :uploadHandler="uploadHandler"
+            <input
+              type="file"
+              @change="handleFileUpload"
+              accept="image/*"
+              class="file-input"
             />
           </div>
 
@@ -79,7 +74,6 @@ import Dropdown from 'primevue/dropdown';
 import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
-import FileUpload from 'primevue/fileupload';
 import axiosClient from '../api/api';  // Ensure correct path to your API client
 
 const router = useRouter();
@@ -100,24 +94,11 @@ const sexOptions = [
 ];
 
 // Handle file upload
-const handleUpload = async (event) => {
-  const uploadedFile = event.files[0];  // Get the first uploaded file
-  photoFile.value = uploadedFile;  // Store it in the reactive variable
-  alert('Photo uploaded successfully!');
-};
-
-// Handle cancel action (clears the file selection)
-const handleCancel = async () => {
-  photoFile.value = null;  // Clear the stored file
-  // Remove the alert here; no need for a cancellation message.
-};
-
-// Custom upload handler
-const uploadHandler = async ({ files, options }) => {
-  // Handle the custom file upload logic here
-  const uploadedFile = files[0];
-  photoFile.value = uploadedFile;
-  alert('Photo file ready for submission.');
+const handleFileUpload = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    photoFile.value = file;  // Store the file
+  }
 };
 
 // Handle create animal logic
@@ -165,7 +146,6 @@ const handleCreateAnimal = async () => {
 </script>
 
 <style scoped>
-
 .title-center {
   text-align: center;
   font-size: 1.5rem;
@@ -175,4 +155,13 @@ const handleCreateAnimal = async () => {
   width: 100%;
 }
 
+.file-input {
+  width: 73%;
+  padding: 8px;
+  padding-left: 5px;
+  border: 1px solid #333333;
+  background-color: #09090b;
+  color: #a1a1aa;
+  border-radius: 4px;
+}
 </style>
