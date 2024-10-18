@@ -2,6 +2,7 @@ from typing import TypeVar, Generic, List, Type, Optional
 from src import db
 from ..models import WalkingSchedule, MedicalRecord, Animal
 from .tools import to_dict
+import base64
 import logging
 
 class PublicRepository():
@@ -23,9 +24,24 @@ class PublicRepository():
         medical_records = db.session.query(MedicalRecord).filter(
             MedicalRecord.animal_id == animal_id
         ).all()
-                
+        
+        if animal.photo:
+            photo_base64 = base64.b64encode(animal.photo).decode('utf-8')
+        else:
+            photo_base64 = None
+
+        
         return {
-            "animal": to_dict(animal),
+            "animal": {
+                "id": animal.id,
+                "name": animal.name,
+                "breed": animal.breed,
+                "age": animal.age,
+                "photo": photo_base64,  # Vrátí Base64 kódovaný obrázek
+                "history": animal.history,
+                "description": animal.description,
+                "sex": animal.sex
+            },
             "schedules": [to_dict(schedule) for schedule in schedules],
             "medical_records": [to_dict(record) for record in medical_records]
         }

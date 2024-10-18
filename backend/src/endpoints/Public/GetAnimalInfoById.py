@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from src.usecases import AnimalUseCase
+import logging
 
 get_animal_info_by_id_bp = Blueprint('get_animal_info_by_id', __name__)
 
@@ -23,7 +24,9 @@ def get_animal_info_by_id():
     use_case = AnimalUseCase()
     
     try:
-        animal_info = use_case.get_animal_info_by_id(animal_id)
-        return jsonify(animal_info), 200
+      animal_info = use_case.get_animal_info_by_id(animal_id)
+      logging.error(f"Animal info fetched: {animal_info}")
+      return animal_info, 200
     except Exception as e:
-        return jsonify({'error': str(e)}), 400
+      logging.error(f"Error fetching animal info: {e}")
+      return jsonify({'error': str(e)}), 400
