@@ -114,7 +114,6 @@ const handleCancel = async () => {
 
 // Custom upload handler
 const uploadHandler = async ({ files, options }) => {
-  // Handle the custom file upload logic here
   const uploadedFile = files[0];
   photoFile.value = uploadedFile;
   alert('Photo file ready for submission.');
@@ -165,7 +164,6 @@ const handleCreateAnimal = async () => {
 </script>
 
 <style scoped>
-
 .title-center {
   text-align: center;
   font-size: 1.5rem;
@@ -174,5 +172,4 @@ const handleCreateAnimal = async () => {
 .w-full {
   width: 100%;
 }
-
 </style>
