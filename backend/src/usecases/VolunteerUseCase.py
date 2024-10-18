@@ -6,6 +6,7 @@ class VolunteerUseCase:
     def __init__(self):
         self.reservation_repository = Repository(Reservation)
         self.public_repository = PublicRepository()
+        self.animal_repository = Repository(Animal)
 
     def create_reservation(self, volunteer_id: int, animal_id: int, start_time: str, end_time: str) -> None:
         animal = self.animal_repository.get_by_id(animal_id)
