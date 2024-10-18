@@ -78,7 +78,7 @@ class CaretakerUseCase:
             veterinarian_id = veterinarian.id,
             request_date = request_date,
             description = description,
-            status='pending'
+            status = 'pending'
         )
         
         self.request_repository.add(new_request)
