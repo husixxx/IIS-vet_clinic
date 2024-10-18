@@ -4,7 +4,7 @@
     <DataTable :value="reservations" class="p-datatable-striped">
       <Column field="id" header="ID"></Column>
       <Column field="animal_id" header="Animal ID"></Column>
-      <Column field="volunteer_id" header="Volunteer ID"></Column>
+      <Column field="volunteer_username" header="Volunteer Username"></Column>
       <Column field="start_time" header="Start Time"></Column>
       <Column field="end_time" header="End Time"></Column>
       <Column header="Status">
@@ -70,9 +70,9 @@ onMounted(async () => {
     console.log(response.data);
     if (response.data) {
       reservations.value = response.data.map(reservation => ({
-        id: reservation.animal_id, // Replace with reservation id if available
+        id: reservation.id,  // Now using the correct reservation id
         animal_id: reservation.animal_id,
-        volunteer_id: reservation.volunteer_id,
+        volunteer_username: reservation.volunteer_username, // Update volunteer ID to username
         start_time: new Date(reservation.start_time).toLocaleString(),
         end_time: new Date(reservation.end_time).toLocaleString(),
         status: reservation.status || 'N/A',
@@ -99,9 +99,11 @@ const cancelEdit = async () => {
 // Save the new status
 const saveStatus = async () => {
   try {
-    const response = await axiosClient.put(`/caretaker/update_reservation_status`, {
-      id: selectedReservation.value.id,
-      status: selectedReservation.value.newStatus
+    const response = await axiosClient.post(`/caretaker/change_reservation_status`, null, {
+      params: {
+        id: selectedReservation.value.id,
+        status: selectedReservation.value.newStatus
+      }
     });
     if (response.status === 200) {
       const index = reservations.value.findIndex(res => res.id === selectedReservation.value.id);
