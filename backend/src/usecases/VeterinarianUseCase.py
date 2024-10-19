@@ -9,11 +9,12 @@ class VeterinarianUseCase:
     def get_all_requests_by_vet_id(self, vet_id: int):
         return self.public_repository.get_all_vet_requests(vet_id)
     
-    def schedule_request(self, request_id: int, date_time: str):
+    def schedule_request(self, request_id: int, date_time: str, status: str) -> Request:
         request = self.request_repository.get_by_id(request_id)
         if not request:
             raise ValueError("Request with this id does not exist")
-        status = 'scheduled'
+        if status not in ['scheduled', 'completed', 'cancelled']:
+            raise ValueError("Invalid status")
         request.status = status
         request.request_date = date_time
         self.request_repository.update(request)

@@ -18,6 +18,10 @@ def schedule_request():
       in: query
       required: true
       type: string
+    - name: status
+      in: query
+      required: true
+      type: string
   responses:
     200:
       description: Request successfully scheduled
@@ -28,14 +32,18 @@ def schedule_request():
   
   request_id = request.args.get('request_id')
   date_time = request.args.get('date_time')
-  
+  status = request.args.get('status')
   if not is_valid_timestamp(date_time):
     return jsonify({
       'error': 'Invalid date time'
     }), 400
   try:
-    use_case.schedule_request(request_id, date_time)
-    
+    scheduled_request = use_case.schedule_request(request_id, date_time, status)
+    return jsonify({
+      'id': scheduled_request.id,
+      'date_time': scheduled_request.date_time,
+      'status': scheduled_request.status
+    }), 200    
   except Exception as e:
     return jsonify({
       'error': str(e)

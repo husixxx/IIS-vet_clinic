@@ -6,7 +6,7 @@ class Request(db.Model):
     animal_id = db.Column(db.Integer, db.ForeignKey('animals.id'), nullable=False)
     veterinarian_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     request_date = db.Column(db.DateTime, nullable=False)
-    status = db.Column(db.Enum('pending','scheduled','completed', 'canceled', default='pending', name='request_status'))
+    status = db.Column(db.Enum('pending','scheduled','completed', 'cancelled', default='pending', name='request_status'))
     description = db.Column(db.Text, nullable=False)
     
     veterinarian = db.relationship('User',foreign_keys=[veterinarian_id] ,backref='veterinarians_requests', lazy=True)
