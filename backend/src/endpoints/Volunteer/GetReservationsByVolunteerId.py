@@ -26,7 +26,7 @@ def get_reservations_by_volunteer_id():
     reservations = use_case.get_history(volunteer_id)
     return jsonify([{
       'id' : reservation.id,
-      'animal_id' : reservation.animal_id,
+      'animal_name' : reservation.animal.name,
       'volunteer_username' : reservation.volunteer.username,
       'start_time' : reservation.start_time,
       'end_time' : reservation.end_time,
