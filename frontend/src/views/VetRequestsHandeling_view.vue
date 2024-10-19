@@ -131,10 +131,17 @@ const cancelEdit = async () => {
 // Save the updated request (start time and status)
 const saveRequestChanges = async () => {
   try {
+    // Convert from 'MM/DD/YYYY, HH:MM:SS' (which is what .toLocaleString() gives) to 'YYYY-MM-DD HH:MM:SS'
+    const [datePart, timePart] = selectedRequest.value.start_time.split(', '); // Separate date and time
+
+    const [month, day, year] = datePart.split('/'); // Split the MM/DD/YYYY part
+    const formattedDateTime = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')} ${timePart}`; // Format as 'YYYY-MM-DD HH:MM:SS'
+
+    // Make the request to the backend with the properly formatted date and status
     const response = await axiosClient.post(`/veterinarian/schedule_request`, null, {
       params: {
         request_id: selectedRequest.value.id,
-        date_time: new Date(selectedRequest.value.start_time).toISOString(),
+        date_time: formattedDateTime, // Send as 'YYYY-MM-DD HH:MM:SS'
         status: selectedRequest.value.newStatus.value,
       },
     });
