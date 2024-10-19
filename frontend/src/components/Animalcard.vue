@@ -53,7 +53,7 @@ const animalPhoto = computed(() => {
 // Handle the card click
 const handleCardClick = () => {
   // You can redirect to another page or handle any action here
-  alert(`You clicked on ${props.name} with id ${props.id}`);
+  // alert(`You clicked on ${props.name} with id ${props.id}`);
 
   router.push({ name: 'Animalinfo', params: { id: props.id } });
 };

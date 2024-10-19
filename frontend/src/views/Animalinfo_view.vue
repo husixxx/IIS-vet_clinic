@@ -1,29 +1,76 @@
 <template>
   <div class="main-content">
-    <!-- Div pre fotku -->
+    <!-- Div for the photo -->
     <div class="photo-section">
-      <img src="https://via.placeholder.com/300" alt="Animal photo" />
+      <img src="../assets/cat3.jpg" alt="Animal photo" />
     </div>
 
-    <!-- Div pre popis (description) -->
-    <div class="description-section">
-      <h3>Name</h3>
-      <p>Breed</p>
-      <p>Location of funding</p>
-      <p>Age</p>
-      <p>Description</p>
+      <!-- Div pre popis (description) -->
+    <div class="animal-schedules">
+      <h3 style="text-align: center;">Avaliable schedules</h3>
+      <Button v-if="authStore.getRoleId === UserRole.Caretaker" label="Add schedule" class="p-button-warning" style="width: 100%;"/>
+      <Card class="full-width-card">
+        <template #content>
+          <div class="p-fluid">
+            <DataTable :value="animalSchedules" class="full-width-table" tableStyle="width: 100%">
+              <Column field="start_time" header="Start date" style="width: 10%;"></Column>
+              <Column field="end_time" header="End date" style="width: 10%;"></Column>
+              <Column v-if="authStore.getRoleId === UserRole.Volunteer" header="" style="width: 10%; text-align: right;" headerStyle="text-align: right; padding-right: 30px;">
+                <template #body="slotProps">
+                  <Button
+                    label="Make reservation"
+                   
+                    class="p-button-warning"
+                  />
+                </template>
+              </Column>
+              <Column v-if="authStore.getRoleId === UserRole.Caretaker" header="" style="width: 10%; text-align: right;" headerStyle="text-align: right; padding-right: 30px;">
+                <template #body="slotProps">
+                  <Button
+                    label="Edit schedule"
+                   
+                    class="p-button-warning"
+                  />
+                </template>
+              </Column>
+            </DataTable>
+          </div>
+        </template>
+      </Card>
     </div>
 
-    <!-- Div pre zdravotné záznamy (medical records) -->
-    <div class="medical-records-section">
-      <h3>Medical records</h3>
-      <p>Details about the medical history of the animal.</p>
+    <!-- Medical records section -->
+    <div class="animal-info">
+      <!-- First column: Tags -->
+      <div class="tags-column">
+        <div class="tags">
+          <strong>Name:</strong> {{ animalInfo?.animal?.name }}
+        </div>
+        <div class="tags">
+          <strong>Age:</strong> {{ animalInfo?.animal?.age }}
+        </div>
+        <div class="tags">
+          <strong>Breed:</strong> {{ animalInfo?.animal?.breed }}
+        </div>
+        <div class="tags">
+          <strong>Sex:</strong> {{ animalInfo?.animal?.sex }}
+        </div>
+      </div>
+
+      <!-- Second column: Fieldsets -->
+      <div class="animal-fieldsets">
+        <Fieldset legend="Description">
+          <p>{{ animalInfo?.animal?.description }}</p>
+        </Fieldset>
+        <Fieldset legend="History">
+          <p>{{ animalInfo?.animal?.history }}</p>
+        </Fieldset>
+      </div>
     </div>
 
-    <!-- Div pre rezervácie (schedule) -->
+    <!-- Schedule section -->
     <div class="schedule-section">
-      <h3>Schedule</h3>
-      <p>11.8.2024</p>
+      <p>hello</p>
     </div>
   </div>
 </template>
@@ -33,20 +80,43 @@
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import axiosClient from '../api/api';
-import { useAuthStore } from '../store/Authstore';  // Ensure correct import of your AuthStore
+import { useAuthStore, UserRole } from '../store/Authstore';  // Ensure correct import of your AuthStore
+import Fieldset from 'primevue/fieldset';
+import DataTable from 'primevue/datatable';
+import Card from 'primevue/card';
+import Column from 'primevue/column';
+import Button from 'primevue/button';
 
+const route = useRoute();
 const authStore = useAuthStore();
 const user = authStore.getUser;
 const userRole = authStore.getRoleId;
+const animalInfo = ref();
+const animalSchedules = ref([]);
 
-const router = useRoute();
+// const showEditDialog = ref(false);
+// const selectedSchedule = reactive({
+//   id: null,
+//   animalId: null,
+//   startTime: '',
+//   endTime: ''
+// });
+
+// const reservSchedulesFields = [
+//   { id: 'startDate', label: 'Start date', model: 'startDate', component: InputText },
+//   { id: 'endtDate', label: 'endDate', model: 'endDate', component: InputText }
+//   // { id: 'username', label: 'Username', model: 'username', component: InputText },
+//   // { id: 'password', label: 'Password', model: 'password', component: InputText, props: { type: 'password' } },
+//   // { id: 'verified', label: 'Verified', model: 'verified', component: Dropdown, props: { options: verifiedOptions, optionLabel: 'label' } },
+//   // { id: 'role_id', label: 'Role', model: 'role_id', component: Dropdown, props: { options: roleOptions, optionLabel: 'label' } }
+// ];
 
 onMounted(async () => {
   try {
-    const response = await axiosClient.get(`/animal/info?animal_id=${encodeURIComponent(router.params.id)}`);
-    console.log(response.data);
-    // animals.value = response.data;  // Assign the array of animals
-    // console.log(animals.value);
+    const response = await axiosClient.get(`/animal/info?animal_id=${encodeURIComponent(route.params.id)}`);
+    // console.log(response.data);
+    animalInfo.value = response.data;
+    animalSchedules.value = animalInfo.value.schedules;
   } catch (error) {
     console.error('Error fetching animal data:', error);
   }
@@ -56,15 +126,68 @@ onMounted(async () => {
   
 <style scoped>
 
-.main-content {
-  display: grid;
-  grid-template-columns: 0.8fr 2.5fr;  /* Make medical records and schedule wider */
-  gap: 20px;                         /* Medzi jednotlivými sekciami bude medzera */
-  padding: 20px;
-  margin-bottom: 115;
+.animal-schedules {
+  grid-row: 2 / span 1;
+  justify-content: center;
+  align-items: center;
+  /* padding: 20px; */
+  width: 100%;
+  /* Set min-height to ensure space for content without cutting off the table */
+  min-height: 5vh; 
 }
 
-/* Styling for each section */
+.full-width-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.p-fluid {
+  flex-grow: 1;
+}
+
+.full-width-table {
+  width: 100%;
+}
+
+.main-content {
+  display: grid;
+  grid-template-columns: 0.8fr 2.5fr;
+  gap: 20px;
+  padding: 20px;
+  padding-bottom: 110px;
+}
+
+/* Layout for medical records section with two columns */
+.animal-info {
+  display: grid;
+  grid-template-columns: 0.2fr 1fr; /* Two equal-width columns */
+  gap: 20px;
+}
+
+.tags-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Spacing between the tags */
+  padding-top: 8px;
+}
+
+.tags {
+  margin-bottom: 5px;
+}
+
+.animal-fieldsets {
+  display: flex;
+  flex-direction: column;
+  gap: 0px; /* Spacing between the fieldsets */
+}
+
+fieldset {
+  width: 100%;
+  max-width: 800px;
+  /* margin-bottom: 20px; */
+}
+
 .photo-section img {
   width: 100%;
   height: auto;
@@ -72,24 +195,14 @@ onMounted(async () => {
   border-radius: 10px;
 }
 
-.description-section, .medical-records-section, .schedule-section {
-  background-color: #f0f0f0;
-  padding: 15px;  /* Reduced padding to reduce height */
-  border-radius: 10px;
-}
-
-.description-section {
-  grid-row: 2 / span 1;  /* Description sekcia bude v druhom riadku */
-}
-
-.medical-records-section {
-  grid-column: 2 / span 1;  /* Bude na pravej strane vedľa fotky */
-  grid-row: 1 / span 1;
-}
-
 .schedule-section {
   grid-column: 2 / span 1;
   grid-row: 2 / span 1;
+}
+
+.animal-schedules, .animal-info, .schedule-section {
+  /* background-color: #f0f0f0; */
+  border-radius: 10px;
 }
 
 </style>
