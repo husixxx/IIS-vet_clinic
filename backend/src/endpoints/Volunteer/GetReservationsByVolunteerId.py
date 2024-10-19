@@ -9,10 +9,9 @@ def get_reservations_by_volunteer_id():
   ---
   parameters:
     - name: volunteer_id
-      in: query
       type: int
       required: true
-  ---
+      in: query
   responses:
     200:
       description: All reservations

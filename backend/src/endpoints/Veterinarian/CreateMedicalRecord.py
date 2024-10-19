@@ -7,36 +7,36 @@ create_medical_record_bp = Blueprint('create_medical_record', __name__)
 
 def create_medical_record():
     """
-    Create medical record
-    ---
-    parameters:
-        - name: animal_id
-          in: query
-          type: int
-          required: true
-        - name: veterinarian_id
-          in: query
-          type: int
-          required: true
-        - name: description
-            in: query
-            type: str
-            required: true
-        - name: examination_date
-            in: query
-            type: str
-            required: true
-        - name: examination_type
-            in: query
-            type: str
-            required: true
-    ---
-    responses:
-        200:
-            description: Medical record created
-        400:
-            description: Medical record not created
-    """
+Create a medical record.
+---
+parameters:
+    - name: animal_id
+      in: query
+      type: integer
+      required: true
+    - name: veterinarian_id
+      in: query
+      type: integer
+      required: true
+    - name: description
+      in: query
+      type: string
+      required: true
+    - name: examination_date
+      in: query
+      type: string
+      required: true
+    - name: examination_type
+      in: query
+      type: string
+      required: true
+responses:
+    200:
+        description: Medical record created
+    400:
+        description: Medical record not created
+"""
+        
     
     animal_id = request.args.get('animal_id')
     veterinarian_id = request.args.get('veterinarian_id')

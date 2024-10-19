@@ -6,23 +6,23 @@ schedule_request_bp = Blueprint('schedule_request', __name__)
 @schedule_request_bp.route('/veterinarian/schedule_request', methods=['POST'])
 
 def schedule_request():
-  """Schedule request from caretaker
+  """
+  Schedule a request from a caretaker.
   ---
   parameters:
     - name: request_id
       in: query
-      type: int
       required: true
-    - name: date time
+      type: integer
+    - name: date_time
       in: query
-      type: str
       required: true
-  ---
+      type: string
   responses:
     200:
-      description: Request scheduled
+      description: Request successfully scheduled
     400:
-      description: Request not scheduled
+      description: Request could not be scheduled
   """
   use_case = VeterinarianUseCase()
   

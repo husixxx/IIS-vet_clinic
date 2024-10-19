@@ -8,11 +8,10 @@ def delete_reservation():
     """Delete reservation
     ---
     parameters:
-        - name: reservation_id
-          in: query
-          type: int
-          required: true
-    ---
+        -   name: reservation_id
+            type: int
+            required: true
+            in: query
     responses:
         200:
             description: Reservation deleted
