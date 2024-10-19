@@ -19,9 +19,11 @@ def get_reservations_by_volunteer_id():
       description: No reservations found. 
   """
   
+  volunteer_id = request.args.get('volunteer_id')
+  
   use_case = VolunteerUseCase()
   try:
-    reservations = use_case.get_history()
+    reservations = use_case.get_history(volunteer_id)
     return jsonify([{
       'id' : reservation.id,
       'animal_id' : reservation.animal_id,
