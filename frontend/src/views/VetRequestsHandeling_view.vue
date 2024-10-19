@@ -1,61 +1,152 @@
 <template>
-    <div class="requests-container">
-      <h1>All Requests for Veterinarian</h1>
+    <div class="vet-requests-container">
+      <h1>Veterinarian Requests</h1>
   
-      <!-- Check if there are requests -->
+      <!-- Check if there are any requests -->
       <template v-if="requests.length > 0">
         <DataTable :value="requests" class="p-datatable-striped">
-          <Column field="id" header="Request ID"></Column>
+          <Column field="id" header="ID"></Column>
           <Column field="animal_id" header="Animal ID"></Column>
-          <Column field="vet_id" header="Veterinarian ID"></Column>
           <Column field="start_time" header="Start Time"></Column>
           <Column field="end_time" header="End Time"></Column>
-          <Column field="status" header="Status"></Column>
           <Column field="description" header="Description"></Column>
+          <Column field="status" header="Status">
+            <template #body="slotProps">
+              <span>{{ typeof slotProps.data.status === 'string' ? slotProps.data.status : slotProps.data.status.value }}</span>
+            </template>
+          </Column>
+          <Column header="Actions">
+            <template #body="slotProps">
+              <Button label="Edit" icon="pi pi-pencil" class="p-button-text p-button-sm" @click="openEditModal(slotProps.data)" />
+            </template>
+          </Column>
         </DataTable>
       </template>
   
-      <!-- Display a message when there are no requests -->
+      <!-- Display a message when no requests are found -->
       <template v-else>
         <div class="no-requests-message">
-          No requests found for this veterinarian.
+          No requests available for this veterinarian.
         </div>
       </template>
+  
+      <!-- Dialog (pop-up) for editing request status -->
+      <Dialog v-model:visible="editDialogVisible" header="Edit Request Status">
+        <div class="p-fluid">
+          <Dropdown
+            v-model="selectedRequest.newStatus"
+            :options="statusOptions"
+            optionLabel="label"
+            placeholder="Select Status"
+            class="w-full"
+          />
+        </div>
+        <template #footer>
+          <Button label="Cancel" class="p-button-text" @click="cancelEdit" />
+          <Button label="Save" class="p-button-primary" @click="saveStatus" />
+        </template>
+      </Dialog>
     </div>
   </template>
   
   <script setup>
   import { ref, onMounted } from 'vue';
-  import { useAuthStore } from '@/stores/auth';  // Path to your Pinia store
-  import axiosClient from '../api/api';  // Ensure correct path to your API client
+  import { useAuthStore } from '../store/Authstore'; // Assuming you have a Pinia store for user authentication
+  import axiosClient from '../api/api';
   import DataTable from 'primevue/datatable';
   import Column from 'primevue/column';
+  import Button from 'primevue/button';
+  import Dialog from 'primevue/dialog';
+  import Dropdown from 'primevue/dropdown';
   
-  // Pinia store for authenticated user
+  // Access the authenticated user's data
   const authStore = useAuthStore();
   
-  // Reactive reference to store the requests
+  // Array to store veterinarian requests
   const requests = ref([]);
   
-  // Fetch requests when the component mounts, using the logged-in veterinarian's ID
+  // Status options for the dropdown
+  const statusOptions = [
+    { label: 'pending', value: 'pending' },
+    { label: 'approved', value: 'approved' },
+    { label: 'canceled', value: 'canceled' },
+    { label: 'completed', value: 'completed' }
+  ];
+  
+  // State to control the edit dialog visibility
+  const editDialogVisible = ref(false);
+  
+  // Currently selected request for editing
+  const selectedRequest = ref(null);
+  
+  // Fetch requests when the component mounts
   onMounted(async () => {
-    if (authStore.isLoggedIn && authStore.getRoleId === 2) {  // Ensure it's a veterinarian
-      try {
-        const response = await axiosClient.get(`/veterinarian/get_all_requests_by_vet_id`, {
-          params: { vet_id: authStore.getUser.id }  // Use the logged-in veterinarian's ID
-        });
-        requests.value = response.data;
-      } catch (error) {
-        console.error('Error fetching requests:', error);
+    try {
+      // Get the veterinarian's ID from the authenticated user
+      const vetId = authStore.getUser?.id;
+  
+      // Make an API request to get requests by vet_id
+      const response = await axiosClient.get(`/veterinarian/get_all_requests_by_vet_id`, {
+        params: {
+          vet_id: vetId,
+        },
+      });
+  
+      if (response.data) {
+        requests.value = response.data.map((request) => ({
+          id: request.id,
+          animal_id: request.animal_id,
+          vet_id: request.vet_id,
+          start_time: new Date(request.start_time).toLocaleString(),
+          end_time: new Date(request.end_time).toLocaleString(),
+          description: request.description,
+          status: request.status || 'N/A',
+          newStatus: request.status,
+        }));
       }
-    } else {
-      console.warn('User is not logged in or not a veterinarian.');
+    } catch (error) {
+      console.error('Error fetching veterinarian requests:', error);
     }
   });
+  
+  // Open the edit modal
+  const openEditModal = async (request) => {
+    selectedRequest.value = { ...request }; // Clone the request
+    editDialogVisible.value = true;
+  };
+  
+  // Cancel editing
+  const cancelEdit = async () => {
+    selectedRequest.value = null;
+    editDialogVisible.value = false;
+  };
+  
+  // Save the updated request status
+  const saveStatus = async () => {
+    try {
+      const response = await axiosClient.post(`/veterinarian/update_request_status`, null, {
+        params: {
+          id: selectedRequest.value.id,
+          status: selectedRequest.value.newStatus.value,
+        },
+      });
+  
+      if (response.status === 200) {
+        const index = requests.value.findIndex((req) => req.id === selectedRequest.value.id);
+        requests.value[index].status = selectedRequest.value.newStatus;
+        editDialogVisible.value = false;
+        selectedRequest.value = null;
+      } else {
+        console.error('Failed to update request status');
+      }
+    } catch (error) {
+      console.error('Error updating request status:', error);
+    }
+  };
   </script>
   
   <style scoped>
-  .requests-container {
+  .vet-requests-container {
     padding: 20px;
   }
   
@@ -74,6 +165,18 @@
     font-size: 1.2rem;
     color: #777;
     padding: 40px;
+  }
+  
+  .p-button-sm {
+    margin-left: 10px;
+  }
+  
+  .p-dialog .p-fluid {
+    padding: 20px;
+  }
+  
+  .w-full {
+    width: 100%;
   }
   </style>
   
