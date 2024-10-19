@@ -76,8 +76,8 @@ const requests = ref([]);
 // Status options for the dropdown
 const statusOptions = [
   { label: 'pending', value: 'pending' },
-  { label: 'approved', value: 'approved' },
-  { label: 'canceled', value: 'canceled' },
+  { label: 'scheduled', value: 'scheduled' },
+  { label: 'cancelled', value: 'cancelled' },
   { label: 'completed', value: 'completed' }
 ];
 
@@ -131,10 +131,10 @@ const cancelEdit = async () => {
 // Save the updated request (start time and status)
 const saveRequestChanges = async () => {
   try {
-    const response = await axiosClient.post(`/veterinarian/update_request_status`, null, {
+    const response = await axiosClient.post(`/veterinarian/schedule_request`, null, {
       params: {
-        id: selectedRequest.value.id,
-        start_time: new Date(selectedRequest.value.start_time).toISOString(),
+        request_id: selectedRequest.value.id,
+        date_time: new Date(selectedRequest.value.start_time).toISOString(),
         status: selectedRequest.value.newStatus.value,
       },
     });
