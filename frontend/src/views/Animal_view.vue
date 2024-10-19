@@ -13,6 +13,7 @@
           :name="animal.name"
           :breed="animal.breed"
           :age="animal.age"
+          :photo="animal.photo" 
           :description="animal.description"
         />
       </div>

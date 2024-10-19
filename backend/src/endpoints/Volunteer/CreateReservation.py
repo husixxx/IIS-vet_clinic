@@ -43,7 +43,7 @@ def create_reservation():
   use_case = VolunteerUseCase()
   
   try:
-    if not is_valid_date(start_time) or not is_valid_date(end_time):
+    if not is_valid_timestamp(start_time) or not is_valid_timestamp(end_time):
       raise Exception('Invalid date format.')
     use_case.create_reservation(volunteer_id, animal_id, start_time, end_time)
     return jsonify({'message': 'Reservation created'}), 200

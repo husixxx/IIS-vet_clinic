@@ -1,5 +1,5 @@
 from src.models import WalkingSchedule, Animal, User, Request, Reservation
-from src.repository import Repository
+from src.repository import Repository, PublicRepository
 
 class CaretakerUseCase:
     
@@ -9,6 +9,7 @@ class CaretakerUseCase:
         self.user_repository = Repository(User)
         self.request_repository = Repository(Request)
         self.reservation_repository = Repository(Reservation)
+        self.public_repository = PublicRepository()
     
     ### Create Animal ###
     def create_animal(self, name: str, breed: str, age: int, photo: bytes, history: str, description: str, sex: str) -> Animal:
@@ -87,24 +88,22 @@ class CaretakerUseCase:
     def get_all_unverified_volunteers(self) -> list:
         return self.user_repository.get_unverified_volunteers()
     
-    def accept_reservation(self, request_id: int):
-        request = self.reservation_repository.get_by_id(request_id) 
-        if request is None:
+    def change_reservation_status(self, reservation_id: int, status: str):
+        reservation = self.reservation_repository.get_by_id(reservation_id) 
+        if reservation is None:
             raise Exception('reservation not found.')
-        request.accepted = True
-        self.reservation_repository.update(request)
-        return request
-    
-    def decline_reservation(self, request_id: int):
-        request = self.reservation_repository.get_by_id(request_id) 
-        if request is None:
-            raise Exception('reservation not found.')
-        request.accepted = False
-        self.reservation_repository.update(request)
-        return request
+        if status not in ['pending','approved','canceled','completed']:
+            raise Exception('Invalid status.')
+        reservation.status = status
+        self.reservation_repository.update(reservation)
+        return reservation
     
     def get_all_reservations(self) -> list:
         return self.reservation_repository.get_all()
+    
+    
+    def filter_animals(self, name:str , age: int, breed: str, date: str) -> list:
+        return self.public_repository.filter_animals(name, age, breed, date)
     
             
     

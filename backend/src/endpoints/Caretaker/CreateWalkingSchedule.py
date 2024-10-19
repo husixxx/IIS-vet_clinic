@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from src.usecases import CaretakerUseCase
+from ..services import is_valid_timestamp
 
 create_walking_schedule_bp = Blueprint('create_walking_schedule', __name__)
 
@@ -48,7 +49,12 @@ def create_walking_schedule():
     start_time = request.args.get('start_time', type=str)
     end_time = request.args.get('end_time', type=str)
    
-
+    if not is_valid_timestamp(start_time) or not is_valid_timestamp(end_time):
+      return jsonify({
+        'error': 'Invalid date time',
+        'start_time': start_time,
+        'end_time': end_time
+      }), 400
 
     caretaker_use_case = CaretakerUseCase()
     walking_schedule = caretaker_use_case.create_walking_schedule(animal_id,start_time, end_time)

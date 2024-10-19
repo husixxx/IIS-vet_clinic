@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify
 from src.usecases import CaretakerUseCase
+import base64
 
 get_all_animals_bp = Blueprint('get_all_animals', __name__)
 
@@ -22,7 +23,7 @@ def get_all_animals():
             'name': animal.name,
             'breed': animal.breed,
             'age': animal.age,
-            'photo': animal.photo,
+            'photo': base64.b64encode(animal.photo).decode('utf-8') if animal.photo else None,
             'description': animal.description,
         } for animal in animals]), 200
     except Exception as e:

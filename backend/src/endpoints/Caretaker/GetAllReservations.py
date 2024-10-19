@@ -17,10 +17,15 @@ def get_all_reservations():
   use_case = CaretakerUseCase()
   try:
     reservations = use_case.get_all_reservations()
-    return jsonify({
-      'reservations': reservations
-    })
+    return jsonify([{
+      'id' : reservation.id,
+      'animal_id' : reservation.animal_id,
+      'volunteer_username' : reservation.volunteer.username,
+      'start_time' : reservation.start_time,
+      'end_time' : reservation.end_time,
+      'status' : reservation.status,
+    } for reservation in reservations]), 200
   except Exception as e:
     return jsonify({
       'error': str(e)
-    }), 400
+    }), 400 

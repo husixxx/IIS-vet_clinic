@@ -1,6 +1,5 @@
 <template>
     <div>
-        <h2>Volunteer Approval</h2>
         <VolunteerDataTable />
     </div>
 </template>

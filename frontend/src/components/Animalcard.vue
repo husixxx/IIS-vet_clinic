@@ -45,7 +45,7 @@ const props = defineProps({
 // Handle photo (convert it to a URL or leave empty if no photo is available)
 const animalPhoto = computed(() => {
   if (props.photo) {
-    return `data:image/jpeg;base64,${props.photo}`;
+    return `data:image/jpeg;base64,${props.photo}`;  // Base64-encoded image
   }
   return null;
 });

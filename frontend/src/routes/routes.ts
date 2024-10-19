@@ -13,6 +13,9 @@ import Create_caretaker from '../views/CreateCaretaker_view.vue'
 import Create_vet from '../views/CreateVet_view.vue'
 import Edit_user from '../views/EditUser_view.vue'
 import Create_vet_request from '../views/CreateVetRequest_view.vue'
+import Reservation_approving from '../views/ReservationApproving_view.vue'
+import Vet_requests_handeling from '../views/VetRequestsHandeling_view.vue'
+import Volunteers_history from '../views/VolunteerHistory_view.vue'
 
 
 const routes: Array<RouteRecordRaw> = [
@@ -91,6 +94,24 @@ const routes: Array<RouteRecordRaw> = [
         name: 'EditUser',
         component: Edit_user,
         meta: { requiresAuth: true, role: UserRole.Admin }  // Only allow access for Caretaker
+      },
+      {
+        path: 'reservationapproving',
+        name: 'ReservationApproving',
+        component: Reservation_approving,
+        meta: { requiresAuth: true, role: UserRole.Caretaker }  // Only allow access for Caretaker
+      },
+      {
+        path: 'historyofreservations',
+        name: 'HistoryOfReservations',
+        component: Volunteers_history,
+        meta: { requiresAuth: true, role: UserRole.Volunteer }  // Only allow access for Caretaker
+      },
+      {
+        path: 'vetrequestshandeling',
+        name: 'VetRequestsHandeling',
+        component: Vet_requests_handeling,
+        meta: { requiresAuth: true, role: UserRole.Veterinarian }  // Only allow access for Caretaker
       }
     ],
   },

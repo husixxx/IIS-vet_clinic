@@ -1,3 +1,4 @@
+import base64
 from flask import Blueprint, request, jsonify
 from src.usecases import CaretakerUseCase
 
@@ -60,16 +61,26 @@ def create_animal():
   # Vytvorenie use case a zvieraťa
   use_case = CaretakerUseCase()
   
+  if photo:
+    photo_data = photo.read()
+  else:
+    photo_data = None
+  
   try:
-    animal = use_case.create_animal(name, breed, age, photo, history, description, sex)
+    animal = use_case.create_animal(name, breed, age, photo_data, history, description, sex)
+    if animal.photo:
+      photo_base64 = base64.b64encode(animal.photo).decode('utf-8')
+    else:
+      photo_base64 = None
     return jsonify({
       'id': animal.id,
       'name': animal.name,
       'breed': animal.breed,
       'age': animal.age,
-      'photo': animal.photo,
+      'photo': photo_base64,
       'history': animal.history,
-      'description': animal.description
+      'description': animal.description,
+      'sex': animal.sex
     }), 201
   except Exception as e:
     return jsonify({'error': str(e)}), 400
