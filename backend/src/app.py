@@ -79,12 +79,20 @@ def create_app():
   app.register_blueprint(get_all_animals_bp)
   app.register_blueprint(filter_animals_bp)
   
+  # Veterinarian
+  app.register_blueprint(get_all_requests_by_vet_id_bp)
+  app.register_blueprint(schedule_request_bp)
+  app.register_blueprint(create_medical_record_bp)
+  
+  
   # public
   app.register_blueprint(get_all_unverified_volunteers_bp)
   app.register_blueprint(get_animal_info_by_id_bp)
 
   # Volunteer
   app.register_blueprint(create_reservation_bp)
+  app.register_blueprint(get_reservations_by_volunteer_id_bp)
+  app.register_blueprint(delete_reservation_bp)
   return app
       
 
@@ -98,8 +106,8 @@ def seed_roles():
     {'name': 'registered'}
   ]
   
-  # Check if roles already exist to avoid duplication
-  with db.session.begin():  # Using a context manager for the session
+  # avoid duplicates
+  with db.session.begin():  # current session
     for role in roles:
       existing_role = Role.query.filter_by(name=role['name']).first()
       if not existing_role:

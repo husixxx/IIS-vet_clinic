@@ -1,0 +1,37 @@
+from flask import Blueprint, request, jsonify
+from src.usecases import VolunteerUseCase
+
+get_reservations_by_volunteer_id_bp = Blueprint('get_reservations_by_volunteer_id', __name__)
+
+@get_reservations_by_volunteer_id_bp.route('/volunteer/get_reservations_by_volunteer_id', methods=['GET'])
+def get_reservations_by_volunteer_id():
+  """Get all reservations by volunteer id
+  ---
+  parameters:
+    - name: volunteer_id
+      in: query
+      type: int
+      required: true
+  ---
+  responses:
+    200:
+      description: All reservations
+    400:
+      description: No reservations found. 
+  """
+  
+  use_case = VolunteerUseCase()
+  try:
+    reservations = use_case.get_history()
+    return jsonify([{
+      'id' : reservation.id,
+      'animal_id' : reservation.animal_id,
+      'volunteer_username' : reservation.volunteer.username,
+      'start_time' : reservation.start_time,
+      'end_time' : reservation.end_time,
+      'status' : reservation.status,
+    } for reservation in reservations]), 200
+  except Exception as e:
+    return jsonify({
+      'error': str(e)
+    }), 400

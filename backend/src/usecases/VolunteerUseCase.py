@@ -30,3 +30,15 @@ class VolunteerUseCase:
         )
         
         self.reservation_repository.add(new_reservation)
+        
+    def delete_reservation(self, reservation_id: int) -> None:
+        reservation = self.reservation_repository.get_by_id(reservation_id)
+        if not reservation:
+            raise ValueError("Reservation with this id does not exist")
+        if reservation.status != 'pending':
+            raise ValueError("Reservation can't be deleted")
+        self.reservation_repository.delete(reservation)
+    
+    def get_history(self, volunteer_id: int):
+        reservations = self.reservation_repository.get_all()
+        return [reservation for reservation in reservations if (reservation.volunteer_id == volunteer_id and reservation.status != 'pending')]    

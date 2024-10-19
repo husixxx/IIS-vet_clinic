@@ -8,7 +8,6 @@ from .ChangeReservationStatus import change_reservation_status_bp
 from .GetAllReservations import get_all_reservations_bp
 from .GetAllVeterinarians import get_all_veterinarians_bp
 from .GetAllAnimals import get_all_animals_bp
-from .FilterAnimals import filter_animals_bp
 
 __all__ = [
     'get_all_reservations_bp',
@@ -20,6 +19,5 @@ __all__ = [
     'create_vet_request_bp',
     'get_all_unverified_volunteers_bp',
     'get_all_veterinarians_bp',
-    'get_all_animals_bp',
-    'filter_animals_bp'
+    'get_all_animals_bp'
 ]
