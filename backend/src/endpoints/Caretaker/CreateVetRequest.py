@@ -43,7 +43,7 @@ def create_vet_request():
   use_case = CaretakerUseCase()
   
   try:
-    if not is_valid_date(request_date):
+    if not is_valid_timestamp(request_date):
       raise Exception('Invalid date format.')
     vet_request = use_case.create_vet_request(animal_id, veterinarian_username, request_date, description)
     return jsonify({

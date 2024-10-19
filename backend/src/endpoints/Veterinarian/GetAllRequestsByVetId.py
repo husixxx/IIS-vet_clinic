@@ -20,19 +20,18 @@ def get_all_requests_by_vet_id():
       description: No requests found
   """
   
-  vet_id = request.args.get('vet_id', type=int)
+  vet_id = request.args.get('vet_id')
   use_case = VeterinarianUseCase()
   try:
     requests = use_case.get_all_requests_by_vet_id(vet_id=vet_id)
     return jsonify([{
-      'id' : request.id,
-      'animal_id' : request.animal_id,
-      'vet_id' : request.vet_id,
-      'start_time' : request.start_time,
-      'end_time' : request.end_time,
-      'status' : request.status,
-      'description' : request.description,
-    } for request in requests]), 200
+      'id' : request_vet.id,
+      'animal_id' : request_vet.animal_id,
+      'vet_id' : request_vet.veterinarian_id,
+      'start_time' : request_vet.request_date,
+      'status' : request_vet.status,
+      'description' : request_vet.description,
+    } for request_vet in requests]), 200
   except Exception as e:
     return jsonify({
       'error': str(e)

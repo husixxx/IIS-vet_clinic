@@ -7,8 +7,7 @@ class VeterinarianUseCase:
         self.public_repository = PublicRepository()
 
     def get_all_requests_by_vet_id(self, vet_id: int):
-        requests = self.request_repository.get_all()
-        return [request for request in requests if request.vet_id == vet_id]
+        return self.public_repository.get_all_vet_requests(vet_id)
     
     def schedule_request(self, request_id: int, date_time: str):
         request = self.request_repository.get_by_id(request_id)

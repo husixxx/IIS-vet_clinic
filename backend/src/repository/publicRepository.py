@@ -1,6 +1,6 @@
 from typing import TypeVar, Generic, List, Type, Optional
 from src import db
-from ..models import WalkingSchedule, MedicalRecord, Animal
+from ..models import WalkingSchedule, MedicalRecord, Animal, Request
 from .tools import to_dict
 import base64
 import logging
@@ -78,6 +78,17 @@ class PublicRepository():
             raise ValueError("No animals found")
         
         return [to_dict(animal) for animal in animals]
+    
+    
+    def get_all_vet_requests(self, vet_id: int):
+        requests = self.db_session.query(Request).filter(
+            Request.veterinarian_id == vet_id
+        ).all()
+        
+        if not requests:
+            raise ValueError("No requests found")
+        
+        return [request for request in requests]
         
     
         
