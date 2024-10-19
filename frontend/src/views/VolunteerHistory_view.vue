@@ -6,7 +6,7 @@
       <template v-if="reservations.length > 0">
         <DataTable :value="reservations" class="p-datatable-striped">
           <Column field="id" header="Reservation ID"></Column>
-          <Column field="animal_id" header="Animal ID"></Column>
+          <Column field="animal_name" header="Animal name"></Column>
           <Column field="volunteer_username" header="Volunteer Username"></Column>
           <Column field="start_time" header="Start Time"></Column>
           <Column field="end_time" header="End Time"></Column>
@@ -58,7 +58,7 @@
       if (response.data) {
         reservations.value = response.data.map((reservation) => ({
           id: reservation.id,
-          animal_id: reservation.animal_id,
+          animal_name: reservation.animal_name,
           volunteer_username: reservation.volunteer_username,
           start_time: new Date(reservation.start_time).toLocaleString(),
           end_time: new Date(reservation.end_time).toLocaleString(),
