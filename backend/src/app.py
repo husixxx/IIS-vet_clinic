@@ -91,6 +91,8 @@ def create_app():
 
   # Volunteer
   app.register_blueprint(create_reservation_bp)
+  app.register_blueprint(get_reservations_by_volunteer_id_bp)
+  app.register_blueprint(delete_reservation_bp)
   return app
       
 
@@ -104,8 +106,8 @@ def seed_roles():
     {'name': 'registered'}
   ]
   
-  # Check if roles already exist to avoid duplication
-  with db.session.begin():  # Using a context manager for the session
+  # avoid duplicates
+  with db.session.begin():  # current session
     for role in roles:
       existing_role = Role.query.filter_by(name=role['name']).first()
       if not existing_role:
