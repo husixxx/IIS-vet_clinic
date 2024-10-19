@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from src.usecases import CaretakerUseCase
 from ..services import *
+from datetime import datetime
 create_vet_request_bp = Blueprint('create_vet_request', __name__)
 
 @create_vet_request_bp.route('/caretaker/vet_request', methods=['POST'])
@@ -45,6 +46,7 @@ def create_vet_request():
   try:
     if not is_valid_timestamp(request_date):
       raise Exception('Invalid date format.')
+  
     vet_request = use_case.create_vet_request(animal_id, veterinarian_username, request_date, description)
     return jsonify({
         'animal_id': vet_request.animal_id,
