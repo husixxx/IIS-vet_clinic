@@ -50,7 +50,7 @@ responses:
         
     use_case = VeterinarianUseCase()
     try:
-        record = use_case.create_medical_record(animal_id, examination_date=examination_date, veterinarian_id=veterinarian_id, examination_type=examination_type, description=description)
+        record = use_case.create_medical_record(animal_id, examination_date=examination_date, vet_id=veterinarian_id, examination_type=examination_type, description=description)
         return jsonify({
             'id': record.id,
             'animal_id': record.animal_id,
