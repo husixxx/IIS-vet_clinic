@@ -38,7 +38,7 @@ const items = computed(() => {
     if (user && [UserRole.Volunteer, UserRole.Veterinarian, UserRole.Caretaker, UserRole.Admin].includes(user.role_id)) {
         const actions = {
             [UserRole.Volunteer]: [{ label: 'Request', command: () => {} }],
-            [UserRole.Veterinarian]: [{ label: 'Requests', command: () => {} }],
+            [UserRole.Veterinarian]: [{ label: 'Requests', command: () => { router.push({ name: "VetRequestsHandeling" }) } }],
             [UserRole.Caretaker]: [
                 { label: 'Volunteer Approving', command: () => { router.push({ name: "ApproveVolunteer" }) } },
                 { label: 'Create Animal', command: () => { router.push({ name: "CreateAnimal" }) } },
