@@ -15,6 +15,7 @@ import Edit_user from '../views/EditUser_view.vue'
 import Create_vet_request from '../views/CreateVetRequest_view.vue'
 import Reservation_approving from '../views/ReservationApproving_view.vue'
 import Vet_requests_handeling from '../views/VetRequestsHandeling_view.vue'
+import Volunteers_history from '../views/VolunteerHistory_view.vue'
 
 
 const routes: Array<RouteRecordRaw> = [
@@ -93,6 +94,12 @@ const routes: Array<RouteRecordRaw> = [
         name: 'ReservationApproving',
         component: Reservation_approving,
         meta: { requiresAuth: true, role: UserRole.Caretaker }  // Only allow access for Caretaker
+      },
+      {
+        path: 'historyofreservations',
+        name: 'HistoryOfReservations',
+        component: Volunteers_history,
+        meta: { requiresAuth: true, role: UserRole.Volunteer }  // Only allow access for Caretaker
       },
       {
         path: 'vetrequestshandeling',

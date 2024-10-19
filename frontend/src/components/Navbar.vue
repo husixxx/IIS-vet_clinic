@@ -37,7 +37,7 @@ const items = computed(() => {
     // Add "Actions" dropdown based on role_id
     if (user && [UserRole.Volunteer, UserRole.Veterinarian, UserRole.Caretaker, UserRole.Admin].includes(user.role_id)) {
         const actions = {
-            [UserRole.Volunteer]: [{ label: 'Request', command: () => {} }],
+            [UserRole.Volunteer]: [{ label: 'History', command: () => { router.push({ name: "HistoryOfReservations" }) } }],
             [UserRole.Veterinarian]: [{ label: 'Requests', command: () => { router.push({ name: "VetRequestsHandeling" }) } }],
             [UserRole.Caretaker]: [
                 { label: 'Volunteer Approving', command: () => { router.push({ name: "ApproveVolunteer" }) } },
