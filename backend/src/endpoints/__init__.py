@@ -18,7 +18,10 @@ from .Caretaker import get_all_veterinarians_bp
 from .Caretaker import get_all_animals_bp
 from .Volunteer import create_reservation_bp
 from .Public import get_animal_info_by_id_bp
-from .Caretaker.FilterAnimals import filter_animals_bp
+from .Public import filter_animals_bp
+from .Veterinarian import get_all_requests_by_vet_id_bp
+from .Veterinarian import schedule_request_bp
+from .Veterinarian import create_medical_record_bp
 __all__ = [
     'get_all_reservations_bp',
     'change_reservation_status_bp',
@@ -37,5 +40,8 @@ __all__ = [
     'update_user_bp',
     'create_reservation_bp',
     'get_animal_info_by_id_bp',
-    'filter_animals_bp'
+    'filter_animals_bp',
+    'get_all_requests_by_vet_id_bp',
+    'schedule_request_bp',
+    'create_medical_record_bp'
     ]
