@@ -1,21 +1,23 @@
 <template>
   <div class="card flex flex-col items-center gap-4">
-    <!-- Name input without label -->
+    <!-- Name input -->
     <div class="input-container">
-      <input
+      <InputText
+        id="name"
         type="text"
-        placeholder="Insert Name"
         v-model="filterItems[0].value"
+        placeholder="Insert Name"
         class="p-inputtext input-field"
       />
     </div>
 
-    <!-- Age input without label -->
+    <!-- Age input -->
     <div class="input-container">
-      <input
+      <InputText
+        id="age"
         type="text"
-        placeholder="Insert Age"
         v-model="filterItems[1].value"
+        placeholder="Insert Age"
         class="p-inputtext input-field"
       />
     </div>
@@ -23,57 +25,66 @@
     <!-- Dropdown for Breed -->
     <div class="input-container">
       <Dropdown
-        :options="filterItems[2].options"
+        id="breed"
         v-model="filterItems[2].value"
+        :options="filterItems[2].options"
+        optionLabel="label"
         placeholder="Select Breed"
-        class="p-dropdown"
+        class="p-dropdown w-full"
       />
     </div>
 
-    <!-- Availability input without label -->
+    <!-- Availability input -->
     <div class="input-container">
-      <input
+      <InputText
+        id="availability"
         type="text"
-        placeholder="Insert Availability"
         v-model="filterItems[3].value"
+        placeholder="Insert Availability"
         class="p-inputtext input-field"
       />
     </div>
 
     <!-- Search Button -->
     <div class="input-container">
-      <Button type="button" label="Search" class="p-button-success input-field" @click="search" />
+      <Button
+        type="button"
+        label="Search"
+        class="p-button-success input-field"
+        @click="search"
+      />
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref } from "vue";
-import Button from 'primevue/button';
-import Dropdown from 'primevue/dropdown';
+import Button from "primevue/button";
+import Dropdown from "primevue/dropdown";
+import InputText from "primevue/inputtext";
 
 // List of filters
 const filterItems = ref([
-  { key: '0', label: 'Name', value: '', type: 'text' },
-  { key: '1', label: 'Age', value: '', type: 'text' },
-  { key: '2', label: 'Breed', value: '', type: 'dropdown', options: [
-    { label: 'Dog', value: 'dog' },
-    { label: 'Cat', value: 'cat' },
-    { label: 'Rabbit', value: 'rabbit' }
-  ]},
-  { key: '3', label: 'Availability', value: '', type: 'text' }
+  { key: "0", label: "Name", value: "", type: "text" },
+  { key: "1", label: "Age", value: "", type: "text" },
+  { key: "2", label: "Breed", value: "", type: "dropdown", options: [
+    { label: "Dog", value: "dog" },
+    { label: "Cat", value: "cat" },
+    { label: "Rabbit", value: "rabbit" },
+  ] },
+  { key: "3", label: "Availability", value: "", type: "text" },
 ]);
 
 // Search function to handle search logic
 const search = () => {
-  console.log('Search filters:', filterItems.value);
+  console.log("Search filters:", filterItems.value);
 };
 </script>
 
 <style scoped>
 .input-container {
   width: 100%;
-  max-width: 200px; /* Znížená maximálna šírka pre užší panel */
+  max-width: 200px; /* Zachované pre užší panel */
   margin-bottom: 10px;
 }
 
