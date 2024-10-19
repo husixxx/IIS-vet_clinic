@@ -31,17 +31,18 @@ def schedule_request():
   use_case = VeterinarianUseCase()
   
   request_id = request.args.get('request_id')
-  date_time = request.args.get('date_time')
+  request_date = request.args.get('date_time')
   status = request.args.get('status')
-  if not is_valid_timestamp(date_time):
+  if not is_valid_timestamp(request_date):
     return jsonify({
-      'error': 'Invalid date time'
+      'error': 'Invalid date time',
+      'date_time': request_date
     }), 400
   try:
-    scheduled_request = use_case.schedule_request(request_id, date_time, status)
+    scheduled_request = use_case.schedule_request(request_id, request_date, status)
     return jsonify({
       'id': scheduled_request.id,
-      'date_time': scheduled_request.date_time,
+      'date_time': scheduled_request.request_date,
       'status': scheduled_request.status
     }), 200    
   except Exception as e:

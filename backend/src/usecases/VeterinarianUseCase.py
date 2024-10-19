@@ -1,6 +1,5 @@
 from src.models import Request, MedicalRecord
 from src.repository import Repository, PublicRepository
-
 class VeterinarianUseCase:
     def __init__(self):
         self.request_repository = Repository(Request)
