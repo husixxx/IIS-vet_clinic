@@ -41,7 +41,7 @@ def schedule_request():
     scheduled_request = use_case.schedule_request(request_id, date_time, status)
     return jsonify({
       'id': scheduled_request.id,
-      'date_time': scheduled_request.date_time,
+      'date_time': scheduled_request.request_date,
       'status': scheduled_request.status
     }), 200    
   except Exception as e:
