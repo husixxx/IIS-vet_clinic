@@ -1,6 +1,6 @@
 from typing import TypeVar, Generic, List, Type, Optional
 from src import db
-from ..models import WalkingSchedule, MedicalRecord, Animal, Request
+from ..models import WalkingSchedule, MedicalRecord, Animal, Request, Reservation
 from .tools import to_dict
 import base64
 import logging
@@ -89,6 +89,17 @@ class PublicRepository():
             raise ValueError("No requests found")
         
         return [request for request in requests]
+    
+
+    def get_all_reservations_by_volunteer_id(self, volunteer_id: int):
+        reservations = self.db_session.query(Reservation).filter(
+            Reservation.volunteer_id == volunteer_id
+        ).all()
+        
+        if not reservations:
+            raise ValueError("No requests found")
+        
+        return [reservation for reservation in reservations]
         
     
         

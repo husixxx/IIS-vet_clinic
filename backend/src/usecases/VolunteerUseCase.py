@@ -40,5 +40,4 @@ class VolunteerUseCase:
         self.reservation_repository.delete(reservation)
     
     def get_history(self, volunteer_id: int):
-        reservations = self.reservation_repository.get_all()
-        return [reservation for reservation in reservations if reservation.volunteer_id == volunteer_id]
+        return self.public_repository.get_all_reservations_by_volunteer_id(volunteer_id)
