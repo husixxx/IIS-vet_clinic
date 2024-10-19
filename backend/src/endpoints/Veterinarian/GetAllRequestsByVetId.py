@@ -7,6 +7,12 @@ get_all_requests_by_vet_id_bp = Blueprint('get_all_requests_by_vet_id', __name__
 def get_all_requests_by_vet_id():
   """Get all requests by vet id
   ---
+  parameters:
+    - name: vet_id
+      required: true
+      type: integer
+      in: query
+  ---
   responses:
     200:
       description: All requests
@@ -14,9 +20,10 @@ def get_all_requests_by_vet_id():
       description: No requests found. 
   """
   
+  vet_id = request.args.get('vet_id', type=int)
   use_case = VeterinarianUseCase()
   try:
-    requests = use_case.get_all_requests_by_vet_id()
+    requests = use_case.get_all_requests_by_vet_id(vet_id=vet_id)
     return jsonify([{
       'id' : request.id,
       'animal_id' : request.animal_id,
