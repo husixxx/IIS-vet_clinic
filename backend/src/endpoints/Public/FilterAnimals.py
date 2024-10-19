@@ -1,5 +1,9 @@
 from flask import Blueprint, request, jsonify
 from src.usecases import CaretakerUseCase
+import logging
+
+logging.basicConfig(level=logging.DEBUG)  # nebo INFO, pokud chceš méně detailů
+logger = logging.getLogger(__name__)
 
 filter_animals_bp = Blueprint('filter_animals', __name__)
 @filter_animals_bp.route('/filter_animals', methods=['GET'])
@@ -22,6 +26,11 @@ def filter_animals():
     - name: date
       type: string
       required: false
+  responses:
+    200:
+      description: Successfully filtered animals
+    400:
+      description: No animals found
   """
   
   name = request.args.get('name', type=str)
@@ -29,11 +38,19 @@ def filter_animals():
   age = request.args.get('age', type=int)
   date = request.args.get('date', type=str)
   
-  
   useCase = CaretakerUseCase()
+  
   try:
     animals = useCase.filter_animals(name, age, breed, date)
-    return jsonify(animals), 200
+    logger.debug(f"Filtered animals: {[{'id': animal.id, 'name': animal.name} for animal in animals]}")
+    
+    return jsonify([{
+      'id' : animal.id,
+      'name' : animal.name,
+      'age' : animal.age,
+      'breed' : animal.breed,
+      'description' : animal.description
+      } for animal in animals]), 200
   except Exception as e:
     return jsonify({'error': str(e)}), 400
     

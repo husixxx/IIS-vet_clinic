@@ -77,7 +77,7 @@ class PublicRepository():
         if not animals:
             raise ValueError("No animals found")
         
-        return [to_dict(animal) for animal in animals]
+        return [animal for animal in animals]
     
     
     def get_all_vet_requests(self, vet_id: int):

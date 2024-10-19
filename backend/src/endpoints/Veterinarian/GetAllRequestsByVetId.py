@@ -30,7 +30,7 @@ def get_all_requests_by_vet_id():
       'vet_id' : request_vet.veterinarian_id,
       'start_time' : request_vet.request_date,
       'status' : request_vet.status,
-      'description' : request_vet.description,
+      'description' : request_vet.description
     } for request_vet in requests]), 200
   except Exception as e:
     return jsonify({
