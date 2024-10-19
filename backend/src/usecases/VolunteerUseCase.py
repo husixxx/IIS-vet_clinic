@@ -41,4 +41,4 @@ class VolunteerUseCase:
     
     def get_history(self, volunteer_id: int):
         reservations = self.reservation_repository.get_all()
-        return [reservation for reservation in reservations if (reservation.volunteer_id == volunteer_id and reservation.status != 'pending')]    
+        return [reservation for reservation in reservations if reservation.volunteer_id == volunteer_id]
