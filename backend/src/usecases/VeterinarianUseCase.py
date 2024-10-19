@@ -4,6 +4,7 @@ class VeterinarianUseCase:
     def __init__(self):
         self.request_repository = Repository(Request)
         self.public_repository = PublicRepository()
+        self.medical_record_repository = Repository(MedicalRecord)
 
     def get_all_requests_by_vet_id(self, vet_id: int):
         return self.public_repository.get_all_vet_requests(vet_id)
@@ -28,7 +29,8 @@ class VeterinarianUseCase:
             examination_type=examination_type,
             veterinarian_id=vet_id
         )
-        self.public_repository.add(new_medical_record)
+        # self.public_repository.add(new_medical_record)
+        self.medical_record_repository.add(new_medical_record)
         return new_medical_record
         
         
