@@ -33,7 +33,6 @@ onMounted(async () => {
   try {
     const response = await axiosClient.get('/caretaker/animals');
     animals.value = response.data;  // Assign the array of animals
-    console.log(animals.value);
   } catch (error) {
     console.error('Error fetching animal data:', error);
   }
@@ -48,7 +47,10 @@ onMounted(async () => {
 
 #boxes {
   display: flex;
+  justify-content: space-between; /* Ensures even spacing between side panel and cards */
   align-items: flex-start;
+  margin-left: 20px; /* Space from the left edge */
+  margin-right: 20px; /* Space from the right edge */
 }
 
 #leftbox {
@@ -57,15 +59,13 @@ onMounted(async () => {
 }
 
 #cards {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* Ensures 4 cards per row */
   gap: 10px;
   margin-bottom: 115px;
-  margin-left: 20px; /* Add margin to the left of the cards to create space from the side panel */
 }
 
 #Animalcard {
-  flex: 1 0 120px;
   height: auto;
   background-color: lightgrey;
 }

@@ -73,25 +73,26 @@ const search = () => {
 <style scoped>
 .input-container {
   width: 100%;
-  max-width: 350px; /* Increase the width for better visibility */
+  max-width: 200px; /* Znížená maximálna šírka pre užší panel */
   margin-bottom: 10px;
 }
 
 .input-field {
   width: 100%;
-  height: 40px; /* Set inputs and button to match the original height */
+  height: 40px; /* Nastavená výška pre inputy a tlačidlá */
   padding: 8px;
   border-radius: 4px;
   box-sizing: border-box;
 }
 
 .p-inputtext {
-  height: 38px; /* Adjust the input height slightly to match the dropdown */
+  height: 38px; /* Jemná úprava výšky, aby zodpovedala dropdownu */
 }
 
 .p-button-success {
   width: 100%;
-  height: 38px; /* Ensure the button height is consistent with the inputs */
+  height: 38px; /* Konzistentná výška tlačidla s inputmi */
+  background-color: #10b981; /* Set the background color */
 }
 
 .p-dropdown {
