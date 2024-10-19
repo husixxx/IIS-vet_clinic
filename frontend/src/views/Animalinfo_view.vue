@@ -69,8 +69,29 @@
     </div>
 
     <!-- Schedule section -->
-    <div class="schedule-section">
-      <p>hello</p>
+    <div class="medical-schedule-section">
+      <h3 style="text-align: center;">Medical records</h3>
+      <Button v-if="authStore.getRoleId === UserRole.Veterinarian" label="Add medical record" class="p-button-warning" style="width: 100%;"/>
+      <Card class="full-width-card">
+        <template #content>
+          <div class="p-fluid">
+            <DataTable :value="animalMedicalRecords" class="full-width-table" tableStyle="width: 100%">
+              <Column field="description" header="Description" style="width: 45%;" bodyStyle="white-space: normal; word-break: break-word;"></Column>
+              <Column field="examination_date" header="Examination date" style="width: 10%;"></Column>
+              <Column field="examination_type" header="Examination type" style="width: 10%;"></Column>
+              <Column v-if="authStore.getRoleId === UserRole.Veterinarian" header="" style="width: 10%; text-align: right;" headerStyle="text-align: right; padding-right: 30px;">
+                <template #body="slotProps">
+                  <Button
+                    label="Edit record"
+                   
+                    class="p-button-warning"
+                  />
+                </template>
+              </Column>
+            </DataTable>
+          </div>
+        </template>
+      </Card>
     </div>
   </div>
 </template>
@@ -93,6 +114,7 @@ const user = authStore.getUser;
 const userRole = authStore.getRoleId;
 const animalInfo = ref();
 const animalSchedules = ref([]);
+const animalMedicalRecords = ref([]);
 
 // const showEditDialog = ref(false);
 // const selectedSchedule = reactive({
@@ -114,9 +136,10 @@ const animalSchedules = ref([]);
 onMounted(async () => {
   try {
     const response = await axiosClient.get(`/animal/info?animal_id=${encodeURIComponent(route.params.id)}`);
-    // console.log(response.data);
+    console.log(response.data);
     animalInfo.value = response.data;
     animalSchedules.value = animalInfo.value.schedules;
+    animalMedicalRecords.value = animalInfo.value.medical_records;
   } catch (error) {
     console.error('Error fetching animal data:', error);
   }
@@ -195,14 +218,24 @@ fieldset {
   border-radius: 10px;
 }
 
-.schedule-section {
+.medical-medical-schedule-section {
   grid-column: 2 / span 1;
   grid-row: 2 / span 1;
 }
 
-.animal-schedules, .animal-info, .schedule-section {
+.animal-schedules, .animal-info, .medical-medical-schedule-section {
   /* background-color: #f0f0f0; */
   border-radius: 10px;
+}
+
+.full-width-table .p-column-title, .full-width-table td {
+    white-space: normal;
+    word-break: break-word;
+}
+
+.full-width-table td {
+    max-width: 100%; /* Ensure cells don't stretch beyond available space */
+    padding: 10px;
 }
 
 </style>
