@@ -83,7 +83,7 @@ class PublicRepository():
             
             animals = animals.outerjoin(WalkingSchedule).filter(
                 Animal.id.in_([reservation.animal_id for reservation in approved_reservations]),
-                WalkingSchedule.id.isnot(None)  
+                WalkingSchedule.id.is_(None)  
             )
         animals = animals.all()
         
@@ -151,8 +151,15 @@ class PublicRepository():
         requests = self.db_session.query(Request).filter(
             Request.veterinarian_id == vet_id).all()
         
+        medicalRecords = self.db_session.query(MedicalRecord).filter(
+            MedicalRecord.veterinarian_id == vet_id
+        ).all()
+        
         for request in requests:
             self.db_session.delete(request)
+        
+        for record in medicalRecords:
+            record.veterinarian_id = None
             
         self.db_session.delete(vet)
         self.db_session.commit()

@@ -6,7 +6,7 @@ class MedicalRecord(db.Model):
     animal_id = db.Column(db.Integer, db.ForeignKey('animals.id', ondelete='CASCADE'), nullable=False)
     examination_date = db.Column(db.Date)
     
-    veterinarian_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    veterinarian_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     veterinarian = db.relationship('User', backref='medical_records', lazy=True)
     
     examination_type = db.Column(db.String(50))

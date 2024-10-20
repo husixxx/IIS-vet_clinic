@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from src.usecases import VeterinarianUseCase
-from ..services import is_valid_date
+from ..services import is_valid_timestamp
 
 create_medical_record_bp = Blueprint('create_medical_record', __name__)
 @create_medical_record_bp.route('/veterinarian/create_medical_record', methods=['POST'])
@@ -43,14 +43,14 @@ responses:
     description = request.args.get('description')
     examination_date = request.args.get('examination_date')
     examination_type = request.args.get('examination_type')
-    if not is_valid_date(examination_date):
+    if not is_valid_timestamp(examination_date):
         return jsonify({
             'error': 'Invalid date'
         }), 400
         
     use_case = VeterinarianUseCase()
     try:
-        record = use_case.create_medical_record(animal_id, examination_date=examination_date, veterinarian_id=veterinarian_id, examination_type=examination_type, description=description)
+        record = use_case.create_medical_record(animal_id, examination_date=examination_date, vet_id=veterinarian_id, examination_type=examination_type, description=description)
         return jsonify({
             'id': record.id,
             'animal_id': record.animal_id,
