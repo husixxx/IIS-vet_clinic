@@ -39,6 +39,7 @@ import AutoComplete  from 'primevue/autocomplete';
 import Textarea from 'primevue/textarea';
 import DatePicker from 'primevue/datepicker';
 import 'primeicons/primeicons.css'
+import { getFormattedDate } from '../utils/date';
 
 const veterinarians = ref([]);
 const filteredVeterinarians = ref([]);
@@ -68,30 +69,13 @@ const searchVeterinarians = (event) => {
   );
 };
 
-// function getCurrentDate() {
-//   const today = new Date();
-
-//   const year = today.getFullYear();
-//   const month = String(today.getMonth() + 1).padStart(2, '0');
-//   const day = String(today.getDate()).padStart(2, '0');
-
-//   return  `${year}-${month}-${day}`;
-// }
-
-function getFormattedDate(date) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
 const handleSendVetRequest = async () => {
   try {
     console.log(date.value);
     const response = await axiosClient.post(
       `/caretaker/vet_request?animal_id=${encodeURIComponent(animalId.value)}` + 
       `&veterinarian_username=${encodeURIComponent(selectedVeterinarian.value.username)}` +
-      `&request_date=${encodeURIComponent(getFormattedDate(date.value))}&description=${encodeURIComponent(description.value)}`
+      `&request_date=${encodeURIComponent(getFormattedDate(date.value, true))}&description=${encodeURIComponent(description.value)}`
     );
 
     if(response.status === SUCCESS_RESPONSE_CODE.value) {
