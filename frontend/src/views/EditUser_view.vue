@@ -5,19 +5,19 @@
       <template #content>
         <div class="p-fluid no-padding">
           <!-- DataTable for displaying users -->
-          <DataTable :value="users" class="full-width-table" tableStyle="width: 100%">
-            <Column field="id" header="ID" style="width: 10%;"></Column>
-            <Column field="name" header="Name" style="width: 15%;"></Column>
-            <Column field="email" header="Email" style="width: 20%;"></Column>
-            <Column field="username" header="Username" style="width: 15%;"></Column>
-            <Column field="verified" header="Verified" style="width: 10%;"></Column>
-            <Column field="role" header="Role" style="width: 10%;"></Column>
-            <Column header="" style="width: 20%; text-align: right;" headerStyle="text-align: right; padding-right: 30px;">
+          <DataTable :value="users" class="p-datatable-striped full-width-table">
+            <Column field="id" header="ID"></Column>
+            <Column field="name" header="Name"></Column>
+            <Column field="email" header="Email"></Column>
+            <Column field="username" header="Username"></Column>
+            <Column field="verified" header="Verified"></Column>
+            <Column field="role" header="Role"></Column>
+            <Column header="">
               <template #body="slotProps">
                 <Button
                   label="Edit"
                   @click="openEditModal(slotProps.data)"
-                  class="p-button-warning"
+                  class="p-button-warning p-button-sm"
                 />
               </template>
             </Column>
@@ -113,16 +113,10 @@ const openEditModal = async (user) => {
   selectedUser.email = user.email;
   selectedUser.username = user.username;
   selectedUser.password = ''; // Leave password empty for security
-
-  // Set the verified value directly as a boolean
   selectedUser.verified = user.verified;
-
-  // Set the role_id directly as an integer
   selectedUser.role_id = user.role_id;
-
   showEditDialog.value = true;
 };
-
 
 // Function to close the edit modal
 const closeEditModal = async () => {
@@ -150,7 +144,7 @@ const updateUser = async () => {
 .edit-users-container {
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* Align items to the top instead of center */
+  align-items: flex-start;
   padding-left: 20px;
   padding-right: 20px;
   width: 100%;
@@ -158,32 +152,51 @@ const updateUser = async () => {
 
 .full-width-card {
   width: 100%;
-}
-
-h1 {
-  text-align: center;
+  border-radius: 0; /* Remove rounded corners */
+  margin: 0; /* Ensure no margin around the card */
 }
 
 .no-padding {
-  padding: 0 !important; /* Remove padding from around the DataTable */
+  padding: 0 !important;
 }
 
 .full-width-table {
   width: 100%;
+  border-radius: 0; /* Ensure the table also has no rounded corners */
 }
 
 .p-button-warning {
   margin: 0 5px;
 }
 
+h1 {
+  text-align: center;
+  margin-bottom: 20px; /* Optional margin-bottom for consistency */
+}
+
+/* Ensure no border-radius, padding, or margin in the table */
+.p-datatable {
+  margin-top: 0; /* Ensure no top margin */
+  padding: 0; /* Remove padding from the DataTable */
+  border-radius: 0; /* Remove border radius */
+  border: none; /* Remove any borders */
+}
+
+/* Ensure the table wrapper also has no border-radius or padding */
+.p-datatable-wrapper {
+  border-radius: 0;
+  padding: 0;
+}
+
 .p-field {
   display: flex;
+  justify-content: space-between; /* Align label and input */
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
 }
 
 .input-label {
-  width: 120px; /* Set a fixed width for labels */
+  width: 120px;
   margin-right: 10px;
   font-size: 1rem;
 }
@@ -192,8 +205,14 @@ h1 {
   flex-grow: 1;
 }
 
-.table-actions {
-  display: flex;
-  justify-content: center;
+.p-dialog .p-fluid {
+  padding: 20px; /* Consistent padding for the modal */
 }
+
+.p-button-success,
+.p-button-secondary {
+  margin: 10px 5px; /* Spacing between the buttons */
+}
+
+
 </style>
