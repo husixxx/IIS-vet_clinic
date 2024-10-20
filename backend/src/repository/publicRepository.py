@@ -60,7 +60,7 @@ class PublicRepository():
         if schedule:
             return to_dict(schedule)
     
-    def filter_animals(self, name: str, age: int, breed: str, availability: bool):
+    def filter_animals(self, name: str, age: int, breed: str, availability: bool = None):
         animals = self.db_session.query(Animal)
        
         if name:
@@ -74,9 +74,9 @@ class PublicRepository():
         
         approved_reservations = self.db_session.query(Reservation).filter(Reservation.status == 'approved')
         
-        if availability:
+        if availability is True:
             animals = animals.filter(Animal.id.notin_([reservation.animal_id for reservation in approved_reservations]))
-        else:
+        elif availability is False:
             animals = animals.filter(Animal.id.in_([reservation.animal_id for reservation in approved_reservations]))
         animals = animals.all()
         
