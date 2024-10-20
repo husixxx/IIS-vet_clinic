@@ -30,6 +30,7 @@ from .Authorization.SignUp import sign_up_bp
 # public
 from .Public import get_animal_info_by_id_bp
 from .Public import filter_animals_bp
+from .Public import get_all_breeds_bp
 __all__ = [
     'get_all_reservations_bp',
     'change_reservation_status_bp',
@@ -53,5 +54,6 @@ __all__ = [
     'schedule_request_bp',
     'create_medical_record_bp',
     'get_reservations_by_volunteer_id_bp',
-    'delete_reservation_bp'
+    'delete_reservation_bp',
+    'get_all_breeds_bp'
     ]

@@ -36,12 +36,12 @@ def filter_animals():
   name = request.args.get('name', type=str)
   breed = request.args.get('breed', type=str)
   age = request.args.get('age', type=int)
-  date = request.args.get('date', type=str)
+  availability = request.args.get('availability', type=bool)
   
   useCase = CaretakerUseCase()
   
   try:
-    animals = useCase.filter_animals(name, age, breed, date)
+    animals = useCase.filter_animals(name, age, breed, availability)
     logger.debug(f"Filtered animals: {[{'id': animal.id, 'name': animal.name} for animal in animals]}")
     
     return jsonify([{

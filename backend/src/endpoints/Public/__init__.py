@@ -1,2 +1,3 @@
 from .GetAnimalInfoById import get_animal_info_by_id_bp
 from .FilterAnimals import filter_animals_bp
+from .GetAllBreeds import get_all_breeds_bp
