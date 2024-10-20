@@ -23,8 +23,9 @@ def filter_animals():
       in: query
       type: integer
       required: false
-    - name: date
+    - name: availability
       type: string
+      in: query
       required: false
   responses:
     200:
@@ -36,9 +37,15 @@ def filter_animals():
   name = request.args.get('name', type=str)
   breed = request.args.get('breed', type=str)
   age = request.args.get('age', type=int)
-  availability = request.args.get('availability', type=bool)
-  
+  availability = request.args.get('availability')
   useCase = CaretakerUseCase()
+  
+  if(availability == 'true' or availability == 'True'):
+    availability = True
+  elif(availability == 'false' or availability == 'False'):
+    availability = False
+  else:
+    availability = None
   
   try:
     animals = useCase.filter_animals(name, age, breed, availability)
