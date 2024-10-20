@@ -68,8 +68,7 @@
       </div>
     </div>
 
-    <!-- Schedule section -->
-    <div class="medical-schedule-section">
+    <div class="medical-records-section">
       <h3 style="text-align: center;">Medical records</h3>
       <Button v-if="authStore.getRoleId === UserRole.Veterinarian" label="Add medical record" class="p-button-warning" style="width: 100%;"/>
       <Card class="full-width-card">
@@ -82,8 +81,9 @@
               <Column v-if="authStore.getRoleId === UserRole.Veterinarian" header="" style="width: 10%; text-align: right;" headerStyle="text-align: right; padding-right: 30px;">
                 <template #body="slotProps">
                   <Button
+                    v-if="user.id === slotProps.data.veterinarian_id"
                     label="Edit record"
-                   
+                    @click="openMedicalRecordEditModal(slotProps.data)"
                     class="p-button-warning"
                   />
                 </template>
@@ -114,6 +114,25 @@
     </template>
   </Dialog>
 
+  <Dialog header="Edit medical record" v-model:visible="showMedicalRecordsEditDialog" :modal="true" :closable="true" :style="{ width: '50vw' }">
+    <div class="p-fluid">
+      <div class="p-field" v-for="field in medicalRecordsFields" :key="field.id">
+        <label :for="field.id" class="input-label">{{ field.label }}</label>
+        <component
+          :is="field.component"
+          v-model="selectedMedicalRecord[field.model]"
+          v-bind="field.props"
+          :id="field.id"
+          class="input-field"
+        />
+      </div>
+    </div>
+    <template #footer>
+      <Button label="Save" @click="updateMedicalRecord" class="p-button-success" />
+      <Button label="Cancel" @click="closeMedicalRecordEditModal" class="p-button-secondary" />
+    </template>
+  </Dialog>
+
 </template>
   
 <script setup>
@@ -129,6 +148,10 @@ import Column from 'primevue/column';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import DatePicker from 'primevue/datepicker';
+import InputText from 'primevue/inputtext';
+import Textarea from 'primevue/textarea';
+import { getFormattedDate } from '../utils/date';
+import 'primeicons/primeicons.css'
 
 const route = useRoute();
 const authStore = useAuthStore();
@@ -142,8 +165,18 @@ const showScheduleEditDialog = ref(false);
 const selectedSchedule = reactive({
   id: null,
   // animalId: null,
+  startDateAnotherFormat: '',
+  endDateAnotherFormat: '',
   startDate: '',
-  endDate: ''
+  endDate: '',
+});
+
+const showMedicalRecordsEditDialog = ref(false);
+const selectedMedicalRecord = reactive({
+  id: null,
+  description: '',
+  examinationDate: '',
+  examinationType: ''
 });
 
 const reservSchedulesFields = [
@@ -154,11 +187,13 @@ const reservSchedulesFields = [
     component: DatePicker,
     props: 
     {
-      // model: 'scheduleStartTime',
       dateFormat: "yy-mm-dd",
       showTime: true,
       showSeconds: true,
-      hourFormat: '24'
+      hourFormat: '24',
+      manualInput: false,
+      showIcon: true,
+      iconDisplay: "input"
     }
   },
   { 
@@ -168,39 +203,63 @@ const reservSchedulesFields = [
     component: DatePicker,
     props: 
     {
-      // model: 'scheduleEndTime',
       dateFormat: "yy-mm-dd",
       showTime: true,
       showSeconds: true,
-      hourFormat: '24'
+      hourFormat: '24',
+      manualInput: false,
+      showIcon: true,
+      iconDisplay: "input"
     }
   }
 ];
 
-function formatDate(inputDate) {
-    const date = new Date(inputDate);
-
-    const year = date.getUTCFullYear();
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-    const day = String(date.getUTCDate()).padStart(2, '0');
-    const hours = String(date.getUTCHours()).padStart(2, '0');
-    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
-    const seconds = String(date.getUTCSeconds()).padStart(2, '0');
-
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-}
+const medicalRecordsFields = [
+  { 
+    id: 'description',
+    label: 'Description',
+    model: 'description',
+    component: Textarea,
+    // props: 
+    // {
+    //   // model: 'scheduleStartTime',
+    // }
+  },
+  {
+    id: 'examinationDate',
+    label: 'Examination date',
+    model: 'examinationDate',
+    component: DatePicker,
+    props: 
+    {
+      dateFormat: "yy-mm-dd",
+      showTime: true,
+      showSeconds: true,
+      hourFormat: '24',
+      manualInput: false,
+      showIcon: true,
+      iconDisplay: "input"
+    }
+  },
+  {
+    id: 'examinationType',
+    label: 'Examination type',
+    model: 'examinationType',
+    component: InputText
+  }
+];
 
 const updateSchedule = async () => {
   try {
     console.log(`/caretaker/update_walking_schedule?walking_schedule_id=${encodeURIComponent(selectedSchedule.id)}` +
-                                           `&start_time=${encodeURIComponent(formatDate(selectedSchedule.startDate))}` +
-                                           `&end_time=${encodeURIComponent(formatDate(selectedSchedule.endDate))}`);
+                                           `&start_time=${encodeURIComponent(getFormattedDate(selectedSchedule.startDate, true))}` +
+                                           `&end_time=${encodeURIComponent(getFormattedDate(selectedSchedule.endDate, true))}`);
     console.log(`/caretaker/update_walking_schedule?walking_schedule_id=${selectedSchedule.id}` +
-                                           `&start_time=${formatDate(selectedSchedule.startDate)}` +
-                                           `&end_time=${formatDate(selectedSchedule.endDate)}`);
+                                           `&start_time=${getFormattedDate(selectedSchedule.startDate, true)}` +
+                                           `&end_time=${getFormattedDate(selectedSchedule.endDate, true)}`);
     const response = await axiosClient.put(`/caretaker/update_walking_schedule?walking_schedule_id=${encodeURIComponent(selectedSchedule.id)}` +
-                                           `&start_time=${encodeURIComponent(formatDate(selectedSchedule.startTime))}` +
-                                           `&end_time=${encodeURIComponent(formatDate(selectedSchedule.endTime))}`);
+                                           `&start_time=${encodeURIComponent(getFormattedDate(selectedSchedule.startDate, true))}` +
+                                           `&end_time=${encodeURIComponent(getFormattedDate(selectedSchedule.endDate, true))}`);
     if (response.status === 200) {
       alert('Schedule updated successfully!');
       closeScheduleEditModal();
@@ -212,17 +271,63 @@ const updateSchedule = async () => {
   }
 };
 
+const updateMedicalRecord = async () => {
+  try {
+    console.log(`/caretaker/update_medical_record?medical_record_id=${selectedMedicalRecord.id}` +
+                                           `&veterinarian_id=${authStore.getUser.id}` +
+                                           `&examination_date=${getFormattedDate(selectedMedicalRecord.examinationDate)}` +
+                                           `&examination_type=${selectedMedicalRecord.examinationType}` +
+                                           `&description=${selectedMedicalRecord.description}`);
+    console.log(`/caretaker/update_medical_record?medical_record_id=${encodeURIComponent(selectedMedicalRecord.id)}` +
+                                           `&veterinarian_id=${encodeURIComponent(authStore.getUser.id)}` +
+                                           `&examination_date=${encodeURIComponent(getFormattedDate(selectedMedicalRecord.examinationDate))}` +
+                                           `&examination_type=${encodeURIComponent(selectedMedicalRecord.examinationType)}` +
+                                           `&description=${encodeURIComponent(selectedMedicalRecord.description)}`);
+    const response = await axiosClient.put(`/caretaker/update_medical_record?medical_record_id=${encodeURIComponent(selectedMedicalRecord.id)}` +
+                                           `&veterinarian_id=${encodeURIComponent(authStore.getUser.id)}` +
+                                           `&examination_date=${encodeURIComponent(getFormattedDate(selectedMedicalRecord.examinationDate))}` +
+                                           `&examination_type=${encodeURIComponent(selectedMedicalRecord.examinationType)}` +
+                                           `&description=${encodeURIComponent(selectedMedicalRecord.description)}`);
+    if(response.status === 200) {
+      alert('Medical record updated successfully!');
+      closeMedicalRecordEditModal();
+      onMounted();
+    }
+  } catch (error) {
+    console.error('Error updating medical record:', error);
+    alert('Failed to update medical record.');
+  }
+};
+
+
 const openScheduleEditModal = async (schedule) => {
-  selectedSchedule.startTime = schedule.start_time;
-  selectedSchedule.endTime = schedule.end_time;
+  selectedSchedule.startDateAnotherFormat = schedule.start_time;
+  selectedSchedule.endDateAnotherFormat = schedule.end_time;
+  selectedSchedule.startDate = getFormattedDate(selectedSchedule.startDateAnotherFormat, true);
+  selectedSchedule.endDate = getFormattedDate(selectedSchedule.endDateAnotherFormat, true);
   selectedSchedule.id = schedule.id;
-  // console.log('Mounted: ', selectedSchedule);
+  // console.log('Mounted: ', schedule);
   showScheduleEditDialog.value = true;
 };
 
 const closeScheduleEditModal = async () => {
   showScheduleEditDialog.value = false;
 };
+
+const openMedicalRecordEditModal = async (medicalRecord) => {
+  console.log('openMedicalRecordEditModal: ', medicalRecord);
+  selectedMedicalRecord.id = medicalRecord.id;
+  selectedMedicalRecord.description = medicalRecord.description;
+  selectedMedicalRecord.examinationDate = medicalRecord.examination_date;
+  selectedMedicalRecord.examinationType = medicalRecord.examination_type;
+  // console.log('Mounted: ', selectedSchedule);
+  showMedicalRecordsEditDialog.value = true;
+};
+
+const closeMedicalRecordEditModal = async () => {
+  showMedicalRecordsEditDialog.value = false;
+};
+
 
 onMounted(async () => {
   try {
@@ -231,6 +336,7 @@ onMounted(async () => {
     animalInfo.value = response.data;
     animalSchedules.value = animalInfo.value.schedules;
     animalMedicalRecords.value = animalInfo.value.medical_records;
+    console.log(animalMedicalRecords.value);
     // console.log('schedules: ', animalSchedules.value);
   } catch (error) {
     console.error('Error fetching animal data:', error);
@@ -310,12 +416,12 @@ fieldset {
   border-radius: 10px;
 }
 
-.medical-medical-schedule-section {
+.medical-records-section {
   grid-column: 2 / span 1;
   grid-row: 2 / span 1;
 }
 
-.animal-schedules, .animal-info, .medical-medical-schedule-section {
+.animal-schedules, .animal-info, .medical-records-section {
   /* background-color: #f0f0f0; */
   border-radius: 10px;
 }
