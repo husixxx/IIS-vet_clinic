@@ -95,43 +95,23 @@
     </div>
   </div>
 
-  <Dialog header="Edit schedule" v-model:visible="showScheduleEditDialog" :modal="true" :closable="true" :style="{ width: '50vw' }">
-    <div class="p-fluid">
-      <div class="p-field" v-for="field in reservSchedulesFields" :key="field.id">
-        <label :for="field.id" class="input-label">{{ field.label }}</label>
-        <component
-          :is="field.component"
-          v-model="selectedSchedule[field.model]"
-          v-bind="field.props"
-          :id="field.id"
-          class="input-field"
-        />
-      </div>
-    </div>
-    <template #footer>
-      <Button label="Save" @click="updateSchedule" class="p-button-success" />
-      <Button label="Cancel" @click="closeScheduleEditModal" class="p-button-secondary" />
-    </template>
-  </Dialog>
+  <EditDialog
+    :header="'Edit schedule'"
+    :isVisible="showScheduleEditDialog"
+    :fields="reservSchedulesFields"
+    :model="selectedSchedule"
+    :onSave="updateSchedule"
+    :onCancel="closeScheduleEditModal"
+  />
 
-  <Dialog header="Edit medical record" v-model:visible="showMedicalRecordsEditDialog" :modal="true" :closable="true" :style="{ width: '50vw' }">
-    <div class="p-fluid">
-      <div class="p-field" v-for="field in medicalRecordsFields" :key="field.id">
-        <label :for="field.id" class="input-label">{{ field.label }}</label>
-        <component
-          :is="field.component"
-          v-model="selectedMedicalRecord[field.model]"
-          v-bind="field.props"
-          :id="field.id"
-          class="input-field"
-        />
-      </div>
-    </div>
-    <template #footer>
-      <Button label="Save" @click="updateMedicalRecord" class="p-button-success" />
-      <Button label="Cancel" @click="closeMedicalRecordEditModal" class="p-button-secondary" />
-    </template>
-  </Dialog>
+  <EditDialog
+    :header="'Edit medical record'"
+    :isVisible="showMedicalRecordsEditDialog"
+    :fields="medicalRecordsFields"
+    :model="selectedMedicalRecord"
+    :onSave="updateMedicalRecord"
+    :onCancel="closeMedicalRecordEditModal"
+  />
 
 </template>
   
@@ -152,6 +132,7 @@ import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import { getFormattedDate } from '../utils/date';
 import 'primeicons/primeicons.css'
+import EditDialog from '../components/EditDialog.vue';
 
 const route = useRoute();
 const authStore = useAuthStore();
