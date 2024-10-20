@@ -32,7 +32,7 @@ def create_app():
       }
   })
   # Database
-  DATABASE_URI = 'postgresql://husic:husic@localhost:5432/iis'
+  DATABASE_URI = 'postgresql://husic:husic@postgres:5432/iis'
   app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
   app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
   app.secret_key = 'husic'  # session secret key
@@ -63,6 +63,7 @@ def create_app():
   app.register_blueprint(create_veterinarian_bp)
   app.register_blueprint(get_all_users_bp)
   app.register_blueprint(update_user_bp)
+  app.register_blueprint(delete_user_bp)
   # Authorization
   app.register_blueprint(sign_in_bp)
   app.register_blueprint(sign_up_bp)

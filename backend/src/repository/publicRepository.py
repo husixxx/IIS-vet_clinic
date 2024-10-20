@@ -1,6 +1,6 @@
 from typing import TypeVar, Generic, List, Type, Optional
 from src import db
-from ..models import WalkingSchedule, MedicalRecord, Animal, Request, Reservation
+from ..models import WalkingSchedule, MedicalRecord, Animal, Request, Reservation, User
 from .tools import to_dict
 import base64
 import logging
@@ -115,5 +115,48 @@ class PublicRepository():
         
         return [breed[0] for breed in breeds]
         
-    
+    def delete_volunteer(self, volunteer_id: int):
+        volunteer = self.db_session.query(User).filter(
+            User.id == volunteer_id
+        ).first()
         
+        if not volunteer:
+            raise ValueError("Volunteer not found")
+        
+        reservations = self.db_session.query(Reservation).filter(
+            Reservation.volunteer_id == volunteer_id
+        ).all()
+        
+        for reservation in reservations:
+            self.db_session.delete(reservation)
+        
+        self.db_session.delete(volunteer)
+        self.db_session.commit()
+    
+    def delete_veterinarian(self, vet_id: int):
+        vet = self.db_session.query(User).filter(
+            User.id == vet_id
+        ).first()
+        
+        if not vet:
+            raise ValueError("Veterinarian not found")
+        
+        requests = self.db_session.query(Request).filter(
+            Request.veterinarian_id == vet_id).all()
+        
+        for request in requests:
+            self.db_session.delete(request)
+            
+        self.db_session.delete(vet)
+        self.db_session.commit()
+    
+    def delete_user(self, user_id: int):
+        user = self.db_session.query(User).filter(
+            User.id == user_id
+        ).first()
+        
+        if not user:
+            raise ValueError("User not found")
+        
+        self.db_session.delete(user)
+        self.db_session.commit()

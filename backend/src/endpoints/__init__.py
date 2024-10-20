@@ -5,6 +5,7 @@ from .Admin.CreateCaretaker import create_caretaker_bp
 from .Admin.CreateVeterinarian import create_veterinarian_bp
 from .Admin.GetAllUsers import get_all_users_bp
 from .Admin import update_user_bp
+from .Admin import delete_user_bp
 # caretaker
 from .Caretaker.CreateWalkingSchedule import create_walking_schedule_bp
 from .Caretaker.CreateAnimal import create_animal_bp
@@ -55,5 +56,6 @@ __all__ = [
     'create_medical_record_bp',
     'get_reservations_by_volunteer_id_bp',
     'delete_reservation_bp',
-    'get_all_breeds_bp'
+    'get_all_breeds_bp',
+    'delete_user_bp'
     ]

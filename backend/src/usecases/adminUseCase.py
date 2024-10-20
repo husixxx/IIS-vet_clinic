@@ -1,5 +1,5 @@
 from src.models import Animal, User
-from src.repository import Repository
+from src.repository import Repository, PublicRepository
 from werkzeug.security import generate_password_hash
 
 class AdminUseCase:
@@ -7,6 +7,7 @@ class AdminUseCase:
     def __init__(self):
         self.animal_repository = Repository(Animal)
         self.user_repository = Repository(User)
+        self.public_repository = PublicRepository()
     
     def create_animal(self, name: str, species: str, age: int = None, photo: str = None, history: str = None, caretaker_id: int = None) -> Animal:
         new_animal = Animal(
@@ -64,4 +65,29 @@ class AdminUseCase:
         user.verified = verified
         user.role_id = role_id
         self.user_repository.update(user)
+        
+    def delete_user(self, user_id: int):
+        user = self.user_repository.get_by_id(user_id)
+        
+        if not user:
+            raise ValueError("User not found")
+        
+        if user.role_id == 1:
+            self.public_repository.delete_volunteer(user_id)
+        
+        if user.role_id == 2:
+            self.public_repository.delete_veterinarian(user_id)
+        
+        if user.role_id == 3:
+            self.public_repository.delete_user(user_id)
+            
+        if user.role_id == 4:
+           raise ValueError("Cannot delete admin")
+       
+        if user.role_id == 5:
+            self.public_repository.delete_user(user_id)
+            
+        
+    
+    
     

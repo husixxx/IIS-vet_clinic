@@ -102,7 +102,8 @@ class CaretakerUseCase:
         return self.reservation_repository.get_all()
     
     
-    def filter_animals(self, name:str , age: int, breed: str,availability: bool) -> list:
+    def filter_animals(self, name:str , age: int, breed: str,availability) -> list:
+
         return self.public_repository.filter_animals(name, age, breed, availability)
     
             
