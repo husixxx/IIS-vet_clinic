@@ -1,6 +1,6 @@
 <template>
     <div class="volunteer-approval-container">
-      <h2>Volunteer Approval</h2>
+      <h1>Volunteer Approval</h1>
       <div class="card">
         <!-- Check if there are any volunteers -->
         <template v-if="volunteers.length > 0">

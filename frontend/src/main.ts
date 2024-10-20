@@ -8,6 +8,7 @@ import { createPinia } from 'pinia';
 
 const app = createApp(App);
 const pinia = createPinia();
+// Define the emit event
 
 // Use PrimeVue with the selected theme
 app.use(PrimeVue, {

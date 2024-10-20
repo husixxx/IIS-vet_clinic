@@ -19,6 +19,11 @@ body {
   margin: 0;
 }
 
+/* Apply color #10b981 to all h1 elements */
+h1 {
+  color: #10b981;
+}
+
 .create-vet-request-container, .sign-up-container, .sign-in-container {
   display: flex;
   justify-content: center;

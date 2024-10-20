@@ -1,7 +1,9 @@
 <template>
   <div class="sign-up-container">
     <Card>
-      <template #title>Sign Up</template>
+      <template #title>
+        <div class="title-center">Sign up</div>
+      </template>
       <template #content>
         <div class="p-fluid">
           <!-- First Name Input -->
@@ -107,6 +109,11 @@ const redirectToSignIn = () => {
 
 .w-full {
   width: 100%;
+}
+
+.title-center{
+  text-align: center;
+  padding-bottom: 10px;
 }
 
 </style>
