@@ -6,15 +6,20 @@
         <FilterPanel @filter-animals="handleFilter" />
       </div>
       <div id="cards">
-        <Animalcard
-          v-for="animal in animals"
-          :key="animal.name"
-          :name="animal.name"
-          :breed="animal.breed"
-          :age="animal.age"
-          :photo="animal.photo"
-          :description="animal.description"
-        />
+        <template v-if="animals.length > 0">
+          <Animalcard
+            v-for="animal in animals"
+            :key="animal.name"
+            :name="animal.name"
+            :breed="animal.breed"
+            :age="animal.age"
+            :photo="animal.photo"
+            :description="animal.description"
+          />
+        </template>
+        <template v-else>
+          <p class="no-animals-message">No animals found.</p>
+        </template>
       </div>
     </div>
   </div>
@@ -77,5 +82,12 @@ fetchAnimals();
 #Animalcard {
   height: auto;
   background-color: lightgrey;
+}
+
+.no-animals-message {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #888;
+  margin-top: 50px;  /* Add some spacing for better visibility */
 }
 </style>

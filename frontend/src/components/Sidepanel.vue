@@ -34,6 +34,18 @@
       />
     </div>
 
+    <!-- Dropdown for Availability -->
+    <div class="input-container">
+      <Dropdown
+        id="availability"
+        v-model="filters.availability"
+        :options="availabilityOptions"
+        optionLabel="label"
+        placeholder="Select Availability"
+        class="p-dropdown w-full"
+      />
+    </div>
+
     <!-- Search Button -->
     <div class="input-container">
       <Button
@@ -60,22 +72,30 @@ const emit = defineEmits(['filter-animals']);
 const filters = ref({
   name: '',
   age: '',
-  breed: ''
+  breed: '',
+  availability: '',
 });
 
 // Dynamic breed options
 const breedOptions = ref([]);
+
+// Availability options
+const availabilityOptions = ref([
+  { label: 'All', value: '' },   // Default option
+  { label: 'Yes', value: true },
+  { label: 'No', value: false },
+]);
 
 // Fetch breed options from API
 const fetchBreeds = async () => {
   try {
     const response = await axiosClient.get('/animal/breeds');
     breedOptions.value = [
-      { label: 'All Breeds', value: '' },
+      { label: 'All', value: '' },  // Default option for breed
       ...response.data.map(breed => ({
-        label: breed,
-        value: breed
-      }))
+        label: breed,   // The breed label to display
+        value: breed    // The actual breed value
+      })),
     ];
   } catch (error) {
     console.error('Error fetching breeds:', error);
@@ -89,13 +109,14 @@ onMounted(() => {
 
 // Apply filters and emit to the parent component
 const applyFilter = () => {
-  const filterData = {
+  const filtersToSend = {
     name: filters.value.name,
     age: filters.value.age,
-    breed: filters.value.breed ? filters.value.breed.value : ''  // Only send the breed value
+    breed: filters.value.breed,
+    availability: filters.value.availability.value,
   };
-  console.log('Filters applied:', filterData);  // Debug to check if filters are applied
-  emit('filter-animals', filterData);
+
+  emit('filter-animals', filtersToSend);
 };
 </script>
 
