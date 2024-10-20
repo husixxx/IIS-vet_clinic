@@ -112,7 +112,7 @@ const applyFilter = () => {
   const filtersToSend = {
     name: filters.value.name,
     age: filters.value.age,
-    breed: filters.value.breed,
+    breed: filters.value.breed.value,
     availability: filters.value.availability.value,
   };
 
