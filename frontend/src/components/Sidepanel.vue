@@ -47,10 +47,14 @@
 </template>
 
 <script setup>
-import { ref, defineEmits } from 'vue';
+import { ref, onMounted } from 'vue';
+import axiosClient from '../api/api';  // Ensure axiosClient is correctly imported
 import InputText from 'primevue/inputtext';
 import Dropdown from 'primevue/dropdown';
 import Button from 'primevue/button';
+
+// Define the emit event
+const emit = defineEmits(['filter-animals']);
 
 // Set up filter states
 const filters = ref({
@@ -59,16 +63,39 @@ const filters = ref({
   breed: ''
 });
 
-// Breed options
-const breedOptions = [
-  { label: 'Dog', value: 'dog' },
-  { label: 'Cat', value: 'cat' },
-  { label: 'Rabbit', value: 'rabbit' },
-];
+// Dynamic breed options
+const breedOptions = ref([]);
+
+// Fetch breed options from API
+const fetchBreeds = async () => {
+  try {
+    const response = await axiosClient.get('/animal/breeds');
+    breedOptions.value = [
+      { label: 'All Breeds', value: '' },
+      ...response.data.map(breed => ({
+        label: breed,
+        value: breed
+      }))
+    ];
+  } catch (error) {
+    console.error('Error fetching breeds:', error);
+  }
+};
+
+// Fetch breeds on component mount
+onMounted(() => {
+  fetchBreeds();
+});
 
 // Apply filters and emit to the parent component
 const applyFilter = () => {
-  emit('filter-animals', filters.value);
+  const filterData = {
+    name: filters.value.name,
+    age: filters.value.age,
+    breed: filters.value.breed ? filters.value.breed.value : ''  // Only send the breed value
+  };
+  console.log('Filters applied:', filterData);  // Debug to check if filters are applied
+  emit('filter-animals', filterData);
 };
 </script>
 

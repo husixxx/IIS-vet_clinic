@@ -12,7 +12,7 @@
           :name="animal.name"
           :breed="animal.breed"
           :age="animal.age"
-          :photo="animal.photo" 
+          :photo="animal.photo"
           :description="animal.description"
         />
       </div>
@@ -26,13 +26,12 @@ import axiosClient from '../api/api';
 import FilterPanel from '../components/Sidepanel.vue';
 import Animalcard from '../components/Animalcard.vue';
 
-// State to hold the animal data
 const animals = ref([]);
 
-// Fetch all animals initially when component mounts
+// Function to fetch animals with filters
 const fetchAnimals = async (filters = {}) => {
   try {
-    // API call to fetch animals, using filters if available
+    console.log('Fetching with filters:', filters);  // Debug to check filters in fetchAnimals
     const response = await axiosClient.get('/filter_animals', { params: filters });
     animals.value = response.data;  // Update the animal list
   } catch (error) {
