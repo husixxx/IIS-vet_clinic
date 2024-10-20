@@ -83,7 +83,7 @@ class PublicRepository():
             
             animals = animals.outerjoin(WalkingSchedule).filter(
                 Animal.id.in_([reservation.animal_id for reservation in approved_reservations]),
-                WalkingSchedule.id.isnot(None)  
+                WalkingSchedule.id.is_(None)  
             )
         animals = animals.all()
         

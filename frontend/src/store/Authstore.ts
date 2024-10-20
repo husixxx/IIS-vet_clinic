@@ -10,7 +10,7 @@ export enum UserRole {
 
 // Define the structure of your user object
 interface User {
-  email: string;
+  username: string;
   id: number;
   role_id: number;  // Store role_id directly
 }

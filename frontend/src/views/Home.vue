@@ -30,4 +30,8 @@
   letter-spacing: 1px; /* Space out the letters a bit for better readability */
   opacity: 0.85; /* Slightly see-through */
 }
+
+h2{
+  color:#777777
+}
 </style>
