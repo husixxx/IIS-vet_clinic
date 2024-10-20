@@ -48,7 +48,7 @@ class CaretakerUseCase:
         
         walking_schedule.start_time = start_time
         walking_schedule.end_time = end_time
-        self.user_repository.update(walking_schedule)
+        self.schedule_repository.update(walking_schedule)
 
     
     def verify_volunteer(self, id: int) -> User:
