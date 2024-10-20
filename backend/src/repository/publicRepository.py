@@ -75,9 +75,16 @@ class PublicRepository():
         approved_reservations = self.db_session.query(Reservation).filter(Reservation.status == 'approved')
         
         if availability is True:
-            animals = animals.filter(Animal.id.notin_([reservation.animal_id for reservation in approved_reservations]))
+            animals = animals.outerjoin(WalkingSchedule).filter(
+                Animal.id.notin_([reservation.animal_id for reservation in approved_reservations]),
+                WalkingSchedule.id.isnot(None)
+            )
         elif availability is False:
-            animals = animals.filter(Animal.id.in_([reservation.animal_id for reservation in approved_reservations]))
+            
+            animals = animals.outerjoin(WalkingSchedule).filter(
+                Animal.id.in_([reservation.animal_id for reservation in approved_reservations]),
+                WalkingSchedule.id.isnot(None)  
+            )
         animals = animals.all()
         
         if not animals:
