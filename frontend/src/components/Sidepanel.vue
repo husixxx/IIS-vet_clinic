@@ -5,7 +5,7 @@
       <InputText
         id="name"
         type="text"
-        v-model="filterItems[0].value"
+        v-model="filters.name"
         placeholder="Insert Name"
         class="p-inputtext input-field"
       />
@@ -16,7 +16,7 @@
       <InputText
         id="age"
         type="text"
-        v-model="filterItems[1].value"
+        v-model="filters.age"
         placeholder="Insert Age"
         class="p-inputtext input-field"
       />
@@ -26,22 +26,11 @@
     <div class="input-container">
       <Dropdown
         id="breed"
-        v-model="filterItems[2].value"
-        :options="filterItems[2].options"
+        v-model="filters.breed"
+        :options="breedOptions"
         optionLabel="label"
         placeholder="Select Breed"
         class="p-dropdown w-full"
-      />
-    </div>
-
-    <!-- Availability input -->
-    <div class="input-container">
-      <InputText
-        id="availability"
-        type="text"
-        v-model="filterItems[3].value"
-        placeholder="Insert Availability"
-        class="p-inputtext input-field"
       />
     </div>
 
@@ -51,59 +40,63 @@
         type="button"
         label="Search"
         class="p-button-success input-field"
-        @click="search"
+        @click="applyFilter"
       />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
-import Button from "primevue/button";
-import Dropdown from "primevue/dropdown";
-import InputText from "primevue/inputtext";
+import { ref, defineEmits } from 'vue';
+import InputText from 'primevue/inputtext';
+import Dropdown from 'primevue/dropdown';
+import Button from 'primevue/button';
 
-// List of filters
-const filterItems = ref([
-  { key: "0", label: "Name", value: "", type: "text" },
-  { key: "1", label: "Age", value: "", type: "text" },
-  { key: "2", label: "Breed", value: "", type: "dropdown", options: [
-    { label: "Dog", value: "dog" },
-    { label: "Cat", value: "cat" },
-    { label: "Rabbit", value: "rabbit" },
-  ] },
-  { key: "3", label: "Availability", value: "", type: "text" },
-]);
+// Define the emit event
+const emit = defineEmits(['filter-animals']);
 
-// Search function to handle search logic
-const search = () => {
-  console.log("Search filters:", filterItems.value);
+// Set up filter states
+const filters = ref({
+  name: '',
+  age: '',
+  breed: ''
+});
+
+// Breed options
+const breedOptions = [
+  { label: 'Dog', value: 'dog' },
+  { label: 'Cat', value: 'cat' },
+  { label: 'Rabbit', value: 'rabbit' },
+];
+
+// Apply filters and emit to the parent component
+const applyFilter = () => {
+  emit('filter-animals', filters.value);
 };
 </script>
 
 <style scoped>
 .input-container {
   width: 100%;
-  max-width: 200px; /* Zachované pre užší panel */
+  max-width: 200px; /* Width for filter panel */
   margin-bottom: 10px;
 }
 
 .input-field {
   width: 100%;
-  height: 40px; /* Nastavená výška pre inputy a tlačidlá */
+  height: 40px; /* Height for inputs and button */
   padding: 8px;
   border-radius: 4px;
   box-sizing: border-box;
 }
 
 .p-inputtext {
-  height: 38px; /* Jemná úprava výšky, aby zodpovedala dropdownu */
+  height: 38px; /* Adjust height to match dropdown */
 }
 
 .p-button-success {
   width: 100%;
-  height: 38px; /* Konzistentná výška tlačidla s inputmi */
-  background-color: #10b981; /* Set the background color */
+  height: 38px; /* Consistent height with inputs */
 }
 
 .p-dropdown {

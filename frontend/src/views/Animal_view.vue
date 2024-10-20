@@ -3,7 +3,7 @@
     <h1 id="main-title">Animals in our shelter</h1>
     <div id="boxes">
       <div id="leftbox">
-        <FilterPanel />
+        <FilterPanel @filter-animals="handleFilter" />
       </div>
       <div id="cards">
         <Animalcard
@@ -21,22 +21,32 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import axiosClient from '../api/api';
 import FilterPanel from '../components/Sidepanel.vue';
 import Animalcard from '../components/Animalcard.vue';
 
+// State to hold the animal data
 const animals = ref([]);
 
-// Fetch all animal data from the backend
-onMounted(async () => {
+// Fetch all animals initially when component mounts
+const fetchAnimals = async (filters = {}) => {
   try {
-    const response = await axiosClient.get('/caretaker/animals');
-    animals.value = response.data;  // Assign the array of animals
+    // API call to fetch animals, using filters if available
+    const response = await axiosClient.get('/filter_animals', { params: filters });
+    animals.value = response.data;  // Update the animal list
   } catch (error) {
     console.error('Error fetching animal data:', error);
   }
-});
+};
+
+// Handle the event emitted from FilterPanel
+const handleFilter = (filters) => {
+  fetchAnimals(filters);  // Fetch filtered animals
+};
+
+// Fetch all animals initially
+fetchAnimals();
 </script>
 
 <style scoped>
