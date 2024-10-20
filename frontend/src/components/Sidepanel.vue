@@ -52,9 +52,6 @@ import InputText from 'primevue/inputtext';
 import Dropdown from 'primevue/dropdown';
 import Button from 'primevue/button';
 
-// Define the emit event
-const emit = defineEmits(['filter-animals']);
-
 // Set up filter states
 const filters = ref({
   name: '',
