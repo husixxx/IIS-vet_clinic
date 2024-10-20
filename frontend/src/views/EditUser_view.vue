@@ -19,6 +19,11 @@
                   @click="openEditModal(slotProps.data)"
                   class="p-button-warning p-button-sm"
                 />
+                <Button
+                  label="Delete"
+                  @click="confirmDelete(slotProps.data)"
+                  class="p-button-danger p-button-sm"
+                />
               </template>
             </Column>
           </DataTable>
@@ -45,8 +50,18 @@
         <Button label="Cancel" @click="closeEditModal" class="p-button-secondary" />
       </template>
     </Dialog>
+
+    <!-- Confirmation dialog for deletion -->
+    <Dialog header="Confirm Delete" v-model:visible="showDeleteDialog" :modal="true" :closable="true" :style="{ width: '30vw' }">
+      <p>Are you sure you want to delete this user?</p>
+      <template #footer>
+        <Button label="Yes" @click="deleteUser" class="p-button-danger" />
+        <Button label="No" @click="closeDeleteDialog" class="p-button-secondary" />
+      </template>
+    </Dialog>
   </div>
 </template>
+
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
@@ -62,6 +77,7 @@ import axiosClient from '../api/api';  // Ensure correct path to your API client
 // Reactive reference to hold user data
 const users = ref([]);
 const showEditDialog = ref(false);
+const showDeleteDialog = ref(false);  // New state for delete dialog
 const selectedUser = reactive({
   id: null,
   name: '',
@@ -107,6 +123,7 @@ onMounted(async () => {
   }
 });
 
+// Open edit modal
 const openEditModal = async (user) => {
   selectedUser.id = user.id;
   selectedUser.name = user.name;
@@ -118,7 +135,7 @@ const openEditModal = async (user) => {
   showEditDialog.value = true;
 };
 
-// Function to close the edit modal
+// Close edit modal
 const closeEditModal = async () => {
   showEditDialog.value = false;
 };
@@ -136,6 +153,35 @@ const updateUser = async () => {
   } catch (error) {
     console.error('Error updating user:', error);
     alert('Failed to update user.');
+  }
+};
+
+// Function to open delete confirmation dialog
+const confirmDelete = (user) => {
+  selectedUser.id = user.id; // Set the selected user's id for deletion
+  showDeleteDialog.value = true;  // Show the delete confirmation dialog
+};
+
+// Function to close delete confirmation dialog
+const closeDeleteDialog = () => {
+  showDeleteDialog.value = false;
+};
+
+// Function to delete the user
+const deleteUser = async () => {
+  try {
+    const response = await axiosClient.delete(`/admin/delete_user`, {
+      params: { user_id: selectedUser.id }
+    });
+    if (response.status === 200) {
+      alert('User deleted successfully!');
+      closeDeleteDialog();
+      // Refresh the user list
+      onMounted();
+    }
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    alert('Failed to delete user.');
   }
 };
 </script>
