@@ -52,7 +52,7 @@ def create_animal():
       description: Invalid input
   """
   
-  if current_user.role.name != "Caretaker":
+  if current_user.role.name != "caretaker":
     return jsonify({"error": "Only caretakers can create animals"}), 403
   
   # Získanie parametrov z requestu
