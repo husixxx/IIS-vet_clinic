@@ -1,10 +1,12 @@
 from flask import Blueprint, request, jsonify
+from flask_login import current_user, login_required
 from src.usecases import CaretakerUseCase
 from ..services import *
 from datetime import datetime
 create_vet_request_bp = Blueprint('create_vet_request', __name__)
 
 @create_vet_request_bp.route('/caretaker/vet_request', methods=['POST'])
+@login_required
 def create_vet_request():
   
   """
@@ -33,7 +35,8 @@ def create_vet_request():
     400:
       description: Invalid input
   """
-
+  if current_user.role != 'caretaker':
+    return jsonify({'error': 'Only caretakers can cancel vet requests'}), 403
   # Získanie parametrov z requestu
   animal_id = request.args.get('animal_id', type=int)
   veterinarian_username = request.args.get('veterinarian_username')

@@ -1,9 +1,11 @@
 from flask import Blueprint, request, jsonify
+from flask_login import current_user, login_required
 from src.usecases import CaretakerUseCase
 
 get_all_reservations_bp = Blueprint('get_all_reservations', __name__)
 
 @get_all_reservations_bp.route('/caretaker/get_all_reservations', methods=['GET'])
+@login_required
 def get_all_reservations():
   """Get all reservations
   ---
@@ -13,7 +15,8 @@ def get_all_reservations():
     400:
       description: No reservations found. 
   """
-  
+  if current_user.role != 'caretaker':
+    return jsonify({'error': 'Only caretakers can cancel vet requests'}), 403
   use_case = CaretakerUseCase()
   try:
     reservations = use_case.get_all_reservations()

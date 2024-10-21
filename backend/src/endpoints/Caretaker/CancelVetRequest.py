@@ -1,9 +1,11 @@
 from flask import Blueprint, request, jsonify
 from src.usecases import CaretakerUseCase
+from flask_login import login_required, current_user
 
 cancel_vet_request_bp = Blueprint('cancel_vet_request', __name__)
 
 @cancel_vet_request_bp.route('/caretaker/cancel_vet_request', methods=['DELETE'])
+@login_required
 def cancel_vet_request():
   """
   Cancel veterinarian request.
@@ -19,7 +21,8 @@ def cancel_vet_request():
     400:
       description: Request not found
   """
-  
+  if current_user.role != 'caretaker':
+    return jsonify({'error': 'Only caretakers can cancel vet requests'}), 403
   vet_request_id = request.args.get('vet_request_id')
   
   use_case = CaretakerUseCase()

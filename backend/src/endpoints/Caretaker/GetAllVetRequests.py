@@ -1,10 +1,10 @@
 from flask import Blueprint, request, jsonify
 from src.usecases import CaretakerUseCase
-
+from flask_login import login_required, current_user
 get_all_vet_requests_bp = Blueprint('get_all_vet_requests', __name__)
 
 @get_all_vet_requests_bp.route('/caretaker/get_all_vet_requests', methods=['GET'])
-
+@login_required
 def get_all_vet_requests():
   """Get all vet requests
   ---
@@ -14,6 +14,8 @@ def get_all_vet_requests():
     400:
       description: No vet requests found
   """
+  if current_user.role != 'caretaker':
+    return jsonify({'error': 'Only caretakers can cancel vet requests'}), 403
   
   use_case = CaretakerUseCase()
   try:

@@ -1,9 +1,10 @@
 from flask import Blueprint, request, jsonify
 from src.usecases import CaretakerUseCase
-
+from flask_login import login_required, current_user
 verify_volunteer_bp = Blueprint('verify_volunteer', __name__)
 
 @verify_volunteer_bp.route('/caretaker/verify_volunteer', methods=['POST'])
+@login_required
 def verify_volunteer():
     """Verify a volunteers account
     ---
@@ -18,7 +19,8 @@ def verify_volunteer():
         400:
             description: User not found/User already validated. 
     """
-    
+    if current_user.role != 'caretaker':
+        return jsonify({'error': 'Only caretakers can cancel vet requests'}), 403
     
     id = request.args.get('id')
     use_case = CaretakerUseCase()

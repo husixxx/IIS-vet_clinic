@@ -1,11 +1,12 @@
 from flask import Blueprint, request, jsonify
 from src.usecases import CaretakerUseCase
 from ..services import is_valid_timestamp
-
+from flask_login import login_required, current_user
 create_walking_schedule_bp = Blueprint('create_walking_schedule', __name__)
 
 
 @create_walking_schedule_bp.route('/caretaker/walking_schedule', methods=['POST'])
+@login_required
 def create_walking_schedule():
     """Create a walking schedule
     ---
@@ -43,7 +44,8 @@ def create_walking_schedule():
       400:
         description: Invalid input
     """
-    
+    if current_user.role != 'caretaker':
+      return jsonify({'error': 'Only caretakers can cancel vet requests'}), 403
     
     animal_id = request.args.get('animal_id', type=int)
     start_time = request.args.get('start_time', type=str)

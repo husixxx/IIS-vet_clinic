@@ -1,9 +1,11 @@
 from flask import Blueprint, request, jsonify
 from src.usecases import CaretakerUseCase
+from flask_login import login_required, current_user
 
 change_reservation_status_bp = Blueprint('change_reservation_status', __name__)
 
 @change_reservation_status_bp.route('/caretaker/change_reservation_status', methods=['POST'])
+@login_required
 def change_reservation_status():
     """Change a reservation status
     ---
@@ -22,7 +24,8 @@ def change_reservation_status():
       400:
         description: Request not found. 
     """
-    
+    if current_user.role != 'caretaker':
+      return jsonify({'error': 'Only caretakers can cancel vet requests'}), 403
     
     reservation_id = request.args.get('id')
     status = request.args.get('status')

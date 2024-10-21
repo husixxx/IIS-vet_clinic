@@ -1,10 +1,12 @@
 from flask import Blueprint, jsonify
+from flask_login import login_required, current_user
 from src.usecases import CaretakerUseCase
 import base64
 
 get_all_animals_bp = Blueprint('get_all_animals', __name__)
 
 @get_all_animals_bp.route('/caretaker/animals', methods=['GET'])
+@login_required
 def get_all_animals():
     """Get all animals.
     ---
@@ -14,6 +16,9 @@ def get_all_animals():
       400:
         description: Invalid input
     """
+    if current_user.role != 'caretaker':
+      return jsonify({'error': 'Only caretakers can cancel vet requests'}), 403
+    
     use_case = CaretakerUseCase()
     
     try:
