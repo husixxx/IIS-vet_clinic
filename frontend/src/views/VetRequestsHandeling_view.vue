@@ -135,7 +135,9 @@ const saveRequestChanges = async () => {
     const [datePart, timePart] = selectedRequest.value.start_time.split(', '); // Separate date and time
 
     const [month, day, year] = datePart.split('/'); // Split the MM/DD/YYYY part
-    const formattedDateTime = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')} ${timePart}`; // Format as 'YYYY-MM-DD HH:MM:SS'
+    // Correct the order to format as 'YYYY-MM-DD HH:MM:SS'
+    const formattedDateTime = `${year}-${day.padStart(2, '0')}-${month.padStart(2, '0')} ${timePart}`; // Corrected the order of month and day
+
 
     // Make the request to the backend with the properly formatted date and status
     const response = await axiosClient.post(`/veterinarian/schedule_request`, null, {

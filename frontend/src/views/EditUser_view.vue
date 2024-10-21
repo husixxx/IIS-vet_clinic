@@ -12,7 +12,7 @@
             <Column field="username" header="Username"></Column>
             <Column field="verified" header="Verified"></Column>
             <Column field="role" header="Role"></Column>
-            <Column header="">
+            <Column header="Actions">
               <template #body="slotProps">
                 <Button
                   label="Edit"

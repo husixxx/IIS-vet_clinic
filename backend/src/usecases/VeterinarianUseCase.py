@@ -13,7 +13,7 @@ class VeterinarianUseCase:
         request = self.request_repository.get_by_id(request_id)
         if not request:
             raise ValueError("Request with this id does not exist")
-        if status not in ['scheduled', 'completed', 'cancelled']:
+        if status not in ['scheduled', 'completed', 'cancelled', 'pending']:
             raise ValueError("Invalid status")
         request.status = status
         request.request_date = date_time

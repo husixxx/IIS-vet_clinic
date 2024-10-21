@@ -16,6 +16,7 @@ import Create_vet_request from '../views/CreateVetRequest_view.vue'
 import Reservation_approving from '../views/ReservationApproving_view.vue'
 import Vet_requests_handeling from '../views/VetRequestsHandeling_view.vue'
 import Volunteers_history from '../views/VolunteerHistory_view.vue'
+import Caretkers_vet_requests from '../views/CaretakerVetRequests_view.vue'
 
 
 const routes: Array<RouteRecordRaw> = [
@@ -106,6 +107,12 @@ const routes: Array<RouteRecordRaw> = [
         name: 'VetRequestsHandeling',
         component: Vet_requests_handeling,
         meta: { requiresAuth: true, role: UserRole.Veterinarian }  // Only allow access for Caretaker
+      },
+      {
+        path: 'vetrequest',
+        name: 'VetRequest',
+        component: Caretkers_vet_requests,
+        meta: { requiresAuth: true, role: UserRole.Caretaker }  // Only allow access for Caretaker
       }
     ],
   },

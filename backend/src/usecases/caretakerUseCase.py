@@ -1,6 +1,5 @@
 from src.models import WalkingSchedule, Animal, User, Request, Reservation
 from src.repository import Repository, PublicRepository
-import base64
 
 class CaretakerUseCase:
     
@@ -13,13 +12,12 @@ class CaretakerUseCase:
         self.public_repository = PublicRepository()
     
     ### Create Animal ###
-    def create_animal(self, name: str, breed: str, age: int, photo: str, history: str, description: str, sex: str) -> Animal:
-        photo_binary = base64.b64decode(photo)
+    def create_animal(self, name: str, breed: str, age: int, photo: bytes, history: str, description: str, sex: str) -> Animal:
         new_animal = Animal(
             name=name,
             breed=breed,
             age=age,
-            photo=photo_binary,
+            photo=photo,
             history=history,
             description=description,
             sex=sex
@@ -85,7 +83,8 @@ class CaretakerUseCase:
             animal_id = animal_id,
             veterinarian_id = veterinarian.id,
             request_date = request_date,
-            description = description
+            description = description,
+            status = 'pending'
         )
         
         self.request_repository.add(new_request)
@@ -97,7 +96,7 @@ class CaretakerUseCase:
     
     ### Accept volunteer reservation request ###
     def accept_reservation(self, request_id: int):
-        request = self.reservation_repository.get_by_id(request_id) 
+        request = self.reservation_repository.get_by_id(request_id)
         if request is None:
             raise Exception('reservation not found.')
         request.accepted = True
@@ -133,6 +132,15 @@ class CaretakerUseCase:
     def filter_animals(self, name:str , age: int, breed: str,availability) -> list:
         return self.public_repository.filter_animals(name, age, breed, availability)
     
+    def change_reservation_status(self, reservation_id: int, status: str):
+        reservation = self.reservation_repository.get_by_id(reservation_id) 
+        if reservation is None:
+            raise Exception("No reservation")
+        if status not in ['pending','approved','canceled','completed']:
+            raise Exception("Invalid status")
+        reservation.status = status
+        self.reservation_repository.update(reservation)
+        return reservation
     
     
         

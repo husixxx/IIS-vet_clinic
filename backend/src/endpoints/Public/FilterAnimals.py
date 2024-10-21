@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from src.usecases import CaretakerUseCase
 import logging
+import base64
 
 logging.basicConfig(level=logging.DEBUG)  # nebo INFO, pokud chceš méně detailů
 logger = logging.getLogger(__name__)
@@ -56,7 +57,8 @@ def filter_animals():
       'name' : animal.name,
       'age' : animal.age,
       'breed' : animal.breed,
-      'description' : animal.description
+      'description' : animal.description,
+      'photo': base64.b64encode(animal.photo).decode('utf-8') if animal.photo else None
       } for animal in animals]), 200
   except Exception as e:
     return jsonify({'error': str(e)}), 400
