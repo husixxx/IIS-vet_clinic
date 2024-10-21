@@ -8,7 +8,7 @@
       <!-- Div pre popis (description) -->
     <div class="animal-schedules">
       <h3 style="text-align: center;">Avaliable schedules</h3>
-      <Button v-if="authStore.getRoleId === UserRole.Caretaker" label="Add schedule" class="p-button-warning" style="width: 100%;"/>
+      <Button v-if="authStore.getRoleId === UserRole.Caretaker" label="Create schedule" style="width: 100%;" @click="openScheduleAddModal({ start_time: '', end_time: '' })"/>
       <Card class="full-width-card">
         <template #content>
           <div class="p-fluid">
@@ -19,7 +19,6 @@
                 <template #body="slotProps">
                   <Button
                     label="Make reservation"
-                   
                     class="p-button-warning"
                   />
                 </template>
@@ -29,7 +28,6 @@
                   <Button
                     label="Edit schedule"
                     @click="openScheduleEditModal(slotProps.data)"
-                    class="p-button-warning"
                   />
                 </template>
               </Column>
@@ -70,7 +68,7 @@
 
     <div class="medical-records-section">
       <h3 style="text-align: center;">Medical records</h3>
-      <Button v-if="authStore.getRoleId === UserRole.Veterinarian" label="Add medical record" class="p-button-warning" style="width: 100%;"/>
+      <Button v-if="authStore.getRoleId === UserRole.Veterinarian" label="Add medical record" class="p-button-warning" style="width: 100%;" @click="openMedicalRecordAddModal({ description: '', examinationDate: '', examinationType: '' })"/>
       <Card class="full-width-card">
         <template #content>
           <div class="p-fluid">
@@ -95,22 +93,44 @@
     </div>
   </div>
 
-  <EditDialog
-    :header="'Edit schedule'"
-    :isVisible="showScheduleEditDialog"
+  <EditAddDialog
+    header="Edit schedule"
+    v-model:isVisible="showScheduleEditDialog"
     :fields="reservSchedulesFields"
     :model="selectedSchedule"
-    :onSave="updateSchedule"
+    :onSaveAdd="updateSchedule"
     :onCancel="closeScheduleEditModal"
+    onSaveAddButtonLabel="Save"
   />
 
-  <EditDialog
-    :header="'Edit medical record'"
-    :isVisible="showMedicalRecordsEditDialog"
+  <EditAddDialog
+    header="Edit medical record"
+    v-model:isVisible="showMedicalRecordsEditDialog"
     :fields="medicalRecordsFields"
     :model="selectedMedicalRecord"
-    :onSave="updateMedicalRecord"
+    :onSaveAdd="updateMedicalRecord"
     :onCancel="closeMedicalRecordEditModal"
+    onSaveAddButtonLabel="Save"
+  />
+
+  <EditAddDialog
+    header="Add schedule"
+    v-model:isVisible="showScheduleAddDialog"
+    :fields="reservSchedulesFields"
+    :model="selectedSchedule"
+    :onSaveAdd="addSchedule"
+    :onCancel="closeScheduleAddModal"
+    onSaveAddButtonLabel="Add"
+  />
+
+  <EditAddDialog
+    header="Add medical record"
+    v-model:isVisible="showMedicalRecordsAddDialog"
+    :fields="medicalRecordsFields"
+    :model="selectedMedicalRecord"
+    :onSaveAdd="addMedicalRecord"
+    :onCancel="closeMedicalRecordAddModal"
+    onSaveAddButtonLabel="Add"
   />
 
 </template>
@@ -120,7 +140,7 @@
 import { ref, reactive, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import axiosClient from '../api/api';
-import { useAuthStore, UserRole } from '../store/Authstore';  // Ensure correct import of your AuthStore
+import { useAuthStore, UserRole } from '../store/Authstore';
 import Fieldset from 'primevue/fieldset';
 import DataTable from 'primevue/datatable';
 import Card from 'primevue/card';
@@ -132,7 +152,7 @@ import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import { getFormattedDate } from '../utils/date';
 import 'primeicons/primeicons.css'
-import EditDialog from '../components/EditDialog.vue';
+import EditAddDialog from '../components/EditAddDialog.vue';
 
 const route = useRoute();
 const authStore = useAuthStore();
@@ -145,7 +165,6 @@ const animalMedicalRecords = ref([]);
 const showScheduleEditDialog = ref(false);
 const selectedSchedule = reactive({
   id: null,
-  // animalId: null,
   startDateAnotherFormat: '',
   endDateAnotherFormat: '',
   startDate: '',
@@ -160,38 +179,40 @@ const selectedMedicalRecord = reactive({
   examinationType: ''
 });
 
+const showScheduleAddDialog = ref(false);
+const showMedicalRecordsAddDialog = ref(false);
+
+function getDatePickerPros(showTime) {
+  const datePickerProps = {
+  dateFormat: "D, dd M yy",
+  manualInput: false,
+  showIcon: true,
+  iconDisplay: "input"
+  }
+
+  if(showTime) {
+    datePickerProps.showTime = true;
+    datePickerProps.showSeconds = true;
+    datePickerProps.hourFormat = '24';
+  }
+
+  return datePickerProps;
+}
+
 const reservSchedulesFields = [
   { 
     id: 'startDate',
     label: 'Start date',
     model: 'startDate',
     component: DatePicker,
-    props: 
-    {
-      dateFormat: "yy-mm-dd",
-      showTime: true,
-      showSeconds: true,
-      hourFormat: '24',
-      manualInput: false,
-      showIcon: true,
-      iconDisplay: "input"
-    }
+    props: getDatePickerPros(true)
   },
   { 
     id: 'endtDate',
     label: 'End date ',
     model: 'endDate',
     component: DatePicker,
-    props: 
-    {
-      dateFormat: "yy-mm-dd",
-      showTime: true,
-      showSeconds: true,
-      hourFormat: '24',
-      manualInput: false,
-      showIcon: true,
-      iconDisplay: "input"
-    }
+    props: getDatePickerPros(true)
   }
 ];
 
@@ -201,93 +222,112 @@ const medicalRecordsFields = [
     label: 'Description',
     model: 'description',
     component: Textarea,
-    // props: 
-    // {
-    //   // model: 'scheduleStartTime',
-    // }
   },
   {
     id: 'examinationDate',
     label: 'Examination date',
     model: 'examinationDate',
     component: DatePicker,
-    props: 
-    {
-      dateFormat: "yy-mm-dd",
-      showTime: true,
-      showSeconds: true,
-      hourFormat: '24',
-      manualInput: false,
-      showIcon: true,
-      iconDisplay: "input"
-    }
+    props: getDatePickerPros(false)
   },
   {
     id: 'examinationType',
     label: 'Examination type',
     model: 'examinationType',
-    component: InputText
+    component: InputText,
   }
 ];
 
-const updateSchedule = async () => {
-  try {
-    console.log(`/caretaker/update_walking_schedule?walking_schedule_id=${encodeURIComponent(selectedSchedule.id)}` +
-                                           `&start_time=${encodeURIComponent(getFormattedDate(selectedSchedule.startDate, true))}` +
-                                           `&end_time=${encodeURIComponent(getFormattedDate(selectedSchedule.endDate, true))}`);
-    console.log(`/caretaker/update_walking_schedule?walking_schedule_id=${selectedSchedule.id}` +
-                                           `&start_time=${getFormattedDate(selectedSchedule.startDate, true)}` +
-                                           `&end_time=${getFormattedDate(selectedSchedule.endDate, true)}`);
-    const response = await axiosClient.put(`/caretaker/update_walking_schedule?walking_schedule_id=${encodeURIComponent(selectedSchedule.id)}` +
-                                           `&start_time=${encodeURIComponent(getFormattedDate(selectedSchedule.startDate, true))}` +
-                                           `&end_time=${encodeURIComponent(getFormattedDate(selectedSchedule.endDate, true))}`);
-    if (response.status === 200) {
-      alert('Schedule updated successfully!');
-      closeScheduleEditModal();
-      onMounted();
-    }
-  } catch (error) {
-    console.error('Error updating schedule:', error);
-    alert('Failed to update schedule.');
-  }
-};
+const SUCCESS_RESPONSE_CODE = 200;
 
-const updateMedicalRecord = async () => {
+const sendReqAndProcessResponse = async (request, isSchedule, isUpdated, closeModalFn) => {
   try {
-    console.log(`/caretaker/update_medical_record?medical_record_id=${selectedMedicalRecord.id}` +
-                                           `&veterinarian_id=${authStore.getUser.id}` +
-                                           `&examination_date=${getFormattedDate(selectedMedicalRecord.examinationDate)}` +
-                                           `&examination_type=${selectedMedicalRecord.examinationType}` +
-                                           `&description=${selectedMedicalRecord.description}`);
-    console.log(`/caretaker/update_medical_record?medical_record_id=${encodeURIComponent(selectedMedicalRecord.id)}` +
-                                           `&veterinarian_id=${encodeURIComponent(authStore.getUser.id)}` +
-                                           `&examination_date=${encodeURIComponent(getFormattedDate(selectedMedicalRecord.examinationDate))}` +
-                                           `&examination_type=${encodeURIComponent(selectedMedicalRecord.examinationType)}` +
-                                           `&description=${encodeURIComponent(selectedMedicalRecord.description)}`);
-    const response = await axiosClient.put(`/caretaker/update_medical_record?medical_record_id=${encodeURIComponent(selectedMedicalRecord.id)}` +
-                                           `&veterinarian_id=${encodeURIComponent(authStore.getUser.id)}` +
-                                           `&examination_date=${encodeURIComponent(getFormattedDate(selectedMedicalRecord.examinationDate))}` +
-                                           `&examination_type=${encodeURIComponent(selectedMedicalRecord.examinationType)}` +
-                                           `&description=${encodeURIComponent(selectedMedicalRecord.description)}`);
+    let response;
+    
+    if(isUpdated) {
+      response = await axiosClient.put(request);
+    } else {
+      response = await axiosClient.post(request);
+    }
+
     if(response.status === 200) {
-      alert('Medical record updated successfully!');
-      closeMedicalRecordEditModal();
-      onMounted();
+      const action = isUpdated ? 'updated' : 'added';
+      const recordType = isSchedule ? 'Schedule' : 'Medical record';
+      alert(`${recordType} ${action} successfully!`);
+      closeModalFn();
     }
   } catch (error) {
-    console.error('Error updating medical record:', error);
-    alert('Failed to update medical record.');
+    const action = isUpdated ? 'updat' : 'add';
+    console.error(`Error ${action}ing ${isSchedule ? 'schedule' : 'medical record'}:`, error);
+    alert(`Failed to ${action}e ${isSchedule ? 'schedule' : 'medical record'}.`);
   }
+}
+
+function updateSchedule() {
+  const requestUrl = `/caretaker/update_walking_schedule?walking_schedule_id=${encodeURIComponent(selectedSchedule.id)}` +
+                     `&start_time=${encodeURIComponent(getFormattedDate(selectedSchedule.startDate, true))}` +
+                     `&end_time=${encodeURIComponent(getFormattedDate(selectedSchedule.endDate, true))}`;
+                     
+  sendReqAndProcessResponse(requestUrl, true, true, closeScheduleEditModal);
+}
+
+function addSchedule() {
+  const requestUrl = `/caretaker/walking_schedule?animal_id=${encodeURIComponent(route.params.id)}` +
+                      `&start_time=${encodeURIComponent(getFormattedDate(selectedSchedule.startDate, true))}` +
+                      `&end_time=${encodeURIComponent(getFormattedDate(selectedSchedule.endDate, true))}`;
+
+  sendReqAndProcessResponse(requestUrl, true, false, closeScheduleAddModal);
+}
+
+function updateMedicalRecord() {
+  const requestUrl = `/caretaker/update_medical_record?medical_record_id=${encodeURIComponent(selectedMedicalRecord.id)}` +
+                     `&veterinarian_id=${encodeURIComponent(authStore.getUser.id)}` +
+                     `&examination_date=${encodeURIComponent(getFormattedDate(selectedMedicalRecord.examinationDate))}` +
+                     `&examination_type=${encodeURIComponent(selectedMedicalRecord.examinationType)}` +
+                     `&description=${encodeURIComponent(selectedMedicalRecord.description)}`;
+
+  sendReqAndProcessResponse(requestUrl, false, true, closeMedicalRecordEditModal);
 };
 
+function addMedicalRecord() {
+  const requestUrl = `/veterinarian/create_medical_record?animal_id=${encodeURIComponent(route.params.id)}` +
+                     `&veterinarian_id=${encodeURIComponent(authStore.getUser.id)}` +
+                     `&description=${encodeURIComponent(selectedMedicalRecord.description)}` +
+                     `&examination_date=${encodeURIComponent(getFormattedDate(selectedMedicalRecord.examinationDate))}` +
+                     `&examination_type=${encodeURIComponent(selectedMedicalRecord.examinationType)}`;
+                     
+  sendReqAndProcessResponse(requestUrl, false, false, closeMedicalRecordAddModal);
+};
+
+const openScheduleAddModal = async (schedule) => {
+  selectedSchedule.startDate = undefined;
+  selectedSchedule.endDate = undefined;
+
+  showScheduleAddDialog.value = true;
+};
+
+const closeScheduleAddModal = async () => {
+  showScheduleAddDialog.value = false;
+};
+
+const openMedicalRecordAddModal = async (schedule) => {
+  selectedMedicalRecord.description = undefined;
+  selectedMedicalRecord.examinationDate = undefined;
+  selectedMedicalRecord.examinationType = undefined;
+
+  showMedicalRecordsAddDialog.value = true;
+};
+
+const closeMedicalRecordAddModal = async () => {
+  showMedicalRecordsAddDialog.value = false;
+};
 
 const openScheduleEditModal = async (schedule) => {
-  selectedSchedule.startDateAnotherFormat = schedule.start_time;
-  selectedSchedule.endDateAnotherFormat = schedule.end_time;
-  selectedSchedule.startDate = getFormattedDate(selectedSchedule.startDateAnotherFormat, true);
-  selectedSchedule.endDate = getFormattedDate(selectedSchedule.endDateAnotherFormat, true);
+  selectedSchedule.startDate = schedule.start_time;
+  selectedSchedule.endDate = schedule.end_time;
+
   selectedSchedule.id = schedule.id;
-  // console.log('Mounted: ', schedule);
+
   showScheduleEditDialog.value = true;
 };
 
@@ -296,12 +336,11 @@ const closeScheduleEditModal = async () => {
 };
 
 const openMedicalRecordEditModal = async (medicalRecord) => {
-  console.log('openMedicalRecordEditModal: ', medicalRecord);
   selectedMedicalRecord.id = medicalRecord.id;
   selectedMedicalRecord.description = medicalRecord.description;
   selectedMedicalRecord.examinationDate = medicalRecord.examination_date;
   selectedMedicalRecord.examinationType = medicalRecord.examination_type;
-  // console.log('Mounted: ', selectedSchedule);
+
   showMedicalRecordsEditDialog.value = true;
 };
 
@@ -309,16 +348,32 @@ const closeMedicalRecordEditModal = async () => {
   showMedicalRecordsEditDialog.value = false;
 };
 
-
 onMounted(async () => {
   try {
     const response = await axiosClient.get(`/animal/info?animal_id=${encodeURIComponent(route.params.id)}`);
-    // console.log(response.data);
     animalInfo.value = response.data;
-    animalSchedules.value = animalInfo.value.schedules;
-    animalMedicalRecords.value = animalInfo.value.medical_records;
-    console.log(animalMedicalRecords.value);
-    // console.log('schedules: ', animalSchedules.value);
+    
+    animalSchedules.value = animalInfo.value.schedules.map(schedule => {
+      const startDateTimePart = schedule.start_time.replace(" GMT", "");
+      const endtDateTimePart = schedule.end_time.replace(" GMT", "");
+
+      return {
+        ...schedule,
+        start_time: startDateTimePart,
+        end_time: endtDateTimePart
+      };
+    });
+
+    animalMedicalRecords.value = animalInfo.value.medical_records.map(record => {
+      const datePart = record.examination_date.split(' ').slice(0, 4).join(' ');
+
+      return {
+        ...record,
+        examination_date: datePart
+      };
+  });
+
+    console.log(animalSchedules.value);
   } catch (error) {
     console.error('Error fetching animal data:', error);
   }
@@ -332,9 +387,7 @@ onMounted(async () => {
   grid-row: 2 / span 1;
   justify-content: center;
   align-items: center;
-  /* padding: 20px; */
   width: 100%;
-  /* Set min-height to ensure space for content without cutting off the table */
   min-height: 5vh; 
 }
 
@@ -360,17 +413,16 @@ onMounted(async () => {
   padding-bottom: 110px;
 }
 
-/* Layout for medical records section with two columns */
 .animal-info {
   display: grid;
-  grid-template-columns: 0.2fr 1fr; /* Two equal-width columns */
+  grid-template-columns: 0.2fr 1fr;
   gap: 20px;
 }
 
 .tags-column {
   display: flex;
   flex-direction: column;
-  gap: 10px; /* Spacing between the tags */
+  gap: 10px;
   padding-top: 8px;
 }
 
@@ -381,13 +433,12 @@ onMounted(async () => {
 .animal-fieldsets {
   display: flex;
   flex-direction: column;
-  gap: 0px; /* Spacing between the fieldsets */
+  gap: 0px;
 }
 
 fieldset {
   width: 100%;
   max-width: 800px;
-  /* margin-bottom: 20px; */
 }
 
 .photo-section img {
@@ -403,7 +454,6 @@ fieldset {
 }
 
 .animal-schedules, .animal-info, .medical-records-section {
-  /* background-color: #f0f0f0; */
   border-radius: 10px;
 }
 
@@ -413,7 +463,7 @@ fieldset {
 }
 
 .full-width-table td {
-  max-width: 100%; /* Ensure cells don't stretch beyond available space */
+  max-width: 100%;
   padding: 10px;
 }
 
