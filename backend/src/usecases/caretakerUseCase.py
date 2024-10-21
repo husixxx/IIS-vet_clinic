@@ -1,5 +1,6 @@
 from src.models import WalkingSchedule, Animal, User, Request, Reservation
-from src.repository import Repository, PublicRepository
+from src.repository import Repository
+import base64
 
 class CaretakerUseCase:
     
@@ -9,20 +10,19 @@ class CaretakerUseCase:
         self.user_repository = Repository(User)
         self.request_repository = Repository(Request)
         self.reservation_repository = Repository(Reservation)
-        self.public_repository = PublicRepository()
     
     ### Create Animal ###
-    def create_animal(self, name: str, breed: str, age: int, photo: bytes, history: str, description: str, sex: str) -> Animal:
+    def create_animal(self, name: str, breed: str, age: int, photo: str, history: str, description: str, sex: str) -> Animal:
+        photo_binary = base64.b64decode(photo)
         new_animal = Animal(
             name=name,
             breed=breed,
             age=age,
-            photo=photo,
+            photo=photo_binary,
             history=history,
             description=description,
             sex=sex
         )
-        
         self.animal_repository.add(new_animal)
         return new_animal
     
@@ -39,6 +39,7 @@ class CaretakerUseCase:
         self.schedule_repository.add(walking_schedule)
         return walking_schedule
     
+    ### Verify Volunteer ###
     def verify_volunteer(self, id: int) -> User:
         volunteer = self.user_repository.get_by_id(id)
         if volunteer is None:
@@ -50,12 +51,15 @@ class CaretakerUseCase:
         self.user_repository.update(volunteer)
         return volunteer
     
+    ### Get All Animals ###
     def get_all_animals(self) -> list:
         return self.animal_repository.get_all()
     
+    ### Get All Schedules ###
     def get_all_schedules(self) -> list:
         return self.schedule_repository.get_all()
     
+    ### Remove Animal ###
     def remove_animal(self, animal_id: int):
         animal = self.animal_repository.get_by_id(animal_id)
         if animal is None:
@@ -64,10 +68,12 @@ class CaretakerUseCase:
             self.animal_repository.delete(animal)
         except:
             raise Exception('Animal has walking schedules.')
-        
+    
+    ### Get All Veterinarians ###        
     def get_all_veterinarians(self) -> list:
         return self.user_repository.model.query.filter_by(role_id=2).all()
-        
+
+    ### Create request for veterinarian ###
     def create_vet_request(self, animal_id: int, veterinarian_username: str, request_date: str, description: str):
         
         veterinarian = self.user_repository.get_by_username(veterinarian_username)
@@ -78,35 +84,50 @@ class CaretakerUseCase:
             animal_id = animal_id,
             veterinarian_id = veterinarian.id,
             request_date = request_date,
-            description = description,
-            status = 'pending'
+            description = description
         )
         
         self.request_repository.add(new_request)
         return new_request
     
+    ### Get all volunteers to verify ###
     def get_all_unverified_volunteers(self) -> list:
         return self.user_repository.get_unverified_volunteers()
     
-    def change_reservation_status(self, reservation_id: int, status: str):
-        reservation = self.reservation_repository.get_by_id(reservation_id) 
-        if reservation is None:
+    ### Accept volunteer reservation request ###
+    def accept_reservation(self, request_id: int):
+        request = self.reservation_repository.get_by_id(request_id) 
+        if request is None:
             raise Exception('reservation not found.')
-        if status not in ['pending','approved','canceled','completed']:
-            raise Exception('Invalid status.')
-        reservation.status = status
-        self.reservation_repository.update(reservation)
-        return reservation
+        request.accepted = True
+        self.reservation_repository.update(request)
+        return request
     
+    ### Decline volunteer reservation request ###
+    def decline_reservation(self, request_id: int):
+        request = self.reservation_repository.get_by_id(request_id) 
+        if request is None:
+            raise Exception('reservation not found.')
+        request.accepted = False
+        self.reservation_repository.update(request)
+        return request
+    
+    ### Get all reservations to handle ###
     def get_all_reservations(self) -> list:
         return self.reservation_repository.get_all()
     
     
-    def filter_animals(self, name:str , age: int, breed: str,availability) -> list:
-
-        return self.public_repository.filter_animals(name, age, breed, availability)
-    
+    ### Get all vet requests ###
+    def get_all_vet_requests(self) -> list:
+        return self.request_repository.get_all()
             
+    def cancel_vet_request(self, vet_request_id):
+        vet_request = self.request_repository.get_by_id(vet_request_id)
+        if vet_request is None:
+            raise Exception('vet_request not found')
+        vet_request.status = 'cancelled'
+        self.reservation_repository.update(vet_request)
+        return vet_request
     
     
     

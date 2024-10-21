@@ -32,6 +32,8 @@ from .Authorization.SignUp import sign_up_bp
 from .Public import get_animal_info_by_id_bp
 from .Public import filter_animals_bp
 from .Public import get_all_breeds_bp
+from .Caretaker import get_all_vet_requests_bp
+from .Caretaker import cancel_vet_request_bp
 __all__ = [
     'get_all_reservations_bp',
     'change_reservation_status_bp',
@@ -57,5 +59,7 @@ __all__ = [
     'get_reservations_by_volunteer_id_bp',
     'delete_reservation_bp',
     'get_all_breeds_bp',
-    'delete_user_bp'
+    'delete_user_bp',
+    'get_all_vet_requests_bp',
+    'cancel_vet_request_bp'
     ]

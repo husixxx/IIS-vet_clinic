@@ -79,6 +79,8 @@ def create_app():
   app.register_blueprint(get_all_veterinarians_bp)
   app.register_blueprint(get_all_animals_bp)
   app.register_blueprint(filter_animals_bp)
+  app.register_blueprint(get_all_vet_requests_bp)
+  app.register_blueprint(cancel_vet_request_bp)
   
   # Veterinarian
   app.register_blueprint(get_all_requests_by_vet_id_bp)
