@@ -1,9 +1,11 @@
 import base64
 from flask import Blueprint, request, jsonify
+from flask_login import *
 from src.usecases import CaretakerUseCase
 
 create_animal_bp = Blueprint('create_animal', __name__)
 @create_animal_bp.route('/caretaker/animal', methods=['POST'])
+@login_required
 def create_animal():
   """
   Create a new animal.
@@ -49,6 +51,10 @@ def create_animal():
     400:
       description: Invalid input
   """
+  
+  if current_user.role.name != "Caretaker":
+    return jsonify({"error": "Only caretakers can create animals"}), 403
+  
   # Získanie parametrov z requestu
   name = request.form.get('name')
   breed = request.form.get('breed')

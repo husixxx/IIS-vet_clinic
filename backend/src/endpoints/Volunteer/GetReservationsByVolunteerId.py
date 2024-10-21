@@ -1,9 +1,11 @@
 from flask import Blueprint, request, jsonify
+from flask_login import *
 from src.usecases import VolunteerUseCase
 
 get_reservations_by_volunteer_id_bp = Blueprint('get_reservations_by_volunteer_id', __name__)
 
 @get_reservations_by_volunteer_id_bp.route('/volunteer/get_reservations_by_volunteer_id', methods=['GET'])
+@login_required
 def get_reservations_by_volunteer_id():
   """Get all reservations by volunteer id
   ---
@@ -18,6 +20,8 @@ def get_reservations_by_volunteer_id():
     400:
       description: No reservations found. 
   """
+  if current_user.role.name != "Volunteer":
+    return jsonify({"error": "Only volunteers can get their reservations"}), 403
   
   volunteer_id = request.args.get('volunteer_id')
   

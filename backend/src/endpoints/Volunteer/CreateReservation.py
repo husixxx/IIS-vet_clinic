@@ -1,9 +1,11 @@
 from flask import Blueprint, request, jsonify
+from flask_login import *
 from src.usecases import VolunteerUseCase
 from ..services import *
 create_reservation_bp = Blueprint('create_reservation', __name__)
 
 @create_reservation_bp.route('/volunteer/reservation', methods=['POST'])
+@login_required
 def create_reservation():
   
   """
@@ -32,7 +34,8 @@ def create_reservation():
     400:
       description: Invalid input
   """
-
+  if current_user.role.name != "Volunteer":
+    return jsonify({"error": "Only volunteers can create reservations"}), 403
   # Získanie parametrov z requestu
   volunteer_id = request.args.get('volunteer_id', type=int)
   animal_id = request.args.get('animal_id', type=int)
