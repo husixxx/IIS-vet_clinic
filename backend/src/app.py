@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify,session
 from flask_login import LoginManager
 from flasgger import Swagger
 from flask_cors import CORS
@@ -30,7 +30,7 @@ def create_app():
         "origins": ["http://127.0.0.1:5173", "http://localhost:5342", "http://localhost:5000", "http://localhost:5173"],
         "supports_credentials": True
       }
-  })
+  }, supports_credentials=True)
   # Database
   DATABASE_URI = 'postgresql://husic:husic@postgres:5432/iis'
   app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
@@ -51,6 +51,9 @@ def create_app():
   def load_user(user_id):
     return User.query.get(int(user_id))
 
+  @app.before_request
+  def make_session_not_permanent():
+    session.permanent = False  # Session vyprší po zavretí prehliadača
   
   # Create tables
   with app.app_context():
