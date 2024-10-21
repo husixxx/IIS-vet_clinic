@@ -18,7 +18,7 @@
           </div>
           <div class="p-field input-group">
             <label for="date" class="input-label">Date</label>
-            <DatePicker class="input-text" v-model="date" :manualInput="false" dateFormat="yy-mm-dd" showIcon fluid iconDisplay="input" />
+            <DatePicker class="input-text" v-model="date" :manualInput="false" dateFormat="D, dd M yy" showIcon fluid iconDisplay="input" />
           </div>
           <div class="p-field send-vet-request">
             <Button label="Send request" @click="handleSendVetRequest" class="w-full" icon="pi pi-send" />
