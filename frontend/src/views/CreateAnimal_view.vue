@@ -9,17 +9,35 @@
           <!-- Form inputs -->
           <div class="p-field input-group">
             <label for="name" class="input-label">Name</label>
-            <InputText id="name" v-model="name" placeholder="Enter the animal's name" class="input-text" />
+            <InputText 
+              id="name" 
+              v-model="name" 
+              placeholder="Enter the animal's name" 
+              class="input-text" 
+              :class="{'p-invalid': !name}" 
+            />
           </div>
 
           <div class="p-field input-group">
             <label for="breed" class="input-label">Breed</label>
-            <InputText id="breed" v-model="breed" placeholder="Enter the breed" class="input-text" />
+            <InputText 
+              id="breed" 
+              v-model="breed" 
+              placeholder="Enter the breed" 
+              class="input-text" 
+              :class="{'p-invalid': !breed}" 
+            />
           </div>
 
           <div class="p-field input-group">
             <label for="age" class="input-label">Age</label>
-            <InputNumber id="age" v-model="age" placeholder="Enter the age" class="input-text" />
+            <InputNumber 
+              id="age" 
+              v-model="age" 
+              placeholder="Enter the age" 
+              class="input-text" 
+              :class="{'p-invalid': !age}" 
+            />
           </div>
 
           <div class="p-field input-group">
@@ -31,10 +49,11 @@
               optionValue="value"
               placeholder="Select sex"
               class="input-text"
+              :class="{'p-invalid': !sex}" 
             />
           </div>
 
-          <!-- File Upload for Animal Photo -->
+          <!-- File Upload for Animal Photo (optional) -->
           <div class="p-field input-group">
             <label for="photo" class="input-label">Photo</label>
             <input
@@ -45,11 +64,13 @@
             />
           </div>
 
+          <!-- History (optional) -->
           <div class="p-field input-group">
             <label for="history" class="input-label">History</label>
             <Textarea id="history" v-model="history" placeholder="Enter animal's history" class="input-text" rows="5" />
           </div>
 
+          <!-- Description (optional) -->
           <div class="p-field input-group">
             <label for="description" class="input-label">Description</label>
             <Textarea id="description" v-model="description" placeholder="Enter description" class="input-text" rows="5" />
@@ -57,7 +78,13 @@
 
           <!-- Submit Button -->
           <div class="p-field sign-up-button">
-            <Button label="Create Animal" icon="pi pi-check" @click="handleCreateAnimal" class="w-full" />
+            <Button 
+              label="Create Animal" 
+              icon="pi pi-check" 
+              @click="handleCreateAnimal" 
+              class="w-full" 
+              :disabled="!isFormValid"
+            />
           </div>
         </div>
       </template>
@@ -66,7 +93,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
@@ -100,6 +127,11 @@ const handleFileUpload = (event) => {
     photoFile.value = file;  // Store the file
   }
 };
+
+// Form validation (check if required fields are filled)
+const isFormValid = computed(() => {
+  return name.value && breed.value && age.value && sex.value;  // Only required fields are checked
+});
 
 // Handle create animal logic
 const handleCreateAnimal = async () => {
@@ -163,5 +195,9 @@ const handleCreateAnimal = async () => {
   background-color: #09090b;
   color: #a1a1aa;
   border-radius: 4px;
+}
+
+.p-invalid {
+  border-color: red;
 }
 </style>
