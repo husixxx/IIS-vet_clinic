@@ -1,5 +1,5 @@
 from src.models import WalkingSchedule, Animal, User, Request, Reservation
-from src.repository import Repository
+from src.repository import Repository, PublicRepository
 import base64
 
 class CaretakerUseCase:
@@ -10,6 +10,7 @@ class CaretakerUseCase:
         self.user_repository = Repository(User)
         self.request_repository = Repository(Request)
         self.reservation_repository = Repository(Reservation)
+        self.public_repository = PublicRepository()
     
     ### Create Animal ###
     def create_animal(self, name: str, breed: str, age: int, photo: str, history: str, description: str, sex: str) -> Animal:
@@ -129,6 +130,8 @@ class CaretakerUseCase:
         self.reservation_repository.update(vet_request)
         return vet_request
     
+    def filter_animals(self, name:str , age: int, breed: str,availability) -> list:
+        return self.public_repository.filter_animals(name, age, breed, availability)
     
     
     
