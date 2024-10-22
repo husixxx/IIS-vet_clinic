@@ -43,11 +43,6 @@ const routes: Array<RouteRecordRaw> = [
         name: 'Signup',
         component: Signup,
       },
-      // {
-      //   path: 'animalinfo',
-      //   name: 'Animalinfo',
-      //   component: Animal_info,
-      // },
       {
         path: 'animal',
         name: 'Animal',
@@ -57,7 +52,6 @@ const routes: Array<RouteRecordRaw> = [
         path: '/animal/:id',
         name: 'Animalinfo',
         component: Animal_info,
-        // props: true
       },
       {
         path: 'createanimal',
@@ -72,7 +66,7 @@ const routes: Array<RouteRecordRaw> = [
         meta: { requiresAuth: true, role: UserRole.Caretaker }  // Only allow access for Caretaker
       },
       {
-        path: 'createvetrequest',
+        path: 'createvetrequest/:animalId',
         name: 'CreateVetRequest',
         component: Create_vet_request,
         meta: { requiresAuth: true, role: UserRole.Caretaker }  // Only allow access for Caretaker
