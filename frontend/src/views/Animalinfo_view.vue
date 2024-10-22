@@ -8,6 +8,7 @@
       <!-- Div pre popis (description) -->
     <div class="animal-schedules">
       <h3 style="text-align: center;">Avaliable schedules</h3>
+      <ConfirmDialog />
       <Button v-if="authStore.getRoleId === UserRole.Caretaker" label="Create schedule" style="width: 100%;" @click="openScheduleAddModal({ start_time: '', end_time: '' })"/>
       <Card class="full-width-card">
         <template #content>
@@ -19,7 +20,7 @@
                 <template #body="slotProps">
                   <Button
                     label="Make reservation"
-                    class="p-button-warning"
+                    @click="confirmReservation(animalInfo.animal.name, slotProps.data)"
                   />
                 </template>
               </Column>
@@ -52,6 +53,12 @@
         </div>
         <div class="tags">
           <strong>Sex:</strong> {{ animalInfo?.animal?.sex }}
+        </div>
+        <div class="tags">
+          <Button v-if="authStore.getRoleId === UserRole.Caretaker" label="Edit animal" style="width: 100%;"></Button>
+        </div>
+        <div class="tags">
+          <Button v-if="authStore.getRoleId === UserRole.Caretaker" label="Create veterinarian request" style="width: 100%;"></Button>
         </div>
       </div>
 
@@ -153,6 +160,8 @@ import Textarea from 'primevue/textarea';
 import { getFormattedDate } from '../utils/date';
 import 'primeicons/primeicons.css'
 import EditAddDialog from '../components/EditAddDialog.vue';
+import ConfirmDialog from 'primevue/confirmdialog';
+import { useConfirm } from "primevue/useconfirm";
 
 const route = useRoute();
 const authStore = useAuthStore();
@@ -161,6 +170,35 @@ const userRole = authStore.getRoleId;
 const animalInfo = ref();
 const animalSchedules = ref([]);
 const animalMedicalRecords = ref([]);
+
+const confirm = useConfirm();
+
+function confirmReservation(animalName, schedule) {
+  confirm.require({
+    message: `Are you sure you want to reserve ${animalName} from ${schedule.start_time} to ${schedule.end_time}?`,
+    header: 'Confirmation',
+    icon: 'pi pi-question',
+    accept: async () => {
+      try {
+        const response = await axiosClient.post(`/volunteer/reservation?volunteer_id=${encodeURIComponent(authStore.getUser.id)}` +
+                                                `&animal_id=${encodeURIComponent(route.params.id)}` +
+                                                `&start_time=${encodeURIComponent(getFormattedDate(schedule.start_time, true))}` +
+                                                `&end_time=${encodeURIComponent(getFormattedDate(schedule.end_time, true))}`);
+
+        if(response.status === SUCCESS_RESPONSE_CODE) {
+          alert('Reservation created successfully!');
+        }
+      } catch (error) {
+        console.error('Error creating reservation: ', error);
+        alert('Failed to create reservation');
+      }
+    },
+
+    reject: () => {
+      alert('Not creating reservation');
+    }
+  })
+}
 
 const showScheduleEditDialog = ref(false);
 const selectedSchedule = reactive({
@@ -250,7 +288,7 @@ const sendReqAndProcessResponse = async (request, isSchedule, isUpdated, closeMo
       response = await axiosClient.post(request);
     }
 
-    if(response.status === 200) {
+    if(response.status === SUCCESS_RESPONSE_CODE) {
       const action = isUpdated ? 'updated' : 'added';
       const recordType = isSchedule ? 'Schedule' : 'Medical record';
       alert(`${recordType} ${action} successfully!`);
@@ -352,7 +390,7 @@ onMounted(async () => {
   try {
     const response = await axiosClient.get(`/animal/info?animal_id=${encodeURIComponent(route.params.id)}`);
     animalInfo.value = response.data;
-    
+
     animalSchedules.value = animalInfo.value.schedules.map(schedule => {
       const startDateTimePart = schedule.start_time.replace(" GMT", "");
       const endtDateTimePart = schedule.end_time.replace(" GMT", "");
@@ -424,6 +462,7 @@ onMounted(async () => {
   flex-direction: column;
   gap: 10px;
   padding-top: 8px;
+  justify-content: space-between;
 }
 
 .tags {
@@ -434,10 +473,12 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: 0px;
+  justify-content: space-between;
 }
 
 fieldset {
   width: 100%;
+  height: 100%;
   max-width: 800px;
 }
 
