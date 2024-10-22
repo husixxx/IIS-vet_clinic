@@ -35,7 +35,7 @@ def create_vet_request():
     400:
       description: Invalid input
   """
-  if current_user.role != 'caretaker':
+  if current_user.role.name != 'caretaker':
     return jsonify({'error': 'Only caretakers can cancel vet requests'}), 403
   # Získanie parametrov z requestu
   animal_id = request.args.get('animal_id', type=int)

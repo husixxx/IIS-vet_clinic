@@ -70,6 +70,8 @@ def create_app():
   # Authorization
   app.register_blueprint(sign_in_bp)
   app.register_blueprint(sign_up_bp)
+  app.register_blueprint(check_session_bp)
+  app.register_blueprint(sign_out_bp)
   
   # Caretaker
   app.register_blueprint(create_walking_schedule_bp)

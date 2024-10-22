@@ -15,7 +15,7 @@ def get_all_reservations():
     400:
       description: No reservations found. 
   """
-  if current_user.role != 'caretaker':
+  if current_user.role.name != 'caretaker':
     return jsonify({'error': 'Only caretakers can cancel vet requests'}), 403
   use_case = CaretakerUseCase()
   try:

@@ -44,7 +44,7 @@ def create_walking_schedule():
       400:
         description: Invalid input
     """
-    if current_user.role != 'caretaker':
+    if current_user.role.name != 'caretaker':
       return jsonify({'error': 'Only caretakers can cancel vet requests'}), 403
     
     animal_id = request.args.get('animal_id', type=int)

@@ -24,7 +24,7 @@ def change_reservation_status():
       400:
         description: Request not found. 
     """
-    if current_user.role != 'caretaker':
+    if current_user.role.name != 'caretaker':
       return jsonify({'error': 'Only caretakers can cancel vet requests'}), 403
     
     reservation_id = request.args.get('id')

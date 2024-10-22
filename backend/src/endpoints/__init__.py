@@ -34,6 +34,8 @@ from .Public import filter_animals_bp
 from .Public import get_all_breeds_bp
 from .Caretaker import get_all_vet_requests_bp
 from .Caretaker import cancel_vet_request_bp
+from .Authorization import check_session_bp
+from .Authorization import sign_out_bp
 __all__ = [
     'get_all_reservations_bp',
     'change_reservation_status_bp',
@@ -61,5 +63,7 @@ __all__ = [
     'get_all_breeds_bp',
     'delete_user_bp',
     'get_all_vet_requests_bp',
-    'cancel_vet_request_bp'
+    'cancel_vet_request_bp',
+    'check_session_bp',
+    'sign_out_bp'
     ]

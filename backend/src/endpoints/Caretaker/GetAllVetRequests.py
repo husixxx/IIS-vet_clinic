@@ -14,8 +14,8 @@ def get_all_vet_requests():
     400:
       description: No vet requests found
   """
-  if current_user.role != 'caretaker':
-    return jsonify({'error': 'Only caretakers can cancel vet requests'}), 403
+  if current_user.role.name != 'caretaker':
+    return jsonify({'error': 'Only caretakers can cancel vet requests', 'user': current_user.role.name}), 403
   
   use_case = CaretakerUseCase()
   try:

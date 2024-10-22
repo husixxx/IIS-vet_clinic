@@ -21,7 +21,7 @@ def cancel_vet_request():
     400:
       description: Request not found
   """
-  if current_user.role != 'caretaker':
+  if current_user.role.name != 'caretaker':
     return jsonify({'error': 'Only caretakers can cancel vet requests'}), 403
   vet_request_id = request.args.get('vet_request_id')
   

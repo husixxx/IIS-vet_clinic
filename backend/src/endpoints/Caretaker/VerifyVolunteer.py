@@ -19,7 +19,7 @@ def verify_volunteer():
         400:
             description: User not found/User already validated. 
     """
-    if current_user.role != 'caretaker':
+    if current_user.role.name != 'caretaker':
         return jsonify({'error': 'Only caretakers can cancel vet requests'}), 403
     
     id = request.args.get('id')
