@@ -58,7 +58,7 @@
           <Button v-if="authStore.getRoleId === UserRole.Caretaker" label="Edit animal" style="width: 100%;"></Button>
         </div>
         <div class="tags">
-          <Button v-if="authStore.getRoleId === UserRole.Caretaker" label="Create veterinarian request" style="width: 100%;"></Button>
+          <Button v-if="authStore.getRoleId === UserRole.Caretaker" @click="() => router.push({ name: 'CreateVetRequest', params: { animalId: route.params.id }  })" label="Create veterinarian request" style="width: 100%;"></Button>
         </div>
       </div>
 
@@ -145,7 +145,7 @@
 <script setup>
 
 import { ref, reactive, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import axiosClient from '../api/api';
 import { useAuthStore, UserRole } from '../store/Authstore';
 import Fieldset from 'primevue/fieldset';
@@ -164,6 +164,7 @@ import ConfirmDialog from 'primevue/confirmdialog';
 import { useConfirm } from "primevue/useconfirm";
 
 const route = useRoute();
+const router = useRouter();
 const authStore = useAuthStore();
 const user = authStore.getUser;
 const userRole = authStore.getRoleId;
