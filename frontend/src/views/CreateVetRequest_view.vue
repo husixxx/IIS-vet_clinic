@@ -40,14 +40,15 @@ import Textarea from 'primevue/textarea';
 import DatePicker from 'primevue/datepicker';
 import 'primeicons/primeicons.css'
 import { getFormattedDate } from '../utils/date';
+import { useRoute } from 'vue-router';
 
 const veterinarians = ref([]);
 const filteredVeterinarians = ref([]);
 const selectedVeterinarian = ref(null);
-const animalId = ref(7); // TODO CHANGE IT!!!
 const description = ref('');
 const date = ref(null);
 const SUCCESS_RESPONSE_CODE = ref(200);
+const route = useRoute();
 
 onMounted(async () => {
     try {
@@ -73,7 +74,7 @@ const handleSendVetRequest = async () => {
   try {
     console.log(date.value);
     const response = await axiosClient.post(
-      `/caretaker/vet_request?animal_id=${encodeURIComponent(animalId.value)}` + 
+      `/caretaker/vet_request?animal_id=${encodeURIComponent(route.params.animalId)}` + 
       `&veterinarian_username=${encodeURIComponent(selectedVeterinarian.value.username)}` +
       `&request_date=${encodeURIComponent(getFormattedDate(date.value, true))}&description=${encodeURIComponent(description.value)}`
     );
