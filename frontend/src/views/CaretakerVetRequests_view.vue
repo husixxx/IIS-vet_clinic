@@ -18,7 +18,7 @@
         <Column header="Actions">
           <template #body="slotProps">
             <Button
-              v-if="slotProps.data.status !== 'cancelled'"
+              v-if="slotProps.data.status === 'pending' || slotProps.data.status === 'scheduled'"
               label="Cancel"
               icon="pi pi-times"
               class="p-button-danger"

@@ -34,7 +34,9 @@
       <div class="p-fluid">
         <!-- Edit Start Time -->
         <div class="p-field">
-          <InputText v-model="selectedRequest.start_time" />
+          <InputText v-model="selectedRequest.start_time" 
+          :invalid="!selectedRequest.start_time"
+          placeholder="DD/MM/YYYY HH/MM/SS"/>
         </div>
 
         <!-- Edit Status -->
@@ -44,12 +46,15 @@
           optionLabel="label"
           placeholder="Select Status"
           class="w-full"
+          :class="{ 'invalid-field': !selectedRequest.newStatus }"
         />
       </div>
       <template #footer>
         <div class="dialog-footer">
           <Button label="Cancel" class="p-button-text" @click="cancelEdit" />
-          <Button label="Save" class="p-button-primary" @click="saveRequestChanges" />
+          <!-- Disable Save button if start_time or newStatus is empty -->
+          <Button label="Save" class="p-button-primary" @click="saveRequestChanges" 
+            :disabled="!selectedRequest.start_time || !selectedRequest.newStatus || !selectedRequest.newStatus.value" />
         </div>
       </template>
     </Dialog>
@@ -160,7 +165,12 @@ const saveRequestChanges = async () => {
       console.error('Failed to update request');
     }
   } catch (error) {
-    console.error('Error updating request:', error);
+
+    
+    console.error('Error: Invalid date format ', error);
+    alert('Error: Invalid date format ', error);
+
+    
   }
 };
 </script>
@@ -209,5 +219,10 @@ h1 {
 .dialog-footer {
   display: flex;
   justify-content: center;
+}
+
+/* Red border for invalid fields */
+.invalid-field {
+  border-color: red !important;
 }
 </style>
