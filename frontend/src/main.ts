@@ -5,6 +5,7 @@ import PrimeVue from 'primevue/config';
 import Aura from '@primevue/themes/aura';
 import router from './routes/routes';  // Import the router from your routes file
 import { createPinia } from 'pinia';
+import ToastService from 'primevue/toastservice';
 
 const app = createApp(App);
 const pinia = createPinia();
@@ -20,6 +21,7 @@ app.use(pinia);
 
 // Add the router to the app so it can handle route navigation
 app.use(router);
+app.use(ToastService);
 
 // Mount the app to the DOM
 app.mount('#app');

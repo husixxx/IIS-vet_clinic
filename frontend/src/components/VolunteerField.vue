@@ -49,32 +49,42 @@
   
   // Fetch volunteers on component mount
   onMounted(async () => {
-    try {
+    try 
+    {
       // Make a GET request to the Flask API to fetch unverified volunteers
       const response = await axiosClient.get('/caretaker/unverified_volunteers',{withCredentials: true});
       // Populate the table with the response data
       volunteers.value = response.data;
-    } catch (error) {
+    } 
+    catch (error) 
+    {
       console.error('Error fetching unverified volunteers:', error);
     }
   });
   
   // Function to verify a volunteer
   const verifyVolunteer = async (volunteer) => {
-    try {
+    try 
+    {
       // Call the updated verification endpoint with the correct query parameter 'id'
       const response = await axiosClient.post(`/caretaker/verify_volunteer?id=${volunteer.id}`, null, {
         withCredentials: true  // Zabezpečí, že cookies budú odoslané a prijaté
       });
   
-      if (response.data.verified) {
+      if (response.data.verified) 
+      {
         // Update the local role_id to 1 if verified successfully
         volunteer.role_id = 1;
         alert(`Volunteer ${volunteer.name} was verified successfully.`);
       }
-    } catch (error) {
-      console.error('Error verifying volunteer:', error);
-      alert('Failed to verify the volunteer.');
+    } 
+    catch (error) 
+    {
+      if(error.response.status == 400)
+      {
+        console.error('Error verifying volunteer:', error);
+        alert('Failed to verify the volunteer.');
+      }
     }
   };
   </script>

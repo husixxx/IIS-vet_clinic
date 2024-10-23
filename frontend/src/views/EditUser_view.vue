@@ -46,7 +46,13 @@
         </div>
       </div>
       <template #footer>
-        <Button label="Save" @click="updateUser" class="p-button-success" />
+        <!-- Disable Save button if verified or role_id is not selected -->
+        <Button
+          label="Save"
+          @click="updateUser"
+          class="p-button-success"
+          :disabled="!selectedUser.verified || !selectedUser.role_id"
+        />
         <Button label="Cancel" @click="closeEditModal" class="p-button-secondary" />
       </template>
     </Dialog>
@@ -61,7 +67,6 @@
     </Dialog>
   </div>
 </template>
-
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
@@ -188,6 +193,7 @@ const deleteUser = async () => {
   }
 };
 </script>
+
 
 <style scoped>
 .edit-users-container {

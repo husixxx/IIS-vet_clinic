@@ -52,7 +52,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';  // Import the router for navigation
 import Card from 'primevue/card';
@@ -61,6 +61,7 @@ import Password from 'primevue/password';
 import Button from 'primevue/button';
 import axiosClient from '../api/api';  // Ensure the axiosClient is correctly imported
 import { useAuthStore } from '../store/Authstore';  // Import the authStore
+
 
 // Reactive references for the form fields
 const username = ref('');
@@ -90,13 +91,32 @@ const handleSignIn = async () => {
     authStore.login(user);
     password.value = '';
     username.value = '';
-    alert("Login successful");
-
     router.push({ name: 'Home' });  // Redirect to home after login
     
-  } catch (error) {
-    console.log(error);
-    alert("Something went wrong");
+  } 
+  catch (error) 
+  {
+    // Handle error and print status code
+    if (error.response) 
+    {
+      var status = error.response.status;
+      var error_msg = error.response.data.error;
+      var displaymsg;
+      if(status == 400)
+      {
+        displaymsg = "User not found."
+      }
+      else if(status == 401)
+      {
+        displaymsg = "Not verified account."
+      }
+      alert("Error: " + displaymsg);
+    } 
+    else 
+    {
+      console.error("Error:", error.message);
+      alert("Something went wrong");
+    }
   }
 };
 

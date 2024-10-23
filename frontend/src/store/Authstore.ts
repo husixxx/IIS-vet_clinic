@@ -37,12 +37,7 @@ export const useAuthStore = defineStore('auth', {
       try {
         // Volanie endpointu pre odhlásenie na serveri
         await axiosClient.post('/authorization/sign_out', null, { withCredentials: true });
-        
-        // Vymazanie používateľa z lokálneho stavu po úspešnom odhlásení
         this.user = null;
-
-        // Voliteľne, môžete pridať oznámenie o úspešnom odhlásení
-        alert('Sign out successful');
       } catch (error) {
         console.error("Error during sign out:", error);
         alert('Error during sign out');

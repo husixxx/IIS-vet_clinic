@@ -125,14 +125,13 @@ const handleCreateVeterinarian = async () => {
       lastName.value = '';
 
       alert('Veterinarian created successfully!');
-      router.push({ name: 'Home' });  // Redirect after creation
     }
   } catch (error) {
     console.error('Error creating veterinarian:', error);
     if (error.response && error.response.status === 409) {
-      alert('User with this email already exists!');
+      alert('Error: User with this email already exists!');
     } else {
-      alert('Failed to create veterinarian.');
+      alert('Error: Failed to create veterinarian.');
     }
   }
 };

@@ -87,8 +87,13 @@ const cancelVetRequest = async (vetRequestId) => {
         requests.value[index].status = 'cancelled';
       }
     }
-  } catch (error) {
-    console.error('Error cancelling vet request:', error);
+  } catch (error) 
+  {
+    if(error.response.status == 400)
+    {
+      console.error('Error: Request could not be cancelled.');
+      alert('Error: Request could not be cancelled.');
+    }
   }
 };
 </script>

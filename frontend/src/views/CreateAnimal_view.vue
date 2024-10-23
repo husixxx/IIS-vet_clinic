@@ -169,7 +169,6 @@ const handleCreateAnimal = async () => {
       photoFile.value = null;
 
       alert('Animal created successfully!');
-      router.push({ name: 'Home' });  // Redirect after creation
     }
   } catch (error) {
     console.error('Error creating animal:', error);
