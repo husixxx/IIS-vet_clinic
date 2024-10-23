@@ -127,7 +127,7 @@ const handleSignUp = async () => {
   if (!isFormValid.value) return; // Prevent signup if form is invalid
 
   try {
-    const response = await axiosClient.post(`/authorization/sign_up?username=${username.value}&email=${email.value}&password=${password.value}&name=${fullName.value}`);
+    const response = await axiosClient.post(`/authorization/sign_up?username=${username.value}&email=${email.value}&password=${password.value}&name=${fullName.value}`, null, {withCredentials: true});
 
     // Reset form fields after successful sign-up
     firstName.value = '';

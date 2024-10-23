@@ -20,6 +20,34 @@
 <script setup>
 import MyMenubar from '../components/Navbar.vue';
 import Footer from '../components/Footer.vue';
+import { onMounted } from 'vue';
+import { useAuthStore } from '../store/Authstore';
+import axiosClient from '../api/api';
+
+const authStore = useAuthStore();
+
+onMounted(async () => {
+  // Skontrolujeme, či má používateľ aktívnu session iba ak nie je prihlásený
+  if (!authStore.isLoggedIn) {
+    try {
+      const response = await axiosClient.get('/authorization/check_session', { withCredentials: true });
+
+      if (response.data.status === 'active') {
+        // Ak má používateľ aktívnu session, nastavíme používateľa v authStore
+        const user = {
+          username: response.data.username,
+          id: response.data.user_id,
+          role_id: response.data.role_id,
+        };
+
+        authStore.login(user);
+      }
+    } catch (error) {
+      console.error('Error checking session:', error);
+    }
+  }
+});
+
 </script>
 
 <style scoped>

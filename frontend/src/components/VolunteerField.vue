@@ -51,7 +51,7 @@
   onMounted(async () => {
     try {
       // Make a GET request to the Flask API to fetch unverified volunteers
-      const response = await axiosClient.get('/caretaker/unverified_volunteers');
+      const response = await axiosClient.get('/caretaker/unverified_volunteers',{withCredentials: true});
       // Populate the table with the response data
       volunteers.value = response.data;
     } catch (error) {
@@ -63,7 +63,9 @@
   const verifyVolunteer = async (volunteer) => {
     try {
       // Call the updated verification endpoint with the correct query parameter 'id'
-      const response = await axiosClient.post(`/caretaker/verify_volunteer?id=${volunteer.id}`);
+      const response = await axiosClient.post(`/caretaker/verify_volunteer?id=${volunteer.id}`, null, {
+        withCredentials: true  // Zabezpečí, že cookies budú odoslané a prijaté
+      });
   
       if (response.data.verified) {
         // Update the local role_id to 1 if verified successfully

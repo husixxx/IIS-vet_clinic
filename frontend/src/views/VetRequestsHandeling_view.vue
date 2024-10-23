@@ -98,6 +98,7 @@ onMounted(async () => {
       params: {
         vet_id: vetId,
       },
+      withCredentials: true
     });
 
     if (response.data) {
@@ -146,6 +147,7 @@ const saveRequestChanges = async () => {
         date_time: formattedDateTime, // Send as 'YYYY-MM-DD HH:MM:SS'
         status: selectedRequest.value.newStatus.value,
       },
+      withCredentials: true
     });
 
     if (response.status === 200) {

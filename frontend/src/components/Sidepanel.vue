@@ -89,7 +89,7 @@ const availabilityOptions = ref([
 // Fetch breed options from API
 const fetchBreeds = async () => {
   try {
-    const response = await axiosClient.get('/animal/breeds');
+    const response = await axiosClient.get('/animal/breeds',{withCredentials: true});
     breedOptions.value = [
       { label: 'All', value: '' },  // Default option for breed
       ...response.data.map(breed => ({

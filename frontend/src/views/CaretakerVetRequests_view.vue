@@ -53,7 +53,7 @@ const requests = ref([]);
 onMounted(async () => {
   try {
     // Make an API request to get all vet requests for caretakers
-    const response = await axiosClient.get('/caretaker/get_all_vet_requests');
+    const response = await axiosClient.get('/caretaker/get_all_vet_requests',{withCredentials: true});
 
     if (response.data) {
       requests.value = response.data.map((request) => ({
@@ -77,6 +77,7 @@ const cancelVetRequest = async (vetRequestId) => {
       params: {
         vet_request_id: vetRequestId,
       },
+      withCredentials: true
     });
 
     if (response.status === 200) {

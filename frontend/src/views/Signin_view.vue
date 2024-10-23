@@ -41,7 +41,6 @@
             />
           </div>
 
-          <!-- Redirect to Sign Up -->
           <div class="p-field sign-up-redirect">
             <p class="sign-up-text">Don't have an account yet?
               <Button label="Create one" link @click="redirectToSignUp" />
@@ -61,7 +60,7 @@ import InputText from 'primevue/inputtext';
 import Password from 'primevue/password';
 import Button from 'primevue/button';
 import axiosClient from '../api/api';  // Ensure the axiosClient is correctly imported
-import { useAuthStore } from '../store/Authstore';  // Ensure correct import of your AuthStore
+import { useAuthStore } from '../store/Authstore';  // Import the authStore
 
 // Reactive references for the form fields
 const username = ref('');
@@ -69,7 +68,7 @@ const password = ref('');
 
 // Router and auth store
 const router = useRouter();
-const authStore = useAuthStore();
+const authStore = useAuthStore();  // Create an instance of the auth store
 
 // Computed property to validate if the form is valid
 const isFormValid = computed(() => {
@@ -79,8 +78,8 @@ const isFormValid = computed(() => {
 // Sign In handler function
 const handleSignIn = async () => {
   try {
-    const response = await axiosClient.post(`/authorization/sign_in?username=${username.value}&password=${password.value}`);
-    
+    const response = await axiosClient.post(`/authorization/sign_in?username=${username.value}&password=${password.value}`, null, {withCredentials: true});
+
     // Handle successful login
     const user = {
       username: response.data.username,
@@ -88,11 +87,13 @@ const handleSignIn = async () => {
       role_id: response.data.role_id,
     };
 
-    authStore.login(user);  // Save user in Pinia store
+    authStore.login(user);
     password.value = '';
     username.value = '';
     alert("Login successful");
+
     router.push({ name: 'Home' });  // Redirect to home after login
+    
   } catch (error) {
     console.log(error);
     alert("Something went wrong");

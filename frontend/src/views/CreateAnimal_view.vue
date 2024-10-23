@@ -36,7 +36,7 @@
               v-model="age" 
               placeholder="Enter the age" 
               class="input-text" 
-              :class="{'p-invalid': !age}" 
+              :invalid="!age"
             />
           </div>
 
@@ -155,6 +155,7 @@ const handleCreateAnimal = async () => {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
+      withCredentials: true  // Zabezpečí, že cookies budú odoslané a prijaté
     });
 
     if (response.status === 201) {

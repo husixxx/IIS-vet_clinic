@@ -114,7 +114,7 @@ const handleCreateVeterinarian = async () => {
     const fullName = `${firstName.value} ${lastName.value}`;
 
     // Send form data using POST request
-    const response = await axiosClient.post(`/admin/veterinarian?username=${username.value}&email=${email.value}&password=${password.value}&name=${fullName}`);
+    const response = await axiosClient.post(`/admin/veterinarian?username=${username.value}&email=${email.value}&password=${password.value}&name=${fullName}`,null,{withCredentials: true});
 
     if (response.status === 201) {
       // Reset form fields

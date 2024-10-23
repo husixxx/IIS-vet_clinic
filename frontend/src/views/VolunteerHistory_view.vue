@@ -65,6 +65,7 @@ onMounted(async () => {
       params: {
         volunteer_id: volunteerId,
       },
+      withCredentials: true
     });
 
     if (response.data) {
@@ -90,6 +91,7 @@ const deleteReservation = async (reservationId) => {
       params: {
         reservation_id: reservationId,
       },
+      withCredentials: true
     });
 
     if (response.status === 200) {

@@ -116,7 +116,9 @@ const fields = [
 // Fetch all users on component mount
 onMounted(async () => {
   try {
-    const response = await axiosClient.get('/admin/users');
+    const response = await axiosClient.get('/admin/users', {
+      withCredentials: true  // Zabezpečí, že cookies budú odoslané a prijaté
+    });
     users.value = response.data;
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -143,7 +145,7 @@ const closeEditModal = async () => {
 const updateUser = async () => {
   try {
     // Format the request properly, ensuring verified is a boolean and role_id is an integer
-    const response = await axiosClient.put(`/admin/update_user?user_id=${selectedUser.id}&name=${selectedUser.name}&email=${selectedUser.email}&username=${selectedUser.username}&password=${selectedUser.password}&verified=${selectedUser.verified.value}&role_id=${selectedUser.role_id.value}`);
+    const response = await axiosClient.put(`/admin/update_user?user_id=${selectedUser.id}&name=${selectedUser.name}&email=${selectedUser.email}&username=${selectedUser.username}&password=${selectedUser.password}&verified=${selectedUser.verified.value}&role_id=${selectedUser.role_id.value}`,null,{withCredentials: true});
     if (response.status === 200) {
       alert('User updated successfully!');
       closeEditModal();
@@ -171,7 +173,8 @@ const closeDeleteDialog = () => {
 const deleteUser = async () => {
   try {
     const response = await axiosClient.delete(`/admin/delete_user`, {
-      params: { user_id: selectedUser.id }
+      params: { user_id: selectedUser.id },
+      withCredentials: true  // Zabezpečí, že cookies budú odoslané a prijaté
     });
     if (response.status === 200) {
       alert('User deleted successfully!');

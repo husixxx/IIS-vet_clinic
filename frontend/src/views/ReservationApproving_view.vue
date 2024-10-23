@@ -77,8 +77,10 @@ const selectedReservation = ref(null);
 // Fetch reservations when the component mounts
 onMounted(async () => {
   try {
-    const response = await axiosClient.get('/caretaker/get_all_reservations');
-    console.log(response.data);
+    const response = await axiosClient.get('/caretaker/get_all_reservations', {
+      withCredentials: true  // Zabezpečí, že cookies budú odoslané a prijaté
+    });
+
     if (response.data) {
       reservations.value = response.data.map(reservation => ({
         id: reservation.id,  // Now using the correct reservation id
@@ -114,7 +116,8 @@ const saveStatus = async () => {
       params: {
         id: selectedReservation.value.id,
         status: selectedReservation.value.newStatus.value
-      }
+      },
+      withCredentials: true
     });
     if (response.status === 200) {
       const index = reservations.value.findIndex(res => res.id === selectedReservation.value.id);

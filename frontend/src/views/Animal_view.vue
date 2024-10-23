@@ -36,8 +36,10 @@ const animals = ref([]);
 // Function to fetch animals with filters
 const fetchAnimals = async (filters = {}) => {
   try {
-    console.log('Fetching with filters:', filters);  // Debug to check filters in fetchAnimals
-    const response = await axiosClient.get('/filter_animals', { params: filters });
+    const response = await axiosClient.get('/filter_animals', {
+      params: filters,
+      withCredentials: true  // Zabezpečí, že cookies budú odoslané a prijaté
+    });
     animals.value = response.data;  // Update the animal list
   } catch (error) {
     console.error('Error fetching animal data:', error);
