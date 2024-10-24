@@ -1,11 +1,9 @@
 <template>
   <div class="main-content">
-    <!-- Div for the photo -->
     <div class="photo-section">
       <img src="../assets/cat3.jpg" alt="Animal photo" />
     </div>
 
-      <!-- Div pre popis (description) -->
     <div class="animal-schedules">
       <h3 style="text-align: center;">Avaliable schedules</h3>
       <ConfirmDialog />
@@ -20,7 +18,7 @@
                 <template #body="slotProps">
                   <Button
                     label="Make reservation"
-                    @click="confirmReservation(animalInfo.animal.name, slotProps.data)"
+                    @click="confirmReservation(animalInfo?.name, slotProps.data)"
                   />
                 </template>
               </Column>
@@ -38,40 +36,34 @@
       </Card>
     </div>
 
-    <!-- Medical records section -->
     <div class="animal-info">
-      <!-- First column: Tags -->
       <div class="tags-column">
+        <div class="tags" v-for="(field, index) in filteredAnimalInfoFields" :key="index">
+          <strong>{{ field.label }}:</strong> {{ animalInfo?.[field.model] }}
+        </div>
+        
         <div class="tags">
-          <strong>Name:</strong> {{ animalInfo?.animal?.name }}
+          <Button v-if="authStore.getRoleId === UserRole.Caretaker" label="Edit animal information" style="width: 100%;" @click="openAnimalInfoEditModal(animalInfo)"/>
         </div>
         <div class="tags">
-          <strong>Age:</strong> {{ animalInfo?.animal?.age }}
-        </div>
-        <div class="tags">
-          <strong>Breed:</strong> {{ animalInfo?.animal?.breed }}
-        </div>
-        <div class="tags">
-          <strong>Sex:</strong> {{ animalInfo?.animal?.sex }}
-        </div>
-        <div class="tags">
-          <Button v-if="authStore.getRoleId === UserRole.Caretaker" label="Edit animal" style="width: 100%;"></Button>
-        </div>
-        <div class="tags">
-          <Button v-if="authStore.getRoleId === UserRole.Caretaker" @click="() => router.push({ name: 'CreateVetRequest', params: { animalId: route.params.id }  })" label="Create veterinarian request" style="width: 100%;"></Button>
+          <Button
+            v-if="authStore.getRoleId === UserRole.Caretaker"
+            @click="() => router.push({ name: 'CreateVetRequest', params: { animalId: route.params.id } })"
+            label="Create veterinarian request"
+            style="width: 100%;"
+          />
         </div>
       </div>
 
-      <!-- Second column: Fieldsets -->
-      <div class="animal-fieldsets">
-        <Fieldset legend="Description">
-          <p>{{ animalInfo?.animal?.description }}</p>
-        </Fieldset>
-        <Fieldset legend="History">
-          <p>{{ animalInfo?.animal?.history }}</p>
-        </Fieldset>
-      </div>
+    <div class="animal-fieldsets">
+      <Fieldset legend="Description">
+        <p>{{ animalInfo?.description }}</p>
+      </Fieldset>
+      <Fieldset legend="History">
+        <p>{{ animalInfo?.history }}</p>
+      </Fieldset>
     </div>
+  </div>
 
     <div class="medical-records-section">
       <h3 style="text-align: center;">Medical records</h3>
@@ -140,11 +132,21 @@
     onSaveAddButtonLabel="Add"
   />
 
+  <EditAddDialog
+    header="Edit animal information"
+    v-model:isVisible="showAnimalInfoEditDialog"
+    :fields="animalInfoFields"
+    :model="selectedAnimalInfo"
+    :onSaveAdd="updateAnimalInfo"
+    :onCancel="closeAnimalInfoEditDialog"
+    onSaveAddButtonLabel="Save"
+  />
+
 </template>
   
 <script setup>
 
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axiosClient from '../api/api';
 import { useAuthStore, UserRole } from '../store/Authstore';
@@ -174,6 +176,10 @@ const animalMedicalRecords = ref([]);
 
 const confirm = useConfirm();
 
+const filteredAnimalInfoFields = computed(() =>
+  animalInfoFields.filter(field => field.model !== 'description' && field.model !== 'history')
+);
+
 function confirmReservation(animalName, schedule) {
   confirm.require({
     message: `Are you sure you want to reserve ${animalName} from ${schedule.start_time} to ${schedule.end_time}?`,
@@ -201,18 +207,26 @@ function confirmReservation(animalName, schedule) {
   })
 }
 
+const showAnimalInfoEditDialog = ref(false);
+const selectedAnimalInfo = reactive({
+  id: null,
+  name: '',
+  breed: '',
+  age: '',
+  history: '',
+  description: '',
+  sex: '',
+});
+
 const showScheduleEditDialog = ref(false);
 const selectedSchedule = reactive({
   id: null,
-  startDateAnotherFormat: '',
-  endDateAnotherFormat: '',
   startDate: '',
   endDate: '',
 });
 
 const showMedicalRecordsEditDialog = ref(false);
 const selectedMedicalRecord = reactive({
-  id: null,
   description: '',
   examinationDate: '',
   examinationType: ''
@@ -238,16 +252,47 @@ function getDatePickerPros(showTime) {
   return datePickerProps;
 }
 
+const animalInfoFields = [
+  { 
+    label: 'Name',
+    model: 'name',
+    component: InputText,
+  },
+  { 
+    label: 'Age',
+    model: 'age',
+    component: InputText,
+  },
+  { 
+    label: 'Breed',
+    model: 'breed',
+    component: InputText,
+  },
+  { 
+    label: 'Sex',
+    model: 'sex',
+    component: InputText,
+  },
+  { 
+    label: 'Description',
+    model: 'description',
+    component: Textarea,
+  },
+  { 
+    label: 'History',
+    model: 'history',
+    component: Textarea,
+  }
+];
+
 const reservSchedulesFields = [
   { 
-    id: 'startDate',
     label: 'Start date',
     model: 'startDate',
     component: DatePicker,
     props: getDatePickerPros(true)
   },
   { 
-    id: 'endtDate',
     label: 'End date ',
     model: 'endDate',
     component: DatePicker,
@@ -257,20 +302,17 @@ const reservSchedulesFields = [
 
 const medicalRecordsFields = [
   { 
-    id: 'description',
     label: 'Description',
     model: 'description',
     component: Textarea,
   },
   {
-    id: 'examinationDate',
     label: 'Examination date',
     model: 'examinationDate',
     component: DatePicker,
     props: getDatePickerPros(false)
   },
   {
-    id: 'examinationType',
     label: 'Examination type',
     model: 'examinationType',
     component: InputText,
@@ -299,6 +341,26 @@ const sendReqAndProcessResponse = async (request, isSchedule, isUpdated, closeMo
     const action = isUpdated ? 'updat' : 'add';
     console.error(`Error ${action}ing ${isSchedule ? 'schedule' : 'medical record'}:`, error);
     alert(`Failed to ${action}e ${isSchedule ? 'schedule' : 'medical record'}.`);
+  }
+}
+
+async function updateAnimalInfo() {
+  try {
+    const response = await axiosClient.put(`/caretaker/update_animal?animal_id=${encodeURIComponent(selectedAnimalInfo.id)}` +
+                                            `&name=${encodeURIComponent(selectedAnimalInfo.name)}` +
+                                            `&breed=${encodeURIComponent(selectedAnimalInfo.breed)}` +
+                                            `&age=${encodeURIComponent(selectedAnimalInfo.age)}` +
+                                            `&history=${encodeURIComponent(selectedAnimalInfo.history)}` +
+                                            `&description=${encodeURIComponent(selectedAnimalInfo.description)}` +
+                                            `&sex=${encodeURIComponent(selectedAnimalInfo.sex)}`);
+
+    if(response.status === SUCCESS_RESPONSE_CODE) {
+        alert('Animal info updated successfully!');
+        closeAnimalInfoEditDialog();
+    }
+  } catch (error) {
+    console.error('Error updating animal info: ', error);
+    alert('Failed to update animal info');
   }
 }
 
@@ -336,6 +398,22 @@ function addMedicalRecord() {
                      `&examination_type=${encodeURIComponent(selectedMedicalRecord.examinationType)}`;
                      
   sendReqAndProcessResponse(requestUrl, false, false, closeMedicalRecordAddModal);
+};
+
+const openAnimalInfoEditModal = async (animalInfo) => {
+  selectedAnimalInfo.id = animalInfo.id;
+  selectedAnimalInfo.name = animalInfo.name;
+  selectedAnimalInfo.breed = animalInfo.breed;
+  selectedAnimalInfo.age = animalInfo.age;
+  selectedAnimalInfo.history = animalInfo.history;
+  selectedAnimalInfo.description = animalInfo.description;
+  selectedAnimalInfo.sex = animalInfo.sex;
+
+  showAnimalInfoEditDialog.value = true;
+};
+
+const closeAnimalInfoEditDialog = async () => {
+  showAnimalInfoEditDialog.value = false;
 };
 
 const openScheduleAddModal = async (schedule) => {
@@ -390,9 +468,9 @@ const closeMedicalRecordEditModal = async () => {
 onMounted(async () => {
   try {
     const response = await axiosClient.get(`/animal/info?animal_id=${encodeURIComponent(route.params.id)}`);
-    animalInfo.value = response.data;
+    animalInfo.value = response.data.animal;
 
-    animalSchedules.value = animalInfo.value.schedules.map(schedule => {
+    animalSchedules.value = response.data.schedules.map(schedule => {
       const startDateTimePart = schedule.start_time.replace(" GMT", "");
       const endtDateTimePart = schedule.end_time.replace(" GMT", "");
 
@@ -403,7 +481,7 @@ onMounted(async () => {
       };
     });
 
-    animalMedicalRecords.value = animalInfo.value.medical_records.map(record => {
+    animalMedicalRecords.value = response.data.medical_records.map(record => {
       const datePart = record.examination_date.split(' ').slice(0, 4).join(' ');
 
       return {
@@ -412,7 +490,7 @@ onMounted(async () => {
       };
   });
 
-    console.log(animalSchedules.value);
+    // console.log(animalSchedules.value);
   } catch (error) {
     console.error('Error fetching animal data:', error);
   }
