@@ -17,6 +17,7 @@ from .Caretaker import get_all_reservations_bp
 from .Caretaker import get_all_veterinarians_bp
 from .Caretaker import get_all_animals_bp
 from .Caretaker.UpdateWalkingSchedule import update_walking_schedule_bp
+from .Caretaker.UpdateAnimal import update_animal_bp
 # veterinarian
 from .Veterinarian import get_all_requests_by_vet_id_bp
 from .Veterinarian import schedule_request_bp
@@ -57,5 +58,6 @@ __all__ = [
     'get_reservations_by_volunteer_id_bp',
     'delete_reservation_bp',
     'update_walking_schedule_bp',
-    'update_medical_record_bp'
+    'update_medical_record_bp',
+    'update_animal_bp'
     ]
