@@ -49,11 +49,13 @@ def sign_up():
 
 
     use_case = UnregisteredUseCase()
-    user = use_case.sign_up(username,password, email, name)
-
-    return jsonify({
+    try:  
+      user = use_case.sign_up(username,password, email, name)
+      return jsonify({
         'id': user.id,
         'email': user.email,
         'role_id': user.role_id,
         'verified': user.verified
-    }), 201
+      }), 201
+    except ValueError as e:
+      return jsonify({'error': str(e)}), 400
