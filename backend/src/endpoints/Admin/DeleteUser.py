@@ -1,9 +1,10 @@
 from flask import Blueprint, request, jsonify
 from src.usecases import AdminUseCase
 
-delete_user_bp = Blueprint('delete_user', __name__)
-@delete_user_bp.route('/admin/delete_user', methods=['DELETE'])
+delete_user_bp = Blueprint("delete_user", __name__)
 
+
+@delete_user_bp.route("/admin/delete_user", methods=["DELETE"])
 def delete_user():
     """
     Delete user.
@@ -17,13 +18,13 @@ def delete_user():
         200:
             description: Deleted
         400:
-            description: Invalid input      
+            description: Invalid input
     """
-    user_id = request.args.get('user_id')
+    user_id = request.args.get("user_id")
     use_case = AdminUseCase()
-    
+
     try:
         use_case.delete_user(user_id)
-        return jsonify({'message': 'User deleted'}), 200
+        return jsonify({"message": "User deleted"}), 200
     except Exception as e:
-        return jsonify({'message': str(e)}), 400
+        return jsonify({"message": str(e)}), 400

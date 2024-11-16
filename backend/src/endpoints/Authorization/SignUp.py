@@ -1,9 +1,10 @@
 from flask import Blueprint, request, jsonify
 from src.usecases import UnregisteredUseCase
 
-sign_up_bp = Blueprint('sign_up', __name__)
+sign_up_bp = Blueprint("sign_up", __name__)
 
-@sign_up_bp.route('/authorization/sign_up', methods=['POST'])
+
+@sign_up_bp.route("/authorization/sign_up", methods=["POST"])
 def sign_up():
     """Sign up
     ---
@@ -40,22 +41,24 @@ def sign_up():
         description: Invalid input
     """
 
-
-    username = request.args.get('username')
-    email = request.args.get('email')
-    password = request.args.get('password')
-    name = request.args.get('name')
-
-
+    username = request.args.get("username")
+    email = request.args.get("email")
+    password = request.args.get("password")
+    name = request.args.get("name")
 
     use_case = UnregisteredUseCase()
-    try:  
-      user = use_case.sign_up(username,password, email, name)
-      return jsonify({
-        'id': user.id,
-        'email': user.email,
-        'role_id': user.role_id,
-        'verified': user.verified
-      }), 201
+    try:
+        user = use_case.sign_up(username, password, email, name)
+        return (
+            jsonify(
+                {
+                    "id": user.id,
+                    "email": user.email,
+                    "role_id": user.role_id,
+                    "verified": user.verified,
+                }
+            ),
+            201,
+        )
     except ValueError as e:
-      return jsonify({'error': str(e)}), 400
+        return jsonify({"error": str(e)}), 400
