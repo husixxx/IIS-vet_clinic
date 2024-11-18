@@ -65,18 +65,21 @@ def create_walking_schedule():
         )
 
     caretaker_use_case = CaretakerUseCase()
-    walking_schedule = caretaker_use_case.create_walking_schedule(
-        animal_id, start_time, end_time
-    )
+    try:
 
-    return (
-        jsonify(
-            {
-                "id": walking_schedule.id,
-                "animal_id": walking_schedule.animal_id,
-                "start_time": walking_schedule.start_time,
-                "end_time": walking_schedule.end_time,
-            }
-        ),
-        200,
-    )
+        walking_schedule = caretaker_use_case.create_walking_schedule(
+            animal_id, start_time, end_time
+        )
+        return (
+            jsonify(
+                {
+                    "id": walking_schedule.id,
+                    "animal_id": walking_schedule.animal_id,
+                    "start_time": walking_schedule.start_time,
+                    "end_time": walking_schedule.end_time,
+                }
+            ),
+            200,
+        )
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400

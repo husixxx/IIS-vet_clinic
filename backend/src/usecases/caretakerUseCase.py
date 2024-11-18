@@ -54,6 +54,17 @@ class CaretakerUseCase:
         description: str,
         sex: str,
     ) -> Animal:
+
+        if (
+            name == None
+            or breed == None
+            or age == None
+            or history == None
+            or description == None
+            or sex == None
+        ):
+            raise ValueError("Missing fields")
+
         new_animal = Animal(
             name=name,
             breed=breed,
@@ -70,7 +81,10 @@ class CaretakerUseCase:
     def create_walking_schedule(
         self, animal_id: int, start_time: str, end_time: str
     ) -> WalkingSchedule:
-
+        
+        if not self.animal_repository.get_by_id(animal_id):
+            raise Exception("Animal not found.")
+        
         walking_schedule = WalkingSchedule(
             animal_id=animal_id,
             start_time=start_time,
@@ -89,6 +103,17 @@ class CaretakerUseCase:
             raise Exception("User is verified.")
         volunteer.verified = True
         volunteer.role_id = 1
+        self.user_repository.update(volunteer)
+        return volunteer
+    
+    def unverify_volunteer(self, id: int) -> User:
+        volunteer = self.user_repository.get_by_id(id)
+        if volunteer is None:
+            raise Exception("User not found.")
+        if volunteer.role_id != 1:
+            raise Exception("User is not a volunteer.")
+        volunteer.verified = False
+        volunteer.role_id = 5
         self.user_repository.update(volunteer)
         return volunteer
 
@@ -123,10 +148,14 @@ class CaretakerUseCase:
         description: str,
     ):
 
-        veterinarian = self.user_repository.get_by_username(veterinarian_username)
-
-        if veterinarian is None:
+        veterinarian = self.public_repository.get_by_username(veterinarian_username)
+        animal = self.animal_repository.get_by_id(animal_id)
+        
+        if animal is None:
+            raise Exception("Animal not found.")
+        if veterinarian is None or veterinarian.role_id != 2:
             raise Exception("Veterinarian not found.")
+        
         new_request = Request(
             animal_id=animal_id,
             veterinarian_id=veterinarian.id,
@@ -140,7 +169,7 @@ class CaretakerUseCase:
 
     ### Get all volunteers to verify ###
     def get_all_unverified_volunteers(self) -> list:
-        return self.user_repository.get_unverified_volunteers()
+        return self.public_repository.get_unverified_volunteers()
 
     ### Accept volunteer reservation request ###
     def accept_reservation(self, request_id: int):
@@ -172,7 +201,7 @@ class CaretakerUseCase:
         vet_request = self.request_repository.get_by_id(vet_request_id)
         if vet_request is None:
             raise Exception("vet_request not found")
-        vet_request.status = "cancelled"
+        vet_request.status = "canceled"
         self.reservation_repository.update(vet_request)
         return vet_request
 
@@ -184,7 +213,7 @@ class CaretakerUseCase:
         if reservation is None:
             raise Exception("No reservation")
         if status not in ["pending", "approved", "canceled", "completed"]:
-            raise Exception("Invalid status")
+            raise ValueError("Invalid status")
         reservation.status = status
         self.reservation_repository.update(reservation)
         return reservation

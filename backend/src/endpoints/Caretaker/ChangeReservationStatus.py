@@ -47,3 +47,5 @@ def change_reservation_status():
         )
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 409

@@ -23,30 +23,37 @@ def create_animal():
                 type: string
                 description: "Name of the animal"
                 example: "Rex"
+                required: true
               breed:
                 type: string
                 description: "Breed of the animal"
                 example: "Jack Russell Terrier"
+                required: true
               age:
                 type: integer
                 description: "Age"
                 example: 2
+                required: true
               photo:
                 type: string
                 format: binary
                 description: "Photo"
+                required: true
               history:
                 type: string
                 description: "History of the animal"
                 example: "Found on the street"
+                required: true
               description:
                 type: string
                 description: "Description of the animal"
                 example: "Friendly and energetic"
+                required: true
               sex:
                 type: string
                 description: "Sex"
                 example: "Male"
+                required: true
     responses:
       201:
         description: Animal created
@@ -99,3 +106,5 @@ def create_animal():
         )
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 409

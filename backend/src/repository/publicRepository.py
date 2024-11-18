@@ -62,7 +62,7 @@ class PublicRepository:
                 "name": animal.name,
                 "breed": animal.breed,
                 "age": animal.age,
-                "photo": photo_base64,  
+                "photo": photo_base64,
                 "history": animal.history,
                 "description": animal.description,
                 "sex": animal.sex,
@@ -215,3 +215,11 @@ class PublicRepository:
 
         self.db_session.delete(user)
         self.db_session.commit()
+
+    def get_by_username(self, username: str) -> User:
+        """Get a single record of user by username."""
+        return self.db_session.query(User).filter(User.username == username).first()
+
+    def get_unverified_volunteers(self) -> List[User]:
+        """Get all unverified volunteers."""
+        return self.db_session.query(User).filter(User.verified == False).all()

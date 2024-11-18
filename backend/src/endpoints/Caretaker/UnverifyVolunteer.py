@@ -1,12 +1,14 @@
 from flask import Blueprint, request, jsonify
 from src.usecases import CaretakerUseCase
+from flask_login import login_required, current_user
 
 unverify_volunteer_bp = Blueprint("unverify_volunteer", __name__)
 
 
 @unverify_volunteer_bp.route("/caretaker/unverify_volunteer", methods=["POST"])
-def verify_volunteer():
-    """Verify a volunteers account
+@login_required
+def unverify_volunteer():
+    """Unverify a volunteers account
     ---
     parameters:
       - name: id
@@ -15,10 +17,12 @@ def verify_volunteer():
         in: query
     responses:
         200:
-            description: Volunteer verified
+            description: Volunteer unverified
         400:
             description: User not found/User already unverified.
     """
+    if current_user.role.name != "caretaker":
+        return jsonify({"error": "Only caretakers can verify volunteers"}), 403
 
     id = request.args.get("id")
     use_case = CaretakerUseCase()
