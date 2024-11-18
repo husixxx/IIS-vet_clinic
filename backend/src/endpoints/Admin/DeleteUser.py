@@ -1,10 +1,12 @@
 from flask import Blueprint, request, jsonify
 from src.usecases import AdminUseCase
+from flask_login import login_required, current_user
 
 delete_user_bp = Blueprint("delete_user", __name__)
 
 
 @delete_user_bp.route("/admin/delete_user", methods=["DELETE"])
+@login_required
 def delete_user():
     """
     Delete user.
@@ -20,6 +22,13 @@ def delete_user():
         400:
             description: Invalid input
     """
+
+    if current_user.role.name != "admin":
+        return (
+            jsonify({"error": f"Unknown operation for {current_user.role.name}"}),
+            403,
+        )
+
     user_id = request.args.get("user_id")
     use_case = AdminUseCase()
 

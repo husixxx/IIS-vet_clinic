@@ -15,7 +15,8 @@ def check_session():
         400:
             description: Expired
     """
-    # Check if the user is authenticated
+
+    # check if cookie is alive
     if current_user.is_authenticated:
         return (
             jsonify(

@@ -38,9 +38,13 @@ class AdminUseCase:
 
         # Check if person exists
         existing_person = User.query.filter_by(username=username).first()
+        existing_person_email = User.query.filter_by(email=email).first()
 
         if existing_person:
             raise ValueError("User with this username already exists")
+
+        if existing_person_email:
+            raise ValueError("User with this email already exists")
 
         new_user = User(
             name=name,
@@ -61,8 +65,13 @@ class AdminUseCase:
         # Check if person exists
         existing_person = User.query.filter_by(username=username).first()
 
+        existing_person_email = User.query.filter_by(email=email).first()
+
         if existing_person:
             raise ValueError("User with this username already exists")
+
+        if existing_person_email:
+            raise ValueError("User with this email already exists")
 
         new_user = User(
             name=name,
@@ -94,7 +103,14 @@ class AdminUseCase:
 
         if not user:
             raise ValueError("User not found")
-
+        if username == "":
+            raise ValueError("Username cannot be empty")
+        if email == "":
+            raise ValueError("Email cannot be empty")
+        if name == "":
+            raise ValueError("Name cannot be empty")
+        
+        
         user.name = name
         user.email = email
         user.username = username

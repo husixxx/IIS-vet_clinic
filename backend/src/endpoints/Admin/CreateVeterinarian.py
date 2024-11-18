@@ -1,10 +1,12 @@
 from flask import Blueprint, request, jsonify
 from src.usecases import AdminUseCase
+from flask_login import login_required, current_user
 
 create_veterinarian_bp = Blueprint("create_veterinarian", __name__)
 
 
 @create_veterinarian_bp.route("/admin/veterinarian", methods=["POST"])
+@login_required
 def create_veterinarian():
     """Create a new veterinarian.
     ---
@@ -34,6 +36,12 @@ def create_veterinarian():
         description: User with this email already exists
     """
 
+    if current_user.role.name != "admin":
+        return (
+            jsonify({"error": f"Unknown operation for {current_user.role.name}"}),
+            403,
+        )
+        
     name = request.args.get("name")
     email = request.args.get("email")
     username = request.args.get("username")

@@ -52,4 +52,4 @@ def sign_in():
 
     login_user(user)
 
-    return jsonify({"id": user.id, "email": user.email, "role_id": user.role_id})
+    return jsonify({"id": user.id, "email": user.email, "role_id": user.role_id}, 200)

@@ -1,10 +1,12 @@
 from flask import Blueprint, request, jsonify
 from src.usecases import AdminUseCase
+from flask_login import login_required, current_user
 
 update_user_bp = Blueprint("update_user", __name__)
 
 
 @update_user_bp.route("/admin/update_user", methods=["PUT"])
+@login_required
 def update_user():
     """
     Update user.
@@ -44,6 +46,13 @@ def update_user():
       400:
         description: Invalid input
     """
+
+    if current_user.role.name != "admin":
+        return (
+            jsonify({"error": f"Unknown operation for {current_user.role.name}"}),
+            403,
+        )
+
     user_id = request.args.get("user_id")
     name = request.args.get("name")
     email = request.args.get("email")
@@ -52,6 +61,7 @@ def update_user():
     if password is None:
         password = ""
     verified_str = request.args.get("verified").lower()
+
     verified = verified_str == "true"
 
     role_id = request.args.get("role_id")
