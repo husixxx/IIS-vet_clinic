@@ -1,19 +1,19 @@
 <template>
  <Dialog :header="header" :visible="isVisible" :modal="true" :closable="false">
    <div class="p-fluid dialog-form-container">
-     <div class="p-field" v-for="field in fields" :key="field.id">
+     <div class="p-field" v-for="field in fields">
        <label :for="field.id" class="dialog-input-label">{{ field.label }}</label>
        <component
          :is="field.component"
          v-model="model[field.model]"
          v-bind="field.props"
-         :id="field.id"
          class="dialog-input-field"
+         :invalid="!model[field.model]"
        />
      </div>
    </div>
    <template #footer>
-     <Button :label="onSaveAddButtonLabel" @click="onSaveAdd" class="p-button-success" />
+     <Button :label="onSaveAddButtonLabel" @click="onSaveAdd" class="p-button-success" :disabled="isNotFilledForm(model)"/>
      <Button label="Cancel" @click="onCancel" class="p-button-secondary" />
    </template>
  </Dialog>
@@ -37,6 +37,18 @@ export default {
   components: {
     Dialog,
     Button
+  },
+  methods: {
+    isNotFilledForm(formItems) {
+      for(const [key, value] of Object.entries(formItems)) {
+        console.log(key, value);
+        if(!value) {
+          return true;
+        }
+      }
+
+      return false;
+    }
   }
 }
 

@@ -10,15 +10,16 @@
                           :suggestions="filteredVeterinarians" 
                           @complete="searchVeterinarians" 
                           :virtualScrollerOptions="{ itemSize: 50 }"
-                          optionLabel="nameAndUsername" dropdown />
+                          optionLabel="nameAndUsername" dropdown
+                          :invalid="!selectedVeterinarian"/>
           </div>
           <div class="p-field input-group">
             <label for="description" class="input-label">Description</label>
-            <Textarea id="description" v-model="description" placeholder="Enter request's description" class="input-text" rows="5" />
+            <Textarea id="description" v-model="description" placeholder="Enter request's description" class="input-text" rows="5" :invalid="!description"/>
           </div>
           <div class="p-field input-group">
             <label for="date" class="input-label">Date</label>
-            <DatePicker class="input-text" v-model="date" :manualInput="false" dateFormat="D, dd M yy" showIcon fluid iconDisplay="input" />
+            <DatePicker class="input-text" v-model="date" :manualInput="false" dateFormat="D, dd M yy" showIcon fluid iconDisplay="input" :invalid="!date" showTime showSeconds hourFormat="24"/>
           </div>
           <div class="p-field send-vet-request">
             <Button label="Send request" @click="handleSendVetRequest" class="w-full" icon="pi pi-send" />

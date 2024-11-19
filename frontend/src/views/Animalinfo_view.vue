@@ -42,12 +42,11 @@
           <strong>{{ field.label }}:</strong> {{ animalInfo?.[field.model] }}
         </div>
         
-        <div class="tags">
-          <Button v-if="authStore.getRoleId === UserRole.Caretaker" label="Edit animal information" style="width: 100%;" @click="openAnimalInfoEditModal(animalInfo)"/>
+        <div class="tags" v-if="authStore.getRoleId === UserRole.Caretaker">
+          <Button label="Edit animal information" style="width: 100%;" @click="openAnimalInfoEditModal(animalInfo)"/>
         </div>
-        <div class="tags">
+        <div class="tags" v-if="authStore.getRoleId === UserRole.Caretaker">
           <Button
-            v-if="authStore.getRoleId === UserRole.Caretaker"
             @click="() => router.push({ name: 'CreateVetRequest', params: { animalId: route.params.id } })"
             label="Create veterinarian request"
             style="width: 100%;"
@@ -55,14 +54,14 @@
         </div>
       </div>
 
-    <div class="animal-fieldsets">
-      <Fieldset legend="Description">
-        <p>{{ animalInfo?.description }}</p>
-      </Fieldset>
-      <Fieldset legend="History">
-        <p>{{ animalInfo?.history }}</p>
-      </Fieldset>
-    </div>
+      <div class="animal-fieldsets">
+        <Fieldset legend="Description">
+          <p>{{ animalInfo?.description }}</p>
+        </Fieldset>
+        <Fieldset legend="History">
+          <p>{{ animalInfo?.history }}</p>
+        </Fieldset>
+      </div>
   </div>
 
     <div class="medical-records-section">
@@ -227,6 +226,7 @@ const selectedSchedule = reactive({
 
 const showMedicalRecordsEditDialog = ref(false);
 const selectedMedicalRecord = reactive({
+  id: null,
   description: '',
   examinationDate: '',
   examinationType: ''
@@ -417,8 +417,12 @@ const closeAnimalInfoEditDialog = async () => {
 };
 
 const openScheduleAddModal = async (schedule) => {
+  selectedSchedule.id = 1;
   selectedSchedule.startDate = undefined;
   selectedSchedule.endDate = undefined;
+  // selectedSchedule.startDate = 1;
+  // selectedSchedule.endDate = 1;
+
 
   showScheduleAddDialog.value = true;
 };
@@ -428,6 +432,7 @@ const closeScheduleAddModal = async () => {
 };
 
 const openMedicalRecordAddModal = async (schedule) => {
+  selectedMedicalRecord.id = 1;
   selectedMedicalRecord.description = undefined;
   selectedMedicalRecord.examinationDate = undefined;
   selectedMedicalRecord.examinationType = undefined;
@@ -559,6 +564,9 @@ fieldset {
   width: 100%;
   height: 100%;
   max-width: 800px;
+  word-break: break-word;
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 
 .photo-section img {
