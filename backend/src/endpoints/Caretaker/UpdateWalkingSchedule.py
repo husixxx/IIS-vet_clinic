@@ -1,9 +1,11 @@
 from flask import Blueprint, request, jsonify
 from src.usecases import CaretakerUseCase
 from ..services import is_valid_timestamp
+from flask_login import login_required, current_user
 
 update_walking_schedule_bp = Blueprint('update_walking_schedule', __name__)
 @update_walking_schedule_bp.route('/caretaker/update_walking_schedule', methods=['PUT'])
+@login_required
 def update_walking_schedule():
   """
   Update walking schedule.
@@ -25,9 +27,16 @@ def update_walking_schedule():
     200:
       description: Updated
     400:
-      description: Invalid input      
+      description: Invalid input
+    403:
+      description: Unknown operation       
   """
 
+  if current_user.role.name != "caretaker":
+        return (
+            jsonify({"error": f"Unknown operation for {current_user.role.name}"}),
+            403,
+        )
 
   walking_schedule_id = request.args.get('walking_schedule_id')
   start_time = request.args.get('start_time')
