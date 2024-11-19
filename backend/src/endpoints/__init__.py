@@ -65,7 +65,7 @@ __all__ = [
     'delete_reservation_bp',
     'update_walking_schedule_bp',
     'update_medical_record_bp',
-    'update_animal_bp'
+    'update_animal_bp',
     'get_all_breeds_bp',
     'delete_user_bp',
     'get_all_vet_requests_bp',
