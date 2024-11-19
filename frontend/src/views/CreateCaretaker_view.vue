@@ -107,14 +107,17 @@ const isFormValid = computed(() => {
   return firstName.value && lastName.value && username.value && email.value && password.value && isEmailValid.value;
 });
 
-// Handle create caretaker logic
 const handleCreateCaretaker = async () => {
   try {
     // Combine first and last names
     const fullName = `${firstName.value} ${lastName.value}`;
 
     // Send form data using POST request
-    const response = await axiosClient.post(`/admin/caretaker?username=${username.value}&email=${email.value}&password=${password.value}&name=${fullName}`,null,{withCredentials: true});
+    const response = await axiosClient.post(
+      `/admin/caretaker?username=${username.value}&email=${email.value}&password=${password.value}&name=${fullName}`,
+      null,
+      { withCredentials: true }
+    );
 
     if (response.status === 201) {
       // Reset form fields
@@ -128,11 +131,10 @@ const handleCreateCaretaker = async () => {
     }
   } catch (error) {
     console.error('Error creating caretaker:', error);
-    if (error.response && error.response.status === 409) {
-      alert('Error: User with this email already exists!');
-    } else {
-      alert('Error: Failed to create caretaker.');
-    }
+
+    // Vypíš error správu z backendu bez ohľadu na status
+    const errorMessage = error.response?.data?.error || 'Unexpected error occurred. Please try again.';
+    alert(errorMessage);
   }
 };
 </script>

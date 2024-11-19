@@ -105,7 +105,7 @@ const roleOptions = [
   { label: 'Caretaker', value: 3 },
   { label: 'Volunteer', value: 1 },
   { label: 'Veterinarian', value: 2 },
-  { label: 'Unverified User', value: 5 }
+  { label: 'Registered', value: 5 }
 ];
 
 // Fields configuration for the form

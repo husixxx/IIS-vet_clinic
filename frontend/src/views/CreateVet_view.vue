@@ -127,12 +127,13 @@ const handleCreateVeterinarian = async () => {
       alert('Veterinarian created successfully!');
     }
   } catch (error) {
-    console.error('Error creating veterinarian:', error);
-    if (error.response && error.response.status === 409) {
-      alert('Error: User with this email already exists!');
-    } else {
-      alert('Error: Failed to create veterinarian.');
-    }
+
+    console.error('Error creating caretaker:', error);
+
+    // Vypíš error správu z backendu bez ohľadu na status
+    const errorMessage = error.response?.data?.error || 'Unexpected error occurred. Please try again.';
+    alert(errorMessage);
+  
   }
 };
 </script>
