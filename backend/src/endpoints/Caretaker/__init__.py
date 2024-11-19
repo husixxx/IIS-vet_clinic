@@ -8,6 +8,8 @@ from .ChangeReservationStatus import change_reservation_status_bp
 from .GetAllReservations import get_all_reservations_bp
 from .GetAllVeterinarians import get_all_veterinarians_bp
 from .GetAllAnimals import get_all_animals_bp
+from .GetAllVetRequests import get_all_vet_requests_bp
+from .CancelVetRequest import cancel_vet_request_bp
 
 __all__ = [
     'get_all_reservations_bp',

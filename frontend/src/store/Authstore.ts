@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import axiosClient from '../api/api';  // Import axios client pre API requesty
 
 export enum UserRole {
   Volunteer = 1,
@@ -8,40 +9,39 @@ export enum UserRole {
   UnverifVolunteer
 }
 
-// Define the structure of your user object
+// Definícia používateľskej štruktúry
 interface User {
-  email: string;
+  username: string;
   id: number;
-  role_id: number;  // Store role_id directly
+  role_id: number;
 }
 
 interface AuthState {
-  user: User | null;  // User will be null if not logged in
+  user: User | null;  // Používateľ môže byť null, ak nie je prihlásený
 }
 
 export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
-    user: null,
+    user: null,  // Na začiatku nie je prihlásený žiadny používateľ
   }),
   getters: {
-    isLoggedIn: (state): boolean => !!state.user,
-    getUser: (state): User | null => state.user,  // Return user directly
-    getRoleId: (state): number | null => state.user ? state.user.role_id : null,  // Access role_id directly
+    isLoggedIn: (state): boolean => !!state.user,  // Kontrola prihlásenia
+    getUser: (state): User | null => state.user,  // Získanie používateľa
+    getRoleId: (state): number | null => state.user ? state.user.role_id : null,  // Získanie role používateľa
   },
   actions: {
     login(user: User) {
-      this.user = user;
-      localStorage.setItem('user', JSON.stringify(user)); // Persist user data
+      this.user = user;  // Nastavenie používateľa po úspešnom prihlásení
     },
-    logout() {
-      this.user = null;
-      localStorage.removeItem('user');
-    },
-    loadUserFromStorage() {
-      const storedUser = localStorage.getItem('user');
-      if (storedUser) {
-        this.user = JSON.parse(storedUser);
+    async logout() {
+      try {
+        // Volanie endpointu pre odhlásenie na serveri
+        await axiosClient.post('/authorization/sign_out', null, { withCredentials: true });
+        this.user = null;
+      } catch (error) {
+        console.error("Error during sign out:", error);
+        alert('Error during sign out');
       }
-    },
+    }
   },
 });

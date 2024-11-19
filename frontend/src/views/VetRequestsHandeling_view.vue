@@ -34,7 +34,9 @@
       <div class="p-fluid">
         <!-- Edit Start Time -->
         <div class="p-field">
-          <InputText v-model="selectedRequest.start_time" />
+          <InputText v-model="selectedRequest.start_time" 
+          :invalid="!selectedRequest.start_time"
+          placeholder="DD/MM/YYYY HH/MM/SS"/>
         </div>
 
         <!-- Edit Status -->
@@ -44,12 +46,15 @@
           optionLabel="label"
           placeholder="Select Status"
           class="w-full"
+          :class="{ 'invalid-field': !selectedRequest.newStatus }"
         />
       </div>
       <template #footer>
         <div class="dialog-footer">
           <Button label="Cancel" class="p-button-text" @click="cancelEdit" />
-          <Button label="Save" class="p-button-primary" @click="saveRequestChanges" />
+          <!-- Disable Save button if start_time or newStatus is empty -->
+          <Button label="Save" class="p-button-primary" @click="saveRequestChanges" 
+            :disabled="!selectedRequest.start_time || !selectedRequest.newStatus || !selectedRequest.newStatus.value" />
         </div>
       </template>
     </Dialog>
@@ -98,6 +103,7 @@ onMounted(async () => {
       params: {
         vet_id: vetId,
       },
+      withCredentials: true
     });
 
     if (response.data) {
@@ -135,7 +141,9 @@ const saveRequestChanges = async () => {
     const [datePart, timePart] = selectedRequest.value.start_time.split(', '); // Separate date and time
 
     const [month, day, year] = datePart.split('/'); // Split the MM/DD/YYYY part
-    const formattedDateTime = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')} ${timePart}`; // Format as 'YYYY-MM-DD HH:MM:SS'
+    // Correct the order to format as 'YYYY-MM-DD HH:MM:SS'
+    const formattedDateTime = `${year}-${day.padStart(2, '0')}-${month.padStart(2, '0')} ${timePart}`; // Corrected the order of month and day
+
 
     // Make the request to the backend with the properly formatted date and status
     const response = await axiosClient.post(`/veterinarian/schedule_request`, null, {
@@ -144,6 +152,7 @@ const saveRequestChanges = async () => {
         date_time: formattedDateTime, // Send as 'YYYY-MM-DD HH:MM:SS'
         status: selectedRequest.value.newStatus.value,
       },
+      withCredentials: true
     });
 
     if (response.status === 200) {
@@ -156,7 +165,12 @@ const saveRequestChanges = async () => {
       console.error('Failed to update request');
     }
   } catch (error) {
-    console.error('Error updating request:', error);
+
+    
+    console.error('Error: Invalid date format ', error);
+    alert('Error: Invalid date format ', error);
+
+    
   }
 };
 </script>
@@ -205,5 +219,10 @@ h1 {
 .dialog-footer {
   display: flex;
   justify-content: center;
+}
+
+/* Red border for invalid fields */
+.invalid-field {
+  border-color: red !important;
 }
 </style>

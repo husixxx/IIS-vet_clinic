@@ -5,19 +5,24 @@
       <template #content>
         <div class="p-fluid no-padding">
           <!-- DataTable for displaying users -->
-          <DataTable :value="users" class="full-width-table" tableStyle="width: 100%">
-            <Column field="id" header="ID" style="width: 10%;"></Column>
-            <Column field="name" header="Name" style="width: 15%;"></Column>
-            <Column field="email" header="Email" style="width: 20%;"></Column>
-            <Column field="username" header="Username" style="width: 15%;"></Column>
-            <Column field="verified" header="Verified" style="width: 10%;"></Column>
-            <Column field="role" header="Role" style="width: 10%;"></Column>
-            <Column header="" style="width: 20%; text-align: right;" headerStyle="text-align: right; padding-right: 30px;">
+          <DataTable :value="users" class="p-datatable-striped full-width-table">
+            <Column field="id" header="ID"></Column>
+            <Column field="name" header="Name"></Column>
+            <Column field="email" header="Email"></Column>
+            <Column field="username" header="Username"></Column>
+            <Column field="verified" header="Verified"></Column>
+            <Column field="role" header="Role"></Column>
+            <Column header="Actions">
               <template #body="slotProps">
                 <Button
                   label="Edit"
                   @click="openEditModal(slotProps.data)"
-                  class="p-button-warning"
+                  class="p-button-warning p-button-sm"
+                />
+                <Button
+                  label="Delete"
+                  @click="confirmDelete(slotProps.data)"
+                  class="p-button-danger p-button-sm"
                 />
               </template>
             </Column>
@@ -41,8 +46,23 @@
         </div>
       </div>
       <template #footer>
-        <Button label="Save" @click="updateUser" class="p-button-success" />
+        <!-- Disable Save button if verified or role_id is not selected -->
+        <Button
+          label="Save"
+          @click="updateUser"
+          class="p-button-success"
+          :disabled="!selectedUser.verified || !selectedUser.role_id"
+        />
         <Button label="Cancel" @click="closeEditModal" class="p-button-secondary" />
+      </template>
+    </Dialog>
+
+    <!-- Confirmation dialog for deletion -->
+    <Dialog header="Confirm Delete" v-model:visible="showDeleteDialog" :modal="true" :closable="true" :style="{ width: '30vw' }">
+      <p>Are you sure you want to delete this user?</p>
+      <template #footer>
+        <Button label="Yes" @click="deleteUser" class="p-button-danger" />
+        <Button label="No" @click="closeDeleteDialog" class="p-button-secondary" />
       </template>
     </Dialog>
   </div>
@@ -62,6 +82,7 @@ import axiosClient from '../api/api';  // Ensure correct path to your API client
 // Reactive reference to hold user data
 const users = ref([]);
 const showEditDialog = ref(false);
+const showDeleteDialog = ref(false);  // New state for delete dialog
 const selectedUser = reactive({
   id: null,
   name: '',
@@ -100,31 +121,28 @@ const fields = [
 // Fetch all users on component mount
 onMounted(async () => {
   try {
-    const response = await axiosClient.get('/admin/users');
+    const response = await axiosClient.get('/admin/users', {
+      withCredentials: true  // Zabezpečí, že cookies budú odoslané a prijaté
+    });
     users.value = response.data;
   } catch (error) {
     console.error('Error fetching users:', error);
   }
 });
 
+// Open edit modal
 const openEditModal = async (user) => {
   selectedUser.id = user.id;
   selectedUser.name = user.name;
   selectedUser.email = user.email;
   selectedUser.username = user.username;
   selectedUser.password = ''; // Leave password empty for security
-
-  // Set the verified value directly as a boolean
   selectedUser.verified = user.verified;
-
-  // Set the role_id directly as an integer
   selectedUser.role_id = user.role_id;
-
   showEditDialog.value = true;
 };
 
-
-// Function to close the edit modal
+// Close edit modal
 const closeEditModal = async () => {
   showEditDialog.value = false;
 };
@@ -132,7 +150,7 @@ const closeEditModal = async () => {
 const updateUser = async () => {
   try {
     // Format the request properly, ensuring verified is a boolean and role_id is an integer
-    const response = await axiosClient.put(`/admin/update_user?user_id=${selectedUser.id}&name=${selectedUser.name}&email=${selectedUser.email}&username=${selectedUser.username}&password=${selectedUser.password}&verified=${selectedUser.verified.value}&role_id=${selectedUser.role_id.value}`);
+    const response = await axiosClient.put(`/admin/update_user?user_id=${selectedUser.id}&name=${selectedUser.name}&email=${selectedUser.email}&username=${selectedUser.username}&password=${selectedUser.password}&verified=${selectedUser.verified.value}&role_id=${selectedUser.role_id.value}`,null,{withCredentials: true});
     if (response.status === 200) {
       alert('User updated successfully!');
       closeEditModal();
@@ -144,13 +162,44 @@ const updateUser = async () => {
     alert('Failed to update user.');
   }
 };
+
+// Function to open delete confirmation dialog
+const confirmDelete = (user) => {
+  selectedUser.id = user.id; // Set the selected user's id for deletion
+  showDeleteDialog.value = true;  // Show the delete confirmation dialog
+};
+
+// Function to close delete confirmation dialog
+const closeDeleteDialog = () => {
+  showDeleteDialog.value = false;
+};
+
+// Function to delete the user
+const deleteUser = async () => {
+  try {
+    const response = await axiosClient.delete(`/admin/delete_user`, {
+      params: { user_id: selectedUser.id },
+      withCredentials: true  // Zabezpečí, že cookies budú odoslané a prijaté
+    });
+    if (response.status === 200) {
+      alert('User deleted successfully!');
+      closeDeleteDialog();
+      // Refresh the user list
+      onMounted();
+    }
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    alert('Failed to delete user.');
+  }
+};
 </script>
+
 
 <style scoped>
 .edit-users-container {
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* Align items to the top instead of center */
+  align-items: flex-start;
   padding-left: 20px;
   padding-right: 20px;
   width: 100%;
@@ -158,32 +207,51 @@ const updateUser = async () => {
 
 .full-width-card {
   width: 100%;
-}
-
-h1 {
-  text-align: center;
+  border-radius: 0; /* Remove rounded corners */
+  margin: 0; /* Ensure no margin around the card */
 }
 
 .no-padding {
-  padding: 0 !important; /* Remove padding from around the DataTable */
+  padding: 0 !important;
 }
 
 .full-width-table {
   width: 100%;
+  border-radius: 0; /* Ensure the table also has no rounded corners */
 }
 
 .p-button-warning {
   margin: 0 5px;
 }
 
+h1 {
+  text-align: center;
+  margin-bottom: 20px; /* Optional margin-bottom for consistency */
+}
+
+/* Ensure no border-radius, padding, or margin in the table */
+.p-datatable {
+  margin-top: 0; /* Ensure no top margin */
+  padding: 0; /* Remove padding from the DataTable */
+  border-radius: 0; /* Remove border radius */
+  border: none; /* Remove any borders */
+}
+
+/* Ensure the table wrapper also has no border-radius or padding */
+.p-datatable-wrapper {
+  border-radius: 0;
+  padding: 0;
+}
+
 .p-field {
   display: flex;
+  justify-content: space-between; /* Align label and input */
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
 }
 
 .input-label {
-  width: 120px; /* Set a fixed width for labels */
+  width: 120px;
   margin-right: 10px;
   font-size: 1rem;
 }
@@ -192,8 +260,14 @@ h1 {
   flex-grow: 1;
 }
 
-.table-actions {
-  display: flex;
-  justify-content: center;
+.p-dialog .p-fluid {
+  padding: 20px; /* Consistent padding for the modal */
 }
+
+.p-button-success,
+.p-button-secondary {
+  margin: 10px 5px; /* Spacing between the buttons */
+}
+
+
 </style>

@@ -2,9 +2,10 @@ from flask import Blueprint, request, jsonify
 from src.usecases import AnimalUseCase
 import logging
 
-get_animal_info_by_id_bp = Blueprint('get_animal_info_by_id', __name__)
+get_animal_info_by_id_bp = Blueprint("get_animal_info_by_id", __name__)
 
-@get_animal_info_by_id_bp.route('/animal/info', methods=['GET'])
+
+@get_animal_info_by_id_bp.route("/animal/info", methods=["GET"])
 def get_animal_info_by_id():
     """
     Get animal information by id.
@@ -20,13 +21,13 @@ def get_animal_info_by_id():
       400:
         description: Invalid input
     """
-    animal_id = request.args.get('animal_id', type=int)
+    animal_id = request.args.get("animal_id", type=int)
     use_case = AnimalUseCase()
-    
+
     try:
-      animal_info = use_case.get_animal_info_by_id(animal_id)
-      logging.error(f"Animal info fetched: {animal_info}")
-      return animal_info, 200
+        animal_info = use_case.get_animal_info_by_id(animal_id)
+        logging.error(f"Animal info fetched: {animal_info}")
+        return animal_info, 200
     except Exception as e:
-      logging.error(f"Error fetching animal info: {e}")
-      return jsonify({'error': str(e)}), 400
+        logging.error(f"Error fetching animal info: {e}")
+        return jsonify({"error": str(e)}), 400

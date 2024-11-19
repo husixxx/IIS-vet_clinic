@@ -5,6 +5,7 @@ from .Admin.CreateCaretaker import create_caretaker_bp
 from .Admin.CreateVeterinarian import create_veterinarian_bp
 from .Admin.GetAllUsers import get_all_users_bp
 from .Admin import update_user_bp
+from .Admin import delete_user_bp
 # caretaker
 from .Caretaker.CreateWalkingSchedule import create_walking_schedule_bp
 from .Caretaker.CreateAnimal import create_animal_bp
@@ -33,6 +34,11 @@ from .Authorization.SignUp import sign_up_bp
 # public
 from .Public import get_animal_info_by_id_bp
 from .Public import filter_animals_bp
+from .Public import get_all_breeds_bp
+from .Caretaker import get_all_vet_requests_bp
+from .Caretaker import cancel_vet_request_bp
+from .Authorization import check_session_bp
+from .Authorization import sign_out_bp
 __all__ = [
     'get_all_reservations_bp',
     'change_reservation_status_bp',
@@ -60,4 +66,10 @@ __all__ = [
     'update_walking_schedule_bp',
     'update_medical_record_bp',
     'update_animal_bp'
+    'get_all_breeds_bp',
+    'delete_user_bp',
+    'get_all_vet_requests_bp',
+    'cancel_vet_request_bp',
+    'check_session_bp',
+    'sign_out_bp'
     ]

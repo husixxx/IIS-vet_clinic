@@ -16,6 +16,8 @@ import Create_vet_request from '../views/CreateVetRequest_view.vue'
 import Reservation_approving from '../views/ReservationApproving_view.vue'
 import Vet_requests_handeling from '../views/VetRequestsHandeling_view.vue'
 import Volunteers_history from '../views/VolunteerHistory_view.vue'
+import Caretkers_vet_requests from '../views/CaretakerVetRequests_view.vue'
+import axiosClient from '../api/api';
 
 
 const routes: Array<RouteRecordRaw> = [
@@ -106,6 +108,12 @@ const routes: Array<RouteRecordRaw> = [
         name: 'VetRequestsHandeling',
         component: Vet_requests_handeling,
         meta: { requiresAuth: true, role: UserRole.Veterinarian }  // Only allow access for Caretaker
+      },
+      {
+        path: 'vetrequest',
+        name: 'VetRequest',
+        component: Caretkers_vet_requests,
+        meta: { requiresAuth: true, role: UserRole.Caretaker }  // Only allow access for Caretaker
       }
     ],
   },
@@ -117,21 +125,55 @@ const router = createRouter({
 });
 
 // Navigation Guard
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore();
 
-  // Check if the route requires authentication and role
+  // Ak je potrebná autentifikácia pre túto trasu
   if (to.meta.requiresAuth) {
-    if (!authStore.isLoggedIn) {
-      // If user is not logged in, redirect to Sign In
-      return next({ name: 'Sign' });
-    } else if (to.meta.role && authStore.getRoleId !== to.meta.role) {
-      // If user's role doesn't match, redirect to Home
-      return next({ name: 'Home' });
+    // Ak používateľ nie je prihlásený, skúsime overiť session na serveri
+    if (!authStore.isLoggedIn) 
+    {
+      try 
+      {
+        const response = await axiosClient.get('/authorization/check_session', { withCredentials: true });
+
+        if (response.data.status === "active") 
+        {
+          // Session je aktívna, nastavíme používateľa
+          const user = {
+            username: response.data.username,
+            id: response.data.user_id,
+            role_id: response.data.role_id,
+          };
+
+          authStore.login(user);
+        } 
+        else 
+        {
+          return next({ name: 'Sign' });
+        }
+      } 
+      catch (error) 
+      {
+        console.error("Error checking session:", error);
+        return next({ name: 'Sign' });
+      }
+    }
+
+    // Ak používateľ nie je autorizovaný pre požadovanú rolu
+    if (to.meta.role && authStore.getRoleId !== to.meta.role)
+    {
+      return next({ name: 'Home' });  // Presmerovanie na domovskú stránku, ak rola nevyhovuje
+    }
+
+    if (to.meta.role && authStore.getRoleId == to.meta.role)
+    {
+      return next();
     }
   }
-  next();  // Allow access if no restrictions
+  next();
 });
+
 
 
 export default router;

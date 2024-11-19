@@ -3,9 +3,10 @@ from werkzeug.security import *
 from flask_login import login_user
 from src.models import User
 
-sign_in_bp = Blueprint('sign_in', __name__)
+sign_in_bp = Blueprint("sign_in", __name__)
 
-@sign_in_bp.route('/authorization/sign_in', methods=['POST'])
+
+@sign_in_bp.route("/authorization/sign_in", methods=["POST"])
 def sign_in():
     """Sign in
     ---
@@ -35,24 +36,20 @@ def sign_in():
       401:
         description: Unauthorized
     """
-    username = request.args.get('username')
-    password = request.args.get('password')
+    username = request.args.get("username")
+    password = request.args.get("password")
 
-    current_app.logger.info(f'Sign in: {username}')
-    
+    current_app.logger.info(f"Sign in: {username}")
+
     user = User.query.filter_by(username=username).first()
     if user is None:
-      return jsonify({'error': 'Not found'}), 400
+        return jsonify({"error": "Not found"}), 400
     if not check_password_hash(user.password, password):
-      return jsonify({'error': 'Password bad'}), 400
-    
+        return jsonify({"error": "Password bad"}), 400
+
     if not user.verified:
-      return jsonify({'error': 'Unauthorized'}), 401
-    
+        return jsonify({"error": "Unauthorized"}), 401
+
     login_user(user)
-    
-    return jsonify({
-      'id': user.id,
-      'email': user.email,
-      'role_id': user.role_id
-      })
+
+    return jsonify({"id": user.id, "email": user.email, "role_id": user.role_id}, 200)
