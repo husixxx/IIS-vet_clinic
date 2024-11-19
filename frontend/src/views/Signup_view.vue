@@ -127,7 +127,11 @@ const handleSignUp = async () => {
   if (!isFormValid.value) return; // Prevent signup if form is invalid
 
   try {
-    const response = await axiosClient.post(`/authorization/sign_up?username=${username.value}&email=${email.value}&password=${password.value}&name=${fullName.value}`, null, {withCredentials: true});
+    const response = await axiosClient.post(
+      `/authorization/sign_up?username=${username.value}&email=${email.value}&password=${password.value}&name=${fullName.value}`,
+      null,
+      { withCredentials: true }
+    );
 
     // Reset form fields after successful sign-up
     firstName.value = '';
@@ -138,10 +142,17 @@ const handleSignUp = async () => {
 
     alert("Your volunteer account has to be approved by caretaker");
   } catch (error) {
-    console.log(error);
-    alert("Something went wrong");
+    if (error.response) {
+      const errorMessage = error.response.data.error || "Unknown error occurred";
+      alert(errorMessage); // Ukážeme používateľovi správu z backendu
+    } else {
+      // Ak je chyba sieťová alebo nejaký iný problém
+      console.error("Error:", error.message);
+      alert("Something went wrong. Please try again later.");
+    }
   }
 };
+
 
 // Redirect to Sign In using named route
 const redirectToSignIn = () => {

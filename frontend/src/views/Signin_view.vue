@@ -79,45 +79,39 @@ const isFormValid = computed(() => {
 // Sign In handler function
 const handleSignIn = async () => {
   try {
-    const response = await axiosClient.post(`/authorization/sign_in?username=${username.value}&password=${password.value}`, null, {withCredentials: true});
+    const response = await axiosClient.post(
+      `/authorization/sign_in?username=${username.value}&password=${password.value}`,
+      null,
+      { withCredentials: true }
+    );
 
-    // Handle successful login
+    const userData = response.data[0]; 
+
+    // Map response data to the user object
     const user = {
-      username: response.data.username,
-      id: response.data.id,
-      role_id: response.data.role_id,
+      username: userData.username,
+      id: userData.id,
+      role_id: userData.role_id,
     };
 
-    authStore.login(user);
+    authStore.login(user); // Login with the mapped user object
     password.value = '';
     username.value = '';
-    router.push({ name: 'Home' });  // Redirect to home after login
-    
+    router.push({ name: 'Home' }); // Redirect to home after login
   } 
-  catch (error) 
-  {
-    // Handle error and print status code
-    if (error.response) 
-    {
-      var status = error.response.status;
-      var error_msg = error.response.data.error;
-      var displaymsg;
-      if(status == 400)
-      {
-        displaymsg = "User not found."
-      }
-      else if(status == 401)
-      {
-        displaymsg = "Not verified account."
-      }
-      alert("Error: " + displaymsg);
-    } 
-    else 
-    {
-      console.error("Error:", error.message);
-      alert("Something went wrong");
-    }
+  catch (error) {
+  if (error.response) {
+
+    const status = error.response.status;
+    const error_msg = error.response.data.error;
+    console.error(`Error Status: ${status}`);
+    alert(error_msg);
+  } else {
+
+    console.error("Error:", error.message);
+    alert("Something went wrong. Please try again later.");
   }
+}
 };
 
 // Redirect to sign up page
