@@ -1,9 +1,11 @@
 from flask import Blueprint, request, jsonify
 from src.usecases import VeterinarianUseCase
 from ..services import is_valid_date
+from flask_login import login_required, current_user
 
 update_medical_record_bp = Blueprint('update_medical_record', __name__)
 @update_medical_record_bp.route('/caretaker/update_medical_record', methods=['PUT'])
+@login_required
 def update_medical_record():
   """
   Update medical record.
@@ -33,9 +35,16 @@ def update_medical_record():
     200:
       description: Updated
     400:
-      description: Invalid input      
+      description: Invalid input
+    403:
+      description: Unknown operation
   """
 
+  if current_user.role.name != "veterinarian":
+        return (
+            jsonify({"error": f"Unknown operation for {current_user.role.name}"}),
+            403,
+        )
 
   medical_record_id = request.args.get('medical_record_id')
   veterinarian_id = request.args.get('veterinarian_id')
