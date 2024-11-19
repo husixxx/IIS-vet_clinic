@@ -66,7 +66,7 @@ const items = computed(() => {
             label: 'Logout',
             command: () => {
                 authStore.logout();  // Clear user from AuthStore
-                router.push({ name: "Sign" });  // Redirect to Sign In page
+                router.push({ name: "Home" });  // Redirect to Home page
             }
         });
     } else {
