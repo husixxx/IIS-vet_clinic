@@ -1,8 +1,10 @@
 from flask import Blueprint, request, jsonify
 from src.usecases import CaretakerUseCase
+from flask_login import login_required, current_user
 
 update_animal_bp = Blueprint('update_animal', __name__)
 @update_animal_bp.route('/caretaker/update_animal', methods=['PUT'])
+@login_required
 def update_animal():
   """
   Update animal.
@@ -40,9 +42,16 @@ def update_animal():
     200:
       description: Updated
     400:
-      description: Invalid input      
+      description: Invalid input
+    403:
+      description: Unknown operation            
   """
 
+  if current_user.role.name != "caretaker":
+        return (
+            jsonify({"error": f"Unknown operation for {current_user.role.name}"}),
+            403,
+        )
 
   animal_id = request.args.get('animal_id')
   name = request.args.get('name')
