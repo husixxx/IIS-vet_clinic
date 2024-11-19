@@ -2,6 +2,7 @@ import base64
 from flask import Blueprint, request, jsonify
 from flask_login import *
 from src.usecases import CaretakerUseCase
+from flask_login import login_required, current_user
 
 create_animal_bp = Blueprint("create_animal", __name__)
 
@@ -59,6 +60,8 @@ def create_animal():
         description: Animal created
       400:
         description: Invalid input
+      403:
+        description: Unknown operation 
     """
 
     if current_user.role.name != "caretaker":
