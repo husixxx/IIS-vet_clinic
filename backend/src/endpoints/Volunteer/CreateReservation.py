@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_login import *
 from src.usecases import VolunteerUseCase
 from ..services import *
+from flask_login import login_required, current_user
 
 create_reservation_bp = Blueprint("create_reservation", __name__)
 
@@ -34,6 +35,8 @@ def create_reservation():
         description: Reservation created
       400:
         description: Invalid input
+      403:
+        description: Unknown operation
     """
 
     if current_user.role.name != "Volunteer":
