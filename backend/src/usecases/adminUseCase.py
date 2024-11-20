@@ -113,10 +113,10 @@ class AdminUseCase:
         existing_person = User.query.filter_by(username=username).first()
         existing_person_email = User.query.filter_by(email=email).first()
         
-        if existing_person.id != user_id: 
+        if existing_person and existing_person.id != int(user_id):
             raise ValueError("User with this username already exists")
-        
-        if existing_person_email.id != user_id:
+
+        if existing_person_email and existing_person_email.id != int(user_id):
             raise ValueError("User with this email already exists")
         
         user.name = name
