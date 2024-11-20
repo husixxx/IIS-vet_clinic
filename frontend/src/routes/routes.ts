@@ -39,11 +39,13 @@ const routes: Array<RouteRecordRaw> = [
         path: 'signin',
         name: 'Sign',
         component: Signin,
+        meta: { onlyGuest: true },
       },
       {
         path: 'signup',
         name: 'Signup',
         component: Signup,
+        meta: { onlyGuest: true },
       },
       {
         path: 'animal',
@@ -129,7 +131,8 @@ router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore();
 
   // Ak je potrebná autentifikácia pre túto trasu
-  if (to.meta.requiresAuth) {
+  if (to.meta.requiresAuth) 
+  {
     // Ak používateľ nie je prihlásený, skúsime overiť session na serveri
     if (!authStore.isLoggedIn) 
     {
@@ -158,12 +161,12 @@ router.beforeEach(async (to, from, next) => {
         console.error("Error checking session:", error);
         return next({ name: 'Sign' });
       }
-    }
+  }
 
-    // Ak používateľ nie je autorizovaný pre požadovanú rolu
     if (to.meta.role && authStore.getRoleId !== to.meta.role)
     {
-      return next({ name: 'Home' });  // Presmerovanie na domovskú stránku, ak rola nevyhovuje
+      alert('You do not have permession to access this site')
+      return next({ name: 'Home' });
     }
 
     if (to.meta.role && authStore.getRoleId == to.meta.role)

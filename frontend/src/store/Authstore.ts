@@ -35,7 +35,6 @@ export const useAuthStore = defineStore('auth', {
     },
     async logout() {
       try {
-        // Volanie endpointu pre odhlásenie na serveri
         await axiosClient.post('/authorization/sign_out', null, { withCredentials: true });
         this.user = null;
       } catch (error) {
