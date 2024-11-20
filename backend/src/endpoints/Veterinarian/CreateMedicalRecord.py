@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from flask_login import login_required, current_user
 from src.usecases import VeterinarianUseCase
 from ..services import is_valid_timestamp
 
@@ -6,6 +7,7 @@ create_medical_record_bp = Blueprint("create_medical_record", __name__)
 
 
 @create_medical_record_bp.route("/veterinarian/create_medical_record", methods=["POST"])
+@login_required
 def create_medical_record():
     """
     Create a medical record.
@@ -37,7 +39,9 @@ def create_medical_record():
         400:
             description: Medical record not created
     """
-
+    if current_user.role.name != "veterinarian":
+        return jsonify({"error": "Only veterinarians can create medical records"}), 403
+    
     animal_id = request.args.get("animal_id")
     veterinarian_id = request.args.get("veterinarian_id")
     description = request.args.get("description")

@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from flask_login import current_user, login_required
 from src.usecases import VeterinarianUseCase
 
 get_all_requests_by_vet_id_bp = Blueprint("get_all_requests_by_vet_id", __name__)
@@ -7,6 +8,7 @@ get_all_requests_by_vet_id_bp = Blueprint("get_all_requests_by_vet_id", __name__
 @get_all_requests_by_vet_id_bp.route(
     "/veterinarian/get_all_requests_by_vet_id", methods=["GET"]
 )
+@login_required
 def get_all_requests_by_vet_id():
     """
     Get all requests by veterinarian ID.
@@ -23,6 +25,8 @@ def get_all_requests_by_vet_id():
       400:
         description: No requests found
     """
+    if current_user.role.name != "veterinarian":
+        return jsonify({"error": "Only veterinarians can create medical records"}), 403
 
     vet_id = request.args.get("vet_id")
     use_case = VeterinarianUseCase()
