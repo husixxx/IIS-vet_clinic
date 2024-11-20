@@ -27,6 +27,7 @@ def get_all_reservations():
                     {
                         "id": reservation.id,
                         "animal_id": reservation.animal_id,
+                        "animal_name": reservation.animal.name,
                         "volunteer_username": reservation.volunteer.username,
                         "start_time": reservation.start_time,
                         "end_time": reservation.end_time,
