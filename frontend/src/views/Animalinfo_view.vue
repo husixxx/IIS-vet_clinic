@@ -527,6 +527,10 @@ onMounted(async () => {
   
 <style scoped>
 
+.non-prime-animal-info {
+  color: var(--p-fieldset-color);
+}
+
 .animal-schedules {
   grid-row: 2 / span 1;
   justify-content: center;
