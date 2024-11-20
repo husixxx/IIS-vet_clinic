@@ -18,7 +18,8 @@
         type="text"
         v-model="filters.age"
         placeholder="Insert Age"
-        class="p-inputtext input-field"
+        class="p-inputtext input-field no-spinner"
+        @keypress="allowOnlyIntegers"
       />
     </div>
 
@@ -67,6 +68,13 @@ import Button from 'primevue/button';
 
 // Define the emit event
 const emit = defineEmits(['filter-animals']);
+
+const allowOnlyIntegers = (event) => {
+  // Ak nie je stlačený číselný znak, zablokuj vstup
+  if (!/^[0-9]$/.test(event.key)) {
+    event.preventDefault();
+  }
+};
 
 // Set up filter states
 const filters = ref({
