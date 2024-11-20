@@ -141,16 +141,21 @@ const handleSignUp = async () => {
     password.value = '';
 
     alert("Your volunteer account has to be approved by caretaker");
-  } catch (error) {
-    if (error.response) {
-      const errorMessage = error.response.data.error || "Unknown error occurred";
-      alert(errorMessage); // Ukážeme používateľovi správu z backendu
-    } else {
-      // Ak je chyba sieťová alebo nejaký iný problém
-      console.error("Error:", error.message);
-      alert("Something went wrong. Please try again later.");
-    }
+  } 
+  catch (error) {
+    console.log(error.response);
+  if (error.response) {
+
+    const status = error.response.status;
+    const error_msg = error.response.data.error;
+    console.error(`Error Status: ${status}`);
+    alert(error_msg);
+  } else {
+
+    console.error("Error:", error.message);
+    alert("Something went wrong. Please try again later.");
   }
+}
 };
 
 

@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from flask_login import current_user, login_required
 from src.usecases import VeterinarianUseCase
 from flask_login import login_required, current_user
 
@@ -27,6 +28,8 @@ def get_all_requests_by_vet_id():
       403:
         description: Unknown operation
     """
+    if current_user.role.name != "veterinarian":
+        return jsonify({"error": "Only veterinarians can create medical records"}), 403
 
     if current_user.role.name != "veterinarian":
         return (

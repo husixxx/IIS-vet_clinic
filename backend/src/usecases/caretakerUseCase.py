@@ -227,7 +227,7 @@ class CaretakerUseCase:
         vet_request = self.request_repository.get_by_id(vet_request_id)
         if vet_request is None:
             raise Exception("vet_request not found")
-        vet_request.status = "canceled"
+        vet_request.status = "cancelled"
         self.reservation_repository.update(vet_request)
         return vet_request
 
@@ -238,7 +238,7 @@ class CaretakerUseCase:
         reservation = self.reservation_repository.get_by_id(reservation_id)
         if reservation is None:
             raise Exception("No reservation")
-        if status not in ["pending", "approved", "canceled", "completed"]:
+        if status not in ["pending", "approved", "cancelled", "completed"]:
             raise ValueError("Invalid status")
         reservation.status = status
         self.reservation_repository.update(reservation)

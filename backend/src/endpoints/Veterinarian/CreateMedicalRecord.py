@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from flask_login import login_required, current_user
 from src.usecases import VeterinarianUseCase
 from ..services import is_valid_timestamp
 from flask_login import login_required, current_user

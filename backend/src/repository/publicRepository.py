@@ -199,6 +199,7 @@ class PublicRepository:
         )
 
         for request in requests:
+            request.veterinarian_id = None
             self.db_session.delete(request)
 
         for record in medicalRecords:
