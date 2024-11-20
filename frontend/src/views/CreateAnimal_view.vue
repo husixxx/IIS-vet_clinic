@@ -180,7 +180,7 @@ const handleCreateAnimal = async () => {
 <style scoped>
 .title-center {
   text-align: center;
-  font-size: 1.5rem;
+  margin-bottom: 10px;
 }
 
 .w-full {

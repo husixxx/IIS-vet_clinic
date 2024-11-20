@@ -1,7 +1,7 @@
 <template>
   <div class="create-caretaker-container">
     <Card class="centered-card">
-      <template #title">
+      <template #title>
         <div class="title-center">Create Caretaker</div>
       </template>
       <template #content>
@@ -150,7 +150,7 @@ const handleCreateCaretaker = async () => {
 
 .title-center {
   text-align: center;
-  font-size: 1.5rem;
+  margin-bottom: 10px;
 }
 
 .input-group {

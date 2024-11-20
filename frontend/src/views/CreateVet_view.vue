@@ -1,7 +1,7 @@
 <template>
   <div class="create-veterinarian-container">
     <Card class="centered-card">
-      <template #title">
+      <template #title>
         <div class="title-center">Create Veterinarian</div>
       </template>
       <template #content>
@@ -149,7 +149,7 @@ const handleCreateVeterinarian = async () => {
 
 .title-center {
   text-align: center;
-  font-size: 1.5rem;
+  margin-bottom: 10px;
 }
 
 .input-group {
