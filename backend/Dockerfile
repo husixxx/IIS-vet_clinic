@@ -19,6 +19,6 @@ ENV PYTHONPATH=/app/backend
 # expose port 5000
 EXPOSE 5000
 
-# run gunicorn
-CMD ["sh", "-c", "cd backend && python run.py"]
+# run 
+CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:5000", "backend.src.app:app"]
 
