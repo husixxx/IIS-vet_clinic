@@ -11,6 +11,9 @@ RUN npm install
 
 # Skopíruj zdrojové kódy a spusti build
 COPY . .
+
+WORKDIR /app/src
+
 RUN npm run build
 
 # Produkčný krok (Production Stage)

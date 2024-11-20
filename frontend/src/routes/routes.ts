@@ -125,7 +125,7 @@ const router = createRouter({
 });
 
 // Navigation Guard
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, _from, next) => {
   const authStore = useAuthStore();
 
   // Ak je potrebná autentifikácia pre túto trasu
