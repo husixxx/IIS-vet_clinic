@@ -20,5 +20,5 @@ ENV PYTHONPATH=/app/backend
 EXPOSE 5000
 
 # run 
-CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:5000", "backend.src.app:app"]
+CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:5000", "backend.run:app"]
 
