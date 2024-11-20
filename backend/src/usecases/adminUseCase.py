@@ -108,6 +108,15 @@ class AdminUseCase:
         if name == "":
             raise ValueError("Name cannot be empty")
 
+        existing_person = User.query.filter_by(username=username).first()
+        existing_person_email = User.query.filter_by(email=email).first()
+        
+        if existing_person.id != user_id: 
+            raise ValueError("User with this username already exists")
+        
+        if existing_person_email.id != user_id:
+            raise ValueError("User with this email already exists")
+        
         user.name = name
         user.email = email
         user.username = username
