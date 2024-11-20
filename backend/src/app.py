@@ -5,6 +5,7 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from . import db
+import os 
 
 from .models import *
 from .usecases import *
@@ -26,21 +27,10 @@ def create_app():
         },
     }
 
-    CORS(
-        app,
-        resources={
-            r"/*": {  # Allow all routes
-                "origins": [
-                    "http://127.0.0.1:5173",
-                    "http://localhost:5342",
-                    "http://localhost:5000",
-                    "http://localhost:5173",
-                ],
-                "supports_credentials": True,
-            }
-        },
-        supports_credentials=True,
-    )
+    
+
+    CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
+
 
     # Database
     # DATABASE_URI = "postgresql://husic:husic@postgres:5432/iis"
