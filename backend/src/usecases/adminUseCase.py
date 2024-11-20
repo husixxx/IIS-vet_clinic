@@ -101,6 +101,8 @@ class AdminUseCase:
 
         if not user:
             raise ValueError("User not found")
+        if user.role_id == 4:
+            raise ValueError("Cant update admin")
         if username == "":
             raise ValueError("Username cannot be empty")
         if email == "":
