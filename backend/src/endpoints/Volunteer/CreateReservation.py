@@ -39,7 +39,7 @@ def create_reservation():
         description: Unknown operation
     """
 
-    if current_user.role.name != "Volunteer":
+    if current_user.role.name != "volunteer":
         return jsonify({"error": "Only volunteers can create reservations"}), 403
 
     # get parameters
