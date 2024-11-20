@@ -183,10 +183,19 @@ const deleteUser = async () => {
       // Refresh the user list
       onMounted();
     }
-  } catch (error) {
-    console.error('Error deleting user:', error);
-    alert('Failed to delete user.');
+  }catch (error) {
+  if (error.response) {
+
+    const status = error.response.status;
+    const error_msg = error.response.data.error;
+    console.error(`Error Status: ${status}`);
+    alert(error_msg);
+  } else {
+
+    console.error("Error:", error.message);
+    alert("Something went wrong. Please try again later.");
   }
+}
 };
 </script>
 
