@@ -43,8 +43,8 @@ def create_app():
     )
 
     # Database
-    DATABASE_URI = "postgresql://husic:husic@postgres:5432/iis"
-    app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
+    # DATABASE_URI = "postgresql://husic:husic@postgres:5432/iis"
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.secret_key = "husic"  # session secret key
 
