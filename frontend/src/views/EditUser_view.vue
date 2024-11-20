@@ -44,7 +44,10 @@
             v-model="selectedUser[field.model]"
             v-bind="field.props"
             :id="field.id"
-            :invalid="field.model !== 'password' && !selectedUser[field.model]"
+            :invalid="
+              field.model === 'email'
+                ? !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(selectedUser.email)
+                : field.model !== 'password' && !selectedUser[field.model]"
             class="input-field"
           />
         </div>
@@ -54,11 +57,12 @@
           label="Save"
           @click="updateUser"
           class="p-button-success"
-          :disabled="!selectedUser.name || !selectedUser.email || !selectedUser.username"
+          :disabled="!selectedUser.name || !selectedUser.email || !selectedUser.username || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(selectedUser.email)"
         />
         <Button label="Cancel" @click="closeEditModal" class="p-button-secondary" />
       </template>
     </Dialog>
+
 
     <!-- Confirmation dialog for deletion -->
     <Dialog header="Confirm Delete" v-model:visible="showDeleteDialog" :modal="true" :closable="true" :style="{ width: '30vw' }">
@@ -139,10 +143,20 @@ const updateUser = async () => {
       // Refresh the user list
       onMounted();
     }
-  } catch (error) {
-    console.error('Error updating user:', error);
-    alert('Failed to update user.');
+  } 
+  catch (error) {
+  if (error.response) {
+
+    const status = error.response.status;
+    const error_msg = error.response.data.error;
+    console.error(`Error Status: ${status}`);
+    alert(error_msg);
+  } else {
+
+    console.error("Error:", error.message);
+    alert("Something went wrong. Please try again later.");
   }
+}
 };
 
 // Function to open delete confirmation dialog
