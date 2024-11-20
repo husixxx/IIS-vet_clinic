@@ -101,6 +101,7 @@ const cancelVetRequest = async (vetRequestId) => {
 <style scoped>
 .caretaker-vet-requests-container {
   padding: 20px;
+  margin-bottom: 100px;
 }
 
 h1 {

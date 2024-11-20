@@ -109,6 +109,7 @@ const deleteReservation = async (reservationId) => {
 <style scoped>
 .volunteer-history-container {
   padding: 20px;
+  margin-bottom: 100px;
 }
 
 h1 {
