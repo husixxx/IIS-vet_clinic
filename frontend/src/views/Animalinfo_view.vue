@@ -1,7 +1,7 @@
 <template>
   <div class="main-content">
     <div class="photo-section">
-      <img src="../assets/cat3.jpg" alt="Animal photo" />
+      <img :src="animalPhoto" alt="Animal photo" />
     </div>
 
     <div class="animal-schedules">
@@ -38,7 +38,7 @@
 
     <div class="animal-info">
       <div class="tags-column">
-        <div class="tags" v-for="(field, index) in filteredAnimalInfoFields" :key="index">
+        <div class="tags non-prime-animal-info" v-for="(field, index) in filteredAnimalInfoFields" :key="index">
           <strong>{{ field.label }}:</strong> {{ animalInfo?.[field.model] }}
         </div>
         
@@ -169,7 +169,7 @@ const router = useRouter();
 const authStore = useAuthStore();
 const user = authStore.getUser;
 const userRole = authStore.getRoleId;
-const animalInfo = ref();
+const animalInfo = ref({});
 const animalSchedules = ref([]);
 const animalMedicalRecords = ref([]);
 
@@ -178,6 +178,15 @@ const confirm = useConfirm();
 const filteredAnimalInfoFields = computed(() =>
   animalInfoFields.filter(field => field.model !== 'description' && field.model !== 'history')
 );
+
+const animalPhoto = computed(() => {
+  if(animalInfo.value && animalInfo.value.photo) {
+    return `data:image/jpeg;base64,${animalInfo.value.photo}`;
+  }
+
+  return null;
+});
+
 
 function confirmReservation(animalName, schedule) {
   confirm.require({
@@ -218,6 +227,7 @@ const selectedAnimalInfo = reactive({
   history: '',
   description: '',
   sex: '',
+  // photo: '',
 });
 
 const showScheduleEditDialog = ref(false);
@@ -507,9 +517,7 @@ onMounted(async () => {
         ...record,
         examination_date: datePart
       };
-  });
-
-    // console.log(animalSchedules.value);
+    });
   } catch (error) {
     console.error('Error fetching animal data:', error);
   }
