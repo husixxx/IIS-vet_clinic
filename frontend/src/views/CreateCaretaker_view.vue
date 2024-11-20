@@ -130,12 +130,18 @@ const handleCreateCaretaker = async () => {
       alert('Caretaker created successfully!');
     }
   } catch (error) {
-    console.error('Error creating caretaker:', error);
+  if (error.response) {
 
-    // Vypíš error správu z backendu bez ohľadu na status
-    const errorMessage = error.response?.data?.error || 'Unexpected error occurred. Please try again.';
-    alert(errorMessage);
+    const status = error.response.status;
+    const error_msg = error.response.data.error;
+    console.error(`Error Status: ${status}`);
+    alert(error_msg);
+  } else {
+
+    console.error("Error:", error.message);
+    alert("Something went wrong. Please try again later.");
   }
+}
 };
 </script>
 

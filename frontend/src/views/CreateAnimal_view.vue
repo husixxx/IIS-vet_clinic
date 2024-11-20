@@ -178,9 +178,18 @@ const handleCreateAnimal = async () => {
       alert('Animal created successfully!');
     }
   } catch (error) {
-    console.error('Error creating animal:', error);
-    alert('Failed to create animal.');
+  if (error.response) {
+
+    const status = error.response.status;
+    const error_msg = error.response.data.error;
+    console.error(`Error Status: ${status}`);
+    alert(error_msg);
+  } else {
+
+    console.error("Error:", error.message);
+    alert("Something went wrong. Please try again later.");
   }
+}
 };
 </script>
 

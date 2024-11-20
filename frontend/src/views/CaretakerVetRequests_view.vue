@@ -89,11 +89,18 @@ const cancelVetRequest = async (vetRequestId) => {
       }
     }
   } catch (error) {
-    if (error.response && error.response.status === 400) {
-      console.error('Error: Request could not be cancelled.');
-      alert('Error: Request could not be cancelled.');
-    }
+  if (error.response) {
+
+    const status = error.response.status;
+    const error_msg = error.response.data.error;
+    console.error(`Error Status: ${status}`);
+    alert(error_msg);
+  } else {
+
+    console.error("Error:", error.message);
+    alert("Something went wrong. Please try again later.");
   }
+}
 };
 </script>
 
