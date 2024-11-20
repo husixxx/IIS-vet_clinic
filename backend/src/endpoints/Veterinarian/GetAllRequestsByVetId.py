@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from src.usecases import VeterinarianUseCase
+from flask_login import login_required, current_user
 
 get_all_requests_by_vet_id_bp = Blueprint("get_all_requests_by_vet_id", __name__)
 
@@ -7,6 +8,7 @@ get_all_requests_by_vet_id_bp = Blueprint("get_all_requests_by_vet_id", __name__
 @get_all_requests_by_vet_id_bp.route(
     "/veterinarian/get_all_requests_by_vet_id", methods=["GET"]
 )
+@login_required
 def get_all_requests_by_vet_id():
     """
     Get all requests by veterinarian ID.
@@ -22,7 +24,15 @@ def get_all_requests_by_vet_id():
         description: Successfully retrieved all requests
       400:
         description: No requests found
+      403:
+        description: Unknown operation
     """
+
+    if current_user.role.name != "veterinarian":
+        return (
+            jsonify({"error": f"Unknown operation for {current_user.role.name}"}),
+            403,
+        )
 
     vet_id = request.args.get("vet_id")
     use_case = VeterinarianUseCase()
