@@ -17,5 +17,5 @@ COPY . .
 ENV FLASK_APP=backend/src/app.py
 
 # run 
-CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:5000", "backend.src.app:app"]
+CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:5000", "backend.run:app"]
 
