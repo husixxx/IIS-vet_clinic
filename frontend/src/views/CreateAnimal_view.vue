@@ -53,13 +53,13 @@
             />
           </div>
 
-          <!-- File Upload for Animal Photo (optional) -->
+          <!-- File Upload for Animal Photo (accepting only JPEG) -->
           <div class="p-field input-group">
-            <label for="photo" class="input-label">Photo</label>
+            <label for="photo" class="input-label">Photo (JPEG only)</label>
             <input
               type="file"
               @change="handleFileUpload"
-              accept="image/*"
+              accept="image/jpeg"
               class="file-input"
             />
           </div>
@@ -124,7 +124,14 @@ const sexOptions = [
 const handleFileUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
-    photoFile.value = file;  // Store the file
+    const validTypes = ['image/jpeg'];
+    if (!validTypes.includes(file.type)) {
+      alert('Only JPEG photos are allowed.');
+      photoFile.value = null; // Reset the file if it's not a valid type
+      event.target.value = ''; // Reset the file input
+      return;
+    }
+    photoFile.value = file; // Store the file
   }
 };
 
