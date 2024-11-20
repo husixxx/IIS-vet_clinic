@@ -94,8 +94,7 @@ class AdminUseCase:
         name: str,
         email: str,
         username: str,
-        password: str,
-        role_id: int,
+        password: str
     ):
 
         user = self.user_repository.get_by_id(user_id)
@@ -116,7 +115,6 @@ class AdminUseCase:
         if password != "":
             user.password = generate_password_hash(password)
 
-        user.role_id = role_id
 
         self.user_repository.update(user)
 

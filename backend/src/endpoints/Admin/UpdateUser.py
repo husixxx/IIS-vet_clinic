@@ -32,10 +32,6 @@ def update_user():
         required: true
         type: string
         in: query
-      - name: role_id
-        required: true
-        type: integer
-        in: query
     responses:
       200:
         description: Updated
@@ -57,11 +53,10 @@ def update_user():
     if password is None:
         password = ""
 
-    role_id = request.args.get("role_id")
 
     use_case = AdminUseCase()
     try:
-        use_case.update_user(user_id, name, email, username, password, role_id)
+        use_case.update_user(user_id, name, email, username, password)
         return jsonify({"message": "User updated"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
