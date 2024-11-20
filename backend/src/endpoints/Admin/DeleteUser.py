@@ -36,4 +36,4 @@ def delete_user():
         use_case.delete_user(user_id)
         return jsonify({"message": "User deleted"}), 200
     except Exception as e:
-        return jsonify({"message": str(e)}), 400
+        return jsonify({"error": str(e)}), 400

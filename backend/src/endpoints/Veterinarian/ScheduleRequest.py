@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from flask_login import login_required, current_user
 from src.usecases import VeterinarianUseCase
 from ..services import is_valid_timestamp
 
@@ -6,6 +7,7 @@ schedule_request_bp = Blueprint("schedule_request", __name__)
 
 
 @schedule_request_bp.route("/veterinarian/schedule_request", methods=["POST"])
+@login_required
 def schedule_request():
     """
     Schedule a request from a caretaker.
@@ -29,6 +31,9 @@ def schedule_request():
       400:
         description: Request could not be scheduled
     """
+    if current_user.role.name != "veterinarian":
+        return jsonify({"error": "Only veterinarians can schedule requests"}), 403
+      
     use_case = VeterinarianUseCase()
 
     request_id = request.args.get("request_id")

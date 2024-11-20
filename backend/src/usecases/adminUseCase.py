@@ -95,7 +95,6 @@ class AdminUseCase:
         email: str,
         username: str,
         password: str,
-        verified: bool,
         role_id: int,
     ):
 
@@ -109,8 +108,7 @@ class AdminUseCase:
             raise ValueError("Email cannot be empty")
         if name == "":
             raise ValueError("Name cannot be empty")
-        
-        
+
         user.name = name
         user.email = email
         user.username = username
@@ -118,7 +116,6 @@ class AdminUseCase:
         if password != "":
             user.password = generate_password_hash(password)
 
-        user.verified = verified
         user.role_id = role_id
 
         self.user_repository.update(user)
@@ -143,3 +140,31 @@ class AdminUseCase:
 
         if user.role_id == 5:
             self.public_repository.delete_user(user_id)
+
+    def verify_user(self, user_id: int):
+        user = self.user_repository.get_by_id(user_id)
+
+        if not user:
+            raise ValueError("User not found")
+
+        if user.verified:
+            raise ValueError("User already validated")
+
+        user.verified = True
+
+        self.user_repository.update(user)
+        return user
+
+    def unverify_user(self, user_id: int):
+        user = self.user_repository.get_by_id(user_id)
+
+        if not user:
+            raise ValueError("User not found")
+
+        if not user.verified:
+            raise ValueError("User already unvalidated")
+
+        user.verified = False
+
+        self.user_repository.update(user)
+        return user
