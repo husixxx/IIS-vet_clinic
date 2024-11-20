@@ -25,7 +25,7 @@ def get_reservations_by_volunteer_id():
       400:
         description: No reservations found.
     """
-    if current_user.role.name != "Volunteer":
+    if current_user.role.name != "volunteer":
         return jsonify({"error": "Only volunteers can get their reservations"}), 403
 
     volunteer_id = request.args.get("volunteer_id")

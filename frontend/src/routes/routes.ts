@@ -39,13 +39,11 @@ const routes: Array<RouteRecordRaw> = [
         path: 'signin',
         name: 'Sign',
         component: Signin,
-        meta: { onlyGuest: true },
       },
       {
         path: 'signup',
         name: 'Signup',
         component: Signup,
-        meta: { onlyGuest: true },
       },
       {
         path: 'animalinfo',

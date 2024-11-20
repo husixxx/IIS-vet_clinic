@@ -36,7 +36,7 @@
         <div class="p-field">
           <InputText v-model="selectedRequest.start_time" 
           :invalid="!selectedRequest.start_time"
-          placeholder="DD/MM/YYYY HH/MM/SS"/>
+          placeholder="DD/MM/YYYY, HH:MM:SS"/>
         </div>
 
         <!-- Edit Status -->
@@ -46,7 +46,7 @@
           optionLabel="label"
           placeholder="Select Status"
           class="w-full"
-          :class="{ 'invalid-field': !selectedRequest.newStatus }"
+          :invalid="!selectedRequest.newStatus"
         />
       </div>
       <template #footer>
@@ -122,9 +122,9 @@ onMounted(async () => {
   }
 });
 
-// Open the edit modal
 const openEditModal = async (request) => {
   selectedRequest.value = { ...request }; // Clone the request
+  selectedRequest.value.newStatus = null; // Nastav status na prázdne pole
   editDialogVisible.value = true;
 };
 

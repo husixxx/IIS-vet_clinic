@@ -38,11 +38,13 @@
           optionLabel="label"
           placeholder="Select Status"
           class="w-full"
+          :invalid="!selectedReservation.newStatus"
         />
       </div>
       <template #footer>
         <Button label="Cancel" class="p-button-text" @click="cancelEdit" />
-        <Button label="Save" class="p-button-primary" @click="saveStatus" />
+        <Button label="Save" class="p-button-primary" @click="saveStatus" 
+        :disabled="!selectedReservation.newStatus"/>
       </template>
     </Dialog>
   </div>
@@ -100,6 +102,7 @@ onMounted(async () => {
 // Open the edit modal
 const openEditModal = async (reservation) => {
   selectedReservation.value = { ...reservation }; // Clone the reservation
+  selectedReservation.value.newStatus = null;
   editDialogVisible.value = true;
 };
 

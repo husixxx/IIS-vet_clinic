@@ -21,7 +21,7 @@ def delete_reservation():
         400:
             description: Reservation not deleted
     """
-    if current_user.role.name != "Volunteer":
+    if current_user.role.name != "volunteer":
         return jsonify({"error": "Only volunteers can delete reservations"}), 403
 
     reservation_id = request.args.get("reservation_id")
