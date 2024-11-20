@@ -1,11 +1,14 @@
 from flask import Blueprint, request, jsonify
 from src.usecases import VeterinarianUseCase
 from ..services import is_valid_timestamp
+from flask_login import login_required, current_user
+
 
 create_medical_record_bp = Blueprint("create_medical_record", __name__)
 
 
 @create_medical_record_bp.route("/veterinarian/create_medical_record", methods=["POST"])
+@login_required
 def create_medical_record():
     """
     Create a medical record.
@@ -36,7 +39,15 @@ def create_medical_record():
             description: Medical record created
         400:
             description: Medical record not created
+        403:
+            description: Unknown operation
     """
+
+    if current_user.role.name != "veterinarian":
+        return (
+            jsonify({"error": f"Unknown operation for {current_user.role.name}"}),
+            403,
+        )
 
     animal_id = request.args.get("animal_id")
     veterinarian_id = request.args.get("veterinarian_id")
