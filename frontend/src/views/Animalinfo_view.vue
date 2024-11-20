@@ -189,10 +189,13 @@ function confirmReservation(animalName, schedule) {
         const response = await axiosClient.post(`/volunteer/reservation?volunteer_id=${encodeURIComponent(authStore.getUser.id)}` +
                                                 `&animal_id=${encodeURIComponent(route.params.id)}` +
                                                 `&start_time=${encodeURIComponent(getFormattedDate(schedule.start_time, true))}` +
-                                                `&end_time=${encodeURIComponent(getFormattedDate(schedule.end_time, true))}`);
+                                                `&end_time=${encodeURIComponent(getFormattedDate(schedule.end_time, true))}`,
+                                                { withCredentials: true });
 
         if(response.status === SUCCESS_RESPONSE_CODE) {
-          alert('Reservation created successfully!');
+          alert('Animal info updated successfully!');
+        } else if(response.status === UNKNOWN_OPERATION_RESPONSE_CODE) {
+          alert('Error! You have no right to perform this operation!');
         }
       } catch (error) {
         console.error('Error creating reservation: ', error);
@@ -320,23 +323,28 @@ const medicalRecordsFields = [
 ];
 
 const SUCCESS_RESPONSE_CODE = 200;
+const UNKNOWN_OPERATION_RESPONSE_CODE = 403;
 
 const sendReqAndProcessResponse = async (request, isSchedule, isUpdated, closeModalFn) => {
   try {
     let response;
     
     if(isUpdated) {
-      response = await axiosClient.put(request);
+      response = await axiosClient.put(request, null, { withCredentials: true });
     } else {
-      response = await axiosClient.post(request);
+      response = await axiosClient.post(request, null, { withCredentials: true });
     }
 
     if(response.status === SUCCESS_RESPONSE_CODE) {
       const action = isUpdated ? 'updated' : 'added';
       const recordType = isSchedule ? 'Schedule' : 'Medical record';
       alert(`${recordType} ${action} successfully!`);
-      closeModalFn();
+    } else if(response.status === UNKNOWN_OPERATION_RESPONSE_CODE) {
+      alert('Error! You have no right to perform this operation!');
     }
+
+    closeModalFn();
+  
   } catch (error) {
     const action = isUpdated ? 'updat' : 'add';
     console.error(`Error ${action}ing ${isSchedule ? 'schedule' : 'medical record'}:`, error);
@@ -352,12 +360,18 @@ async function updateAnimalInfo() {
                                             `&age=${encodeURIComponent(selectedAnimalInfo.age)}` +
                                             `&history=${encodeURIComponent(selectedAnimalInfo.history)}` +
                                             `&description=${encodeURIComponent(selectedAnimalInfo.description)}` +
-                                            `&sex=${encodeURIComponent(selectedAnimalInfo.sex)}`);
+                                            `&sex=${encodeURIComponent(selectedAnimalInfo.sex)}`,
+                                            null,
+                                            { withCredentials: true });
 
     if(response.status === SUCCESS_RESPONSE_CODE) {
-        alert('Animal info updated successfully!');
-        closeAnimalInfoEditDialog();
+      alert('Animal info updated successfully!');
+    } else if(response.status === UNKNOWN_OPERATION_RESPONSE_CODE) {
+      alert('Error! You have no right to perform this operation!');
     }
+
+    closeAnimalInfoEditDialog();
+
   } catch (error) {
     console.error('Error updating animal info: ', error);
     alert('Failed to update animal info');
