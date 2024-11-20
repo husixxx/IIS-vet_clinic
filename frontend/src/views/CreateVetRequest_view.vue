@@ -49,11 +49,17 @@ const selectedVeterinarian = ref(null);
 const description = ref('');
 const date = ref(null);
 const SUCCESS_RESPONSE_CODE = ref(200);
+const UNKNOWN_OPERATION_RESPONSE_CODE = ref(403);
 const route = useRoute();
 
 onMounted(async () => {
     try {
-        const response = await axiosClient.get('/caretaker/veterinarians');
+        const response = await axiosClient.get('/caretaker/veterinarians', { withCredentials: true});
+
+        if(response.status === UNKNOWN_OPERATION_RESPONSE_CODE) {
+          alert('Error! You have no right to perform this operation!');
+        }
+
         veterinarians.value = response.data.map(vet => ({
           ...vet,
           nameAndUsername: `${vet.name} (${vet.username})`
@@ -77,7 +83,9 @@ const handleSendVetRequest = async () => {
     const response = await axiosClient.post(
       `/caretaker/vet_request?animal_id=${encodeURIComponent(route.params.animalId)}` + 
       `&veterinarian_username=${encodeURIComponent(selectedVeterinarian.value.username)}` +
-      `&request_date=${encodeURIComponent(getFormattedDate(date.value, true))}&description=${encodeURIComponent(description.value)}`
+      `&request_date=${encodeURIComponent(getFormattedDate(date.value, true))}&description=${encodeURIComponent(description.value)}`,
+      null,
+      { withCredentials: true}
     );
 
     if(response.status === SUCCESS_RESPONSE_CODE.value) {
@@ -85,6 +93,8 @@ const handleSendVetRequest = async () => {
       description.value = '';
       date.value = '';
       alert('Veterinarian request created successfully!');
+    } else if(response.status === UNKNOWN_OPERATION_RESPONSE_CODE) {
+      alert('Error! You have no right to perform this operation!');
     }
 
   } catch (error) {
