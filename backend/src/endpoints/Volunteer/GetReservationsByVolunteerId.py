@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_login import *
 from src.usecases import VolunteerUseCase
+from flask_login import login_required, current_user
 
 get_reservations_by_volunteer_id_bp = Blueprint(
     "get_reservations_by_volunteer_id", __name__
@@ -25,7 +26,7 @@ def get_reservations_by_volunteer_id():
       400:
         description: No reservations found.
     """
-    if current_user.role.name != "Volunteer":
+    if current_user.role.name != "volunteer":
         return jsonify({"error": "Only volunteers can get their reservations"}), 403
 
     volunteer_id = request.args.get("volunteer_id")
