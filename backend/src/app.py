@@ -99,11 +99,14 @@ def create_app():
     app.register_blueprint(filter_animals_bp)
     app.register_blueprint(get_all_vet_requests_bp)
     app.register_blueprint(cancel_vet_request_bp)
+    app.register_blueprint(update_walking_schedule_bp)
+    app.register_blueprint(update_animal_bp)
 
     # Veterinarian
     app.register_blueprint(get_all_requests_by_vet_id_bp)
     app.register_blueprint(schedule_request_bp)
     app.register_blueprint(create_medical_record_bp)
+    app.register_blueprint(update_medical_record_bp)
 
     # public
     app.register_blueprint(get_all_unverified_volunteers_bp)

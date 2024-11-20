@@ -9,7 +9,7 @@
         <template v-if="animals.length > 0">
           <Animalcard
             v-for="animal in animals"
-            :key="animal.id"
+            :id="animal.id"
             :name="animal.name"
             :breed="animal.breed"
             :age="animal.age"

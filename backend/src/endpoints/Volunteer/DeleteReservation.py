@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_login import *
 from src.usecases import VolunteerUseCase
+from flask_login import login_required, current_user
 
 delete_reservation_bp = Blueprint("delete_reservation", __name__)
 
@@ -20,6 +21,8 @@ def delete_reservation():
             description: Reservation deleted
         400:
             description: Reservation not deleted
+        403:
+            description: Unknown operation
     """
     if current_user.role.name != "volunteer":
         return jsonify({"error": "Only volunteers can delete reservations"}), 403

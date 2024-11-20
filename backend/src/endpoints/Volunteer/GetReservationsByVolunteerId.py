@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_login import *
 from src.usecases import VolunteerUseCase
+from flask_login import login_required, current_user
 
 get_reservations_by_volunteer_id_bp = Blueprint(
     "get_reservations_by_volunteer_id", __name__

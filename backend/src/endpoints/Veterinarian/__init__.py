@@ -1,3 +1,4 @@
 from .GetAllRequestsByVetId import get_all_requests_by_vet_id_bp
 from .ScheduleRequest import schedule_request_bp
 from .CreateMedicalRecord import create_medical_record_bp
+from .UpdateMedicalRecord import update_medical_record_bp

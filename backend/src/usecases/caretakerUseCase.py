@@ -93,8 +93,34 @@ class CaretakerUseCase:
 
         self.schedule_repository.add(walking_schedule)
         return walking_schedule
+    
+    def update_walking_schedule(self, walking_shcedule_id: int, start_time: str, end_time: str):
+        
+        walking_schedule = self.schedule_repository.get_by_id(walking_shcedule_id)
 
-    ### Verify Volunteer ###
+        if not walking_schedule:
+            raise ValueError("Walking schedule not found")
+        
+        walking_schedule.start_time = start_time
+        walking_schedule.end_time = end_time
+        self.schedule_repository.update(walking_schedule)
+
+    def update_animal(self, animal_id: int, name: str, breed: str, age: int, history: str, description: str, sex: str):
+        
+        animal = self.animal_repository.get_by_id(animal_id)
+
+        if not animal:
+            raise ValueError("Animal not found")
+        
+        animal.name = name
+        animal.breed = breed
+        animal.age = age
+        animal.history = history
+        animal.description = description
+        animal.sex = sex
+        self.animal_repository.update(animal)
+
+    
     def verify_volunteer(self, id: int) -> User:
         volunteer = self.user_repository.get_by_id(id)
         if volunteer is None:

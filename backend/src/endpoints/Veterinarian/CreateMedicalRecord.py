@@ -2,6 +2,8 @@ from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from src.usecases import VeterinarianUseCase
 from ..services import is_valid_timestamp
+from flask_login import login_required, current_user
+
 
 create_medical_record_bp = Blueprint("create_medical_record", __name__)
 
@@ -38,10 +40,16 @@ def create_medical_record():
             description: Medical record created
         400:
             description: Medical record not created
+        403:
+            description: Unknown operation
     """
+
     if current_user.role.name != "veterinarian":
-        return jsonify({"error": "Only veterinarians can create medical records"}), 403
-    
+        return (
+            jsonify({"error": f"Unknown operation for {current_user.role.name}"}),
+            403,
+        )
+
     animal_id = request.args.get("animal_id")
     veterinarian_id = request.args.get("veterinarian_id")
     description = request.args.get("description")
@@ -54,25 +62,14 @@ def create_medical_record():
     use_case = VeterinarianUseCase()
 
     try:
-        record = use_case.create_medical_record(
-            animal_id,
-            examination_date=examination_date,
-            vet_id=veterinarian_id,
-            examination_type=examination_type,
-            description=description,
-        )
-        return (
-            jsonify(
-                {
-                    "id": record.id,
-                    "animal_id": record.animal_id,
-                    "examination_date": record.examination_date,
-                    "veterinarian_id": record.veterinarian_id,
-                    "examination_type": record.examination_type,
-                    "description": record.description,
-                }
-            ),
-            200,
-        )
+        record = use_case.create_medical_record(animal_id, examination_date=examination_date, vet_id=veterinarian_id, examination_type=examination_type, description=description)
+        return jsonify({
+            'id': record.id,
+            'animal_id': record.animal_id,
+            'examination_date': record.examination_date,
+            'veterinarian_id': record.veterinarian_id,
+            'examination_type': record.examination_type,
+            'description': record.description
+        }), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400

@@ -10,15 +10,16 @@
                           :suggestions="filteredVeterinarians" 
                           @complete="searchVeterinarians" 
                           :virtualScrollerOptions="{ itemSize: 50 }"
-                          optionLabel="nameAndUsername" dropdown />
+                          optionLabel="nameAndUsername" dropdown
+                          :invalid="!selectedVeterinarian"/>
           </div>
           <div class="p-field input-group">
             <label for="description" class="input-label">Description</label>
-            <Textarea id="description" v-model="description" placeholder="Enter request's description" class="input-text" rows="5" />
+            <Textarea id="description" v-model="description" placeholder="Enter request's description" class="input-text" rows="5" :invalid="!description"/>
           </div>
           <div class="p-field input-group">
             <label for="date" class="input-label">Date</label>
-            <DatePicker class="input-text" v-model="date" :manualInput="false" dateFormat="yy-mm-dd" showIcon fluid iconDisplay="input" />
+            <DatePicker class="input-text" v-model="date" :manualInput="false" dateFormat="D, dd M yy" showIcon fluid iconDisplay="input" :invalid="!date" showTime showSeconds hourFormat="24"/>
           </div>
           <div class="p-field send-vet-request">
             <Button label="Send request" @click="handleSendVetRequest" class="w-full" icon="pi pi-send" />
@@ -39,18 +40,26 @@ import AutoComplete  from 'primevue/autocomplete';
 import Textarea from 'primevue/textarea';
 import DatePicker from 'primevue/datepicker';
 import 'primeicons/primeicons.css'
+import { getFormattedDate } from '../utils/date';
+import { useRoute } from 'vue-router';
 
 const veterinarians = ref([]);
 const filteredVeterinarians = ref([]);
 const selectedVeterinarian = ref(null);
-const animalId = ref(7); // TODO CHANGE IT!!!
 const description = ref('');
 const date = ref(null);
 const SUCCESS_RESPONSE_CODE = ref(200);
+const UNKNOWN_OPERATION_RESPONSE_CODE = ref(403);
+const route = useRoute();
 
 onMounted(async () => {
     try {
-        const response = await axiosClient.get('/caretaker/veterinarians');
+        const response = await axiosClient.get('/caretaker/veterinarians', { withCredentials: true});
+
+        if(response.status === UNKNOWN_OPERATION_RESPONSE_CODE) {
+          alert('Error! You have no right to perform this operation!');
+        }
+
         veterinarians.value = response.data.map(vet => ({
           ...vet,
           nameAndUsername: `${vet.name} (${vet.username})`
@@ -68,30 +77,15 @@ const searchVeterinarians = (event) => {
   );
 };
 
-// function getCurrentDate() {
-//   const today = new Date();
-
-//   const year = today.getFullYear();
-//   const month = String(today.getMonth() + 1).padStart(2, '0');
-//   const day = String(today.getDate()).padStart(2, '0');
-
-//   return  `${year}-${month}-${day}`;
-// }
-
-function getFormattedDate(date) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
 const handleSendVetRequest = async () => {
   try {
     console.log(date.value);
     const response = await axiosClient.post(
-      `/caretaker/vet_request?animal_id=${encodeURIComponent(animalId.value)}` + 
+      `/caretaker/vet_request?animal_id=${encodeURIComponent(route.params.animalId)}` + 
       `&veterinarian_username=${encodeURIComponent(selectedVeterinarian.value.username)}` +
-      `&request_date=${encodeURIComponent(getFormattedDate(date.value))}&description=${encodeURIComponent(description.value)}`
+      `&request_date=${encodeURIComponent(getFormattedDate(date.value, true))}&description=${encodeURIComponent(description.value)}`,
+      null,
+      { withCredentials: true}
     );
 
     if(response.status === SUCCESS_RESPONSE_CODE.value) {
@@ -99,6 +93,8 @@ const handleSendVetRequest = async () => {
       description.value = '';
       date.value = '';
       alert('Veterinarian request created successfully!');
+    } else if(response.status === UNKNOWN_OPERATION_RESPONSE_CODE) {
+      alert('Error! You have no right to perform this operation!');
     }
 
   } catch (error) {
