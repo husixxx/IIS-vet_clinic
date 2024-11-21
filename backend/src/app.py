@@ -39,6 +39,11 @@ def create_app():
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.secret_key = "husic"  # session secret key
 
+    app.config.update(
+        SESSION_COOKIE_SECURE=True,         
+        SESSION_COOKIE_SAMESITE="None"     # cross site
+    )
+
     # not sure if this is needed
     Migrate(app, db)
 
