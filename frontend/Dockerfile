@@ -4,7 +4,7 @@ FROM node:18-alpine AS build
 WORKDIR /app
 
 # Skopíruj package.json a package-lock.json
-COPY package*.json ./
+COPY frontend/package*.json ./
 
 # Nainštaluj závislosti
 RUN npm install
