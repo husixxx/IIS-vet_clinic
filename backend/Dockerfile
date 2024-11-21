@@ -2,7 +2,7 @@
 FROM python:3.10
 
 # set workdir
-WORKDIR /app/backend
+WORKDIR /app
 
 # copy dependencies
 COPY backend/requirements.txt .
@@ -15,9 +15,10 @@ COPY . .
 
 # set environment variables
 ENV FLASK_APP=backend/src/app.py
-
+ENV PYTHONPATH=/app/backend
 # expose port 5000
 EXPOSE 5000
 
 # run gunicorn
-CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:5000", "run:app"]
+CMD ["sh", "-c", "cd backend && gunicorn -w 2 -b 0.0.0.0:5000 run:app"]
+
