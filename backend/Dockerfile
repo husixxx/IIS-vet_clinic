@@ -2,7 +2,7 @@
 FROM python:3.10
 
 # set workdir
-WORKDIR /app
+WORKDIR /app/backend
 
 # copy dependencies
 COPY backend/requirements.txt .
@@ -20,4 +20,4 @@ ENV FLASK_APP=backend/src/app.py
 EXPOSE 5000
 
 # run gunicorn
-CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:5000", "backend.run:app"]
+CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:5000", "run:app"]
