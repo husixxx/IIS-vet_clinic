@@ -30,6 +30,7 @@ Methods:
     cancel_vet_request: Cancels a veterinary request
     filter_animals: Filters animals based on given parameters
     change_reservation_status: Updates the status of a reservation
+    delete_animal: Deletes an animal
 """
 
 
@@ -42,6 +43,16 @@ class CaretakerUseCase:
         self.request_repository = Repository(Request)
         self.reservation_repository = Repository(Reservation)
         self.public_repository = PublicRepository()
+
+    ### Delete Animal ###
+    def delete_animal(self, animal_id: int):
+        animal = self.animal_repository.get_by_id(animal_id)
+
+        if not animal:
+            raise ValueError("Animal not found, hahaha, id == ", animal_id)
+        
+        self.public_repository.delete_animal(animal_id)
+
 
     ### Create Animal ###
     def create_animal(

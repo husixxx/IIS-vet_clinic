@@ -21,6 +21,7 @@ Methods:
     delete_volunteer: Removes a volunteer and their associated reservations
     delete_veterinarian: Removes a veterinarian and handles their associated records
     delete_user: Removes a user from the system
+    delete_animal: Removes an animal from the system
 
 Note:
     This repository handles operations that involve multiple entities
@@ -175,6 +176,7 @@ class PublicRepository:
         )
 
         for reservation in reservations:
+            reservation.volunteer_id = None
             self.db_session.delete(reservation)
 
         self.db_session.delete(volunteer)
@@ -216,6 +218,17 @@ class PublicRepository:
 
         self.db_session.delete(user)
         self.db_session.commit()
+
+    
+    def delete_animal(self, animal_id: int):
+        animal = self.db_session.query(Animal).filter(Animal.id == animal_id).first()
+
+        if not animal:
+            raise ValueError("Animal not foundlooool")
+
+        self.db_session.delete(animal)
+        self.db_session.commit()
+
 
     def get_by_username(self, username: str) -> User:
         """Get a single record of user by username."""
