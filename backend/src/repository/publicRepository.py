@@ -219,13 +219,19 @@ class PublicRepository:
         self.db_session.delete(user)
         self.db_session.commit()
 
-    
+
     def delete_animal(self, animal_id: int):
         animal = self.db_session.query(Animal).filter(Animal.id == animal_id).first()
-
         if not animal:
-            raise ValueError("Animal not foundlooool")
+            raise ValueError("Animal not found")
+        
+        # Delete related records manually
+        self.db_session.query(WalkingSchedule).filter(WalkingSchedule.animal_id == animal_id).delete(synchronize_session=False)
+        self.db_session.query(Reservation).filter(Reservation.animal_id == animal_id).delete(synchronize_session=False)
+        self.db_session.query(Request).filter(Request.animal_id == animal_id).delete(synchronize_session=False)
+        self.db_session.query(MedicalRecord).filter(MedicalRecord.animal_id == animal_id).delete(synchronize_session=False)
 
+        # Delete the animal
         self.db_session.delete(animal)
         self.db_session.commit()
 
