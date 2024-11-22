@@ -52,6 +52,14 @@
             style="width: 100%;"
           />
         </div>
+        <div class="tags" v-if="authStore.getRoleId === UserRole.Caretaker">
+          <Button
+            @click="confirmAnimalDeletion()"
+            label="Delete animal"
+            style="width: 100%;"
+            class="p-button-danger"
+          />
+        </div>
       </div>
 
       <div class="animal-fieldsets">
@@ -214,6 +222,33 @@ function confirmReservation(animalName, schedule) {
 
     reject: () => {
       alert('Not creating reservation');
+    }
+  })
+}
+
+function confirmAnimalDeletion() {
+  confirm.require({
+    message: `Are you sure you want to delete ${animalInfo?.name}`,
+    header: 'Confirmation',
+    icon: 'pi pi-question',
+    accept: async () => {
+      try {
+        const response = await axiosClient.delete(`/caretaker/delete_animal?animal_id=${route.params.id}`,
+                                                  { withCredentials: true });
+
+        if(response.status === SUCCESS_RESPONSE_CODE) {
+          alert('Animal deleted successfully!');
+        } else if(response.status === UNKNOWN_OPERATION_RESPONSE_CODE) {
+          alert('Error! You have no right to perform this operation!');
+        }
+      } catch (error) {
+        console.error('Error deleting animal: ', error);
+        alert('Failed to delete animal');
+      }
+    },
+
+    reject: () => {
+      alert('Not deleting animal');
     }
   })
 }
