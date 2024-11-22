@@ -35,6 +35,7 @@ def get_all_vet_requests():
                 {
                     "id": vet_request.id,
                     "animal_id": vet_request.animal_id,
+                    "animal_name": vet_request.animal.name,
                     "request_date": vet_request.request_date,
                     "status": vet_request.status,
                     "description": vet_request.description,

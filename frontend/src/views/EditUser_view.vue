@@ -207,6 +207,7 @@ const deleteUser = async () => {
   align-items: flex-start;
   padding-left: 20px;
   padding-right: 20px;
+  padding-bottom: 100px;
   width: 100%;
 }
 

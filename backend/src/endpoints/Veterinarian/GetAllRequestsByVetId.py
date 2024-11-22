@@ -47,6 +47,7 @@ def get_all_requests_by_vet_id():
                     {
                         "id": request_vet.id,
                         "animal_id": request_vet.animal_id,
+                        "animal_name": request_vet.animal.name,
                         "vet_id": request_vet.veterinarian_id,
                         "start_time": request_vet.request_date,
                         "status": request_vet.status,

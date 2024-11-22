@@ -7,6 +7,7 @@
       <DataTable :value="requests" class="p-datatable-striped">
         <Column field="id" header="ID"></Column>
         <Column field="animal_id" header="Animal ID"></Column>
+        <Column field="animal_name" header="Animal Name"></Column> <!-- Added Animal Name -->
         <Column field="request_date" header="Request Date"></Column>
         <Column field="description" header="Description"></Column>
         <Column field="status" header="Status">
@@ -40,7 +41,6 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useAuthStore } from '../store/Authstore'; // Assuming you have a Pinia store for user authentication
 import axiosClient from '../api/api';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
@@ -53,12 +53,13 @@ const requests = ref([]);
 onMounted(async () => {
   try {
     // Make an API request to get all vet requests for caretakers
-    const response = await axiosClient.get('/caretaker/get_all_vet_requests',{withCredentials: true});
+    const response = await axiosClient.get('/caretaker/get_all_vet_requests', { withCredentials: true });
 
     if (response.data) {
       requests.value = response.data.map((request) => ({
         id: request.id,
         animal_id: request.animal_id,
+        animal_name: request.animal_name, // Include Animal Name
         request_date: new Date(request.request_date).toLocaleString(),
         description: request.description,
         status: request.status || 'N/A',
@@ -87,20 +88,26 @@ const cancelVetRequest = async (vetRequestId) => {
         requests.value[index].status = 'cancelled';
       }
     }
-  } catch (error) 
-  {
-    if(error.response.status == 400)
-    {
-      console.error('Error: Request could not be cancelled.');
-      alert('Error: Request could not be cancelled.');
-    }
+  } catch (error) {
+  if (error.response) {
+
+    const status = error.response.status;
+    const error_msg = error.response.data.error;
+    console.error(`Error Status: ${status}`);
+    alert(error_msg);
+  } else {
+
+    console.error("Error:", error.message);
+    alert("Something went wrong. Please try again later.");
   }
+}
 };
 </script>
 
 <style scoped>
 .caretaker-vet-requests-container {
   padding: 20px;
+  margin-bottom: 100px;
 }
 
 h1 {

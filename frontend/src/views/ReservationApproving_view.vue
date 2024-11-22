@@ -7,6 +7,7 @@
       <DataTable :value="reservations" class="p-datatable-striped">
         <Column field="id" header="ID"></Column>
         <Column field="animal_id" header="Animal ID"></Column>
+        <Column field="animal_name" header="Animal Name"></Column> <!-- Added Animal Name -->
         <Column field="volunteer_username" header="Volunteer Username"></Column>
         <Column field="start_time" header="Start Time"></Column>
         <Column field="end_time" header="End Time"></Column>
@@ -87,6 +88,7 @@ onMounted(async () => {
       reservations.value = response.data.map(reservation => ({
         id: reservation.id,  // Now using the correct reservation id
         animal_id: reservation.animal_id,
+        animal_name: reservation.animal_name, // Include Animal Name
         volunteer_username: reservation.volunteer_username, // Update volunteer ID to username
         start_time: new Date(reservation.start_time).toLocaleString(),
         end_time: new Date(reservation.end_time).toLocaleString(),
@@ -139,6 +141,7 @@ const saveStatus = async () => {
 <style scoped>
 .reservations-container {
   padding: 20px;
+  margin-bottom: 100px;
 }
 
 h1 {

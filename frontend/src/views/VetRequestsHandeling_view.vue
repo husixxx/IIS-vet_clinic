@@ -7,6 +7,7 @@
       <DataTable :value="requests" class="p-datatable-striped">
         <Column field="id" header="ID"></Column>
         <Column field="animal_id" header="Animal ID"></Column>
+        <Column field="animal_name" header="Animal Name"></Column> <!-- Added Animal Name -->
         <Column field="start_time" header="Start Time"></Column>
         <Column field="description" header="Description"></Column>
         <Column field="status" header="Status">
@@ -110,6 +111,7 @@ onMounted(async () => {
       requests.value = response.data.map((request) => ({
         id: request.id,
         animal_id: request.animal_id,
+        animal_name: request.animal_name, // Include Animal Name
         vet_id: request.vet_id,
         start_time: new Date(request.start_time).toLocaleString(),
         description: request.description,
@@ -139,11 +141,8 @@ const saveRequestChanges = async () => {
   try {
     // Convert from 'MM/DD/YYYY, HH:MM:SS' (which is what .toLocaleString() gives) to 'YYYY-MM-DD HH:MM:SS'
     const [datePart, timePart] = selectedRequest.value.start_time.split(', '); // Separate date and time
-
     const [month, day, year] = datePart.split('/'); // Split the MM/DD/YYYY part
-    // Correct the order to format as 'YYYY-MM-DD HH:MM:SS'
-    const formattedDateTime = `${year}-${day.padStart(2, '0')}-${month.padStart(2, '0')} ${timePart}`; // Corrected the order of month and day
-
+    const formattedDateTime = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')} ${timePart}`; // Corrected the order of month and day
 
     // Make the request to the backend with the properly formatted date and status
     const response = await axiosClient.post(`/veterinarian/schedule_request`, null, {
@@ -165,12 +164,8 @@ const saveRequestChanges = async () => {
       console.error('Failed to update request');
     }
   } catch (error) {
-
-    
     console.error('Error: Invalid date format ', error);
     alert('Error: Invalid date format ', error);
-
-    
   }
 };
 </script>
