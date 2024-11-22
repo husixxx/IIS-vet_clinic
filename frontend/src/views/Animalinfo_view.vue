@@ -414,6 +414,7 @@ async function updateAnimalInfo() {
       alert('Error! You have no right to perform this operation!');
     }
 
+    await fetchAnimalInfo();
     closeAnimalInfoEditDialog();
   } catch (error) {
     console.error('Error updating animal info: ', error);
@@ -421,44 +422,44 @@ async function updateAnimalInfo() {
   }
 }
 
-function updateSchedule() {
+async function updateSchedule() {
   const requestUrl = `/caretaker/update_walking_schedule?walking_schedule_id=${encodeURIComponent(selectedSchedule.id)}` +
                      `&start_time=${encodeURIComponent(getFormattedDate(selectedSchedule.startDate, true))}` +
                      `&end_time=${encodeURIComponent(getFormattedDate(selectedSchedule.endDate, true))}`;
                      
-  sendReqAndProcessResponse(requestUrl, true, true, closeScheduleEditModal);
-  fetchAnimalInfo();
+  await sendReqAndProcessResponse(requestUrl, true, true, closeScheduleEditModal);
+  await fetchAnimalInfo();
 }
 
-function addSchedule() {
+async function addSchedule() {
   const requestUrl = `/caretaker/walking_schedule?animal_id=${encodeURIComponent(route.params.id)}` +
                       `&start_time=${encodeURIComponent(getFormattedDate(selectedSchedule.startDate, true))}` +
                       `&end_time=${encodeURIComponent(getFormattedDate(selectedSchedule.endDate, true))}`;
 
-  sendReqAndProcessResponse(requestUrl, true, false, closeScheduleAddModal);
-  fetchAnimalInfo();
+  await sendReqAndProcessResponse(requestUrl, true, false, closeScheduleAddModal);
+  await fetchAnimalInfo();
 }
 
-function updateMedicalRecord() {
+async function updateMedicalRecord() {
   const requestUrl = `/caretaker/update_medical_record?medical_record_id=${encodeURIComponent(selectedMedicalRecord.id)}` +
                      `&veterinarian_id=${encodeURIComponent(authStore.getUser.id)}` +
                      `&examination_date=${encodeURIComponent(getFormattedDate(selectedMedicalRecord.examinationDate))}` +
                      `&examination_type=${encodeURIComponent(selectedMedicalRecord.examinationType)}` +
                      `&description=${encodeURIComponent(selectedMedicalRecord.description)}`;
 
-  sendReqAndProcessResponse(requestUrl, false, true, closeMedicalRecordEditModal);
-  fetchAnimalInfo();
+  await sendReqAndProcessResponse(requestUrl, false, true, closeMedicalRecordEditModal);
+  await fetchAnimalInfo();
 };
 
-function addMedicalRecord() {
+async function addMedicalRecord() {
   const requestUrl = `/veterinarian/create_medical_record?animal_id=${encodeURIComponent(route.params.id)}` +
                      `&veterinarian_id=${encodeURIComponent(authStore.getUser.id)}` +
                      `&description=${encodeURIComponent(selectedMedicalRecord.description)}` +
                      `&examination_date=${encodeURIComponent(getFormattedDate(selectedMedicalRecord.examinationDate))}` +
                      `&examination_type=${encodeURIComponent(selectedMedicalRecord.examinationType)}`;
                      
-  sendReqAndProcessResponse(requestUrl, false, false, closeMedicalRecordAddModal);
-  fetchAnimalInfo();
+  await sendReqAndProcessResponse(requestUrl, false, false, closeMedicalRecordAddModal);
+  await fetchAnimalInfo();
 };
 
 const openAnimalInfoEditModal = async (animalInfo) => {
