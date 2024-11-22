@@ -389,7 +389,6 @@ const sendReqAndProcessResponse = async (request, isSchedule, isUpdated, closeMo
     }
 
     closeModalFn();
-  
   } catch (error) {
     const action = isUpdated ? 'updat' : 'add';
     console.error(`Error ${action}ing ${isSchedule ? 'schedule' : 'medical record'}:`, error);
@@ -416,7 +415,6 @@ async function updateAnimalInfo() {
     }
 
     closeAnimalInfoEditDialog();
-
   } catch (error) {
     console.error('Error updating animal info: ', error);
     alert('Failed to update animal info');
@@ -429,6 +427,7 @@ function updateSchedule() {
                      `&end_time=${encodeURIComponent(getFormattedDate(selectedSchedule.endDate, true))}`;
                      
   sendReqAndProcessResponse(requestUrl, true, true, closeScheduleEditModal);
+  fetchAnimalInfo();
 }
 
 function addSchedule() {
@@ -437,6 +436,7 @@ function addSchedule() {
                       `&end_time=${encodeURIComponent(getFormattedDate(selectedSchedule.endDate, true))}`;
 
   sendReqAndProcessResponse(requestUrl, true, false, closeScheduleAddModal);
+  fetchAnimalInfo();
 }
 
 function updateMedicalRecord() {
@@ -447,6 +447,7 @@ function updateMedicalRecord() {
                      `&description=${encodeURIComponent(selectedMedicalRecord.description)}`;
 
   sendReqAndProcessResponse(requestUrl, false, true, closeMedicalRecordEditModal);
+  fetchAnimalInfo();
 };
 
 function addMedicalRecord() {
@@ -457,6 +458,7 @@ function addMedicalRecord() {
                      `&examination_type=${encodeURIComponent(selectedMedicalRecord.examinationType)}`;
                      
   sendReqAndProcessResponse(requestUrl, false, false, closeMedicalRecordAddModal);
+  fetchAnimalInfo();
 };
 
 const openAnimalInfoEditModal = async (animalInfo) => {
@@ -529,7 +531,7 @@ const closeMedicalRecordEditModal = async () => {
   showMedicalRecordsEditDialog.value = false;
 };
 
-onMounted(async () => {
+const fetchAnimalInfo = async () => {
   try {
     const response = await axiosClient.get(`/animal/info?animal_id=${encodeURIComponent(route.params.id)}`);
     animalInfo.value = response.data.animal;
@@ -556,7 +558,9 @@ onMounted(async () => {
   } catch (error) {
     console.error('Error fetching animal data:', error);
   }
-});
+}
+
+onMounted(fetchAnimalInfo);
 
 </script>
   
