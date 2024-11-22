@@ -101,6 +101,7 @@ def create_app():
     app.register_blueprint(cancel_vet_request_bp)
     app.register_blueprint(update_walking_schedule_bp)
     app.register_blueprint(update_animal_bp)
+    app.register_blueprint(delete_animal_bp)
 
     # Veterinarian
     app.register_blueprint(get_all_requests_by_vet_id_bp)
