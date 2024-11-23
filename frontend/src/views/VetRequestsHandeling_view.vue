@@ -35,24 +35,31 @@
       <div class="p-fluid">
         <!-- Edit Start Time -->
         <div class="p-field">
-          <InputText v-model="selectedRequest.start_time" 
-                     maxlength="19"
-                     placeholder="DD/MM/YYYY HH:MM:SS"/>
+          <InputText
+            v-model="selectedRequest.start_time"
+            maxlength="19"
+            placeholder="DD/MM/YYYY HH:MM:SS"
+            class="input-full-width"
+            :class="{'p-invalid': !selectedRequest.start_time}"
+          />
         </div>
 
         <!-- Edit Status -->
-        <Dropdown
-          v-model="selectedRequest.newStatus"
-          :options="statusOptions"
-          optionLabel="label"
-          placeholder="Select Status"
-          class="w-full"
-        />
+        <div class="p-field">
+          <Dropdown
+            v-model="selectedRequest.newStatus"
+            :options="statusOptions"
+            optionLabel="label"
+            placeholder="Select Status"
+            class="input-full-width"
+            :invalid="!selectedRequest.newStatus.value"
+          />
+        </div>
       </div>
       <template #footer>
         <div class="dialog-footer">
           <Button label="Cancel" class="p-button-text" @click="cancelEdit" />
-          <Button label="Save" class="p-button-primary" @click="saveRequestChanges" />
+          <Button label="Save" class="p-button-primary" :disabled="!isFormValid" @click="saveRequestChanges" />
         </div>
       </template>
     </Dialog>
@@ -60,7 +67,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted,computed } from 'vue';
 import { useAuthStore } from '../store/Authstore';
 import axiosClient from '../api/api';
 import DataTable from 'primevue/datatable';
@@ -90,6 +97,11 @@ const convertCustomToStandard = (customDateTime) => {
   const formattedDate = `${day}/${months[month]}/${year} ${time}`; // Formátovanie na DD/MM/YYYY HH:MM:SS
   return formattedDate;
 };
+
+// Computed property to validate form
+const isFormValid = computed(() => {
+  return selectedRequest.value.start_time && selectedRequest.value.newStatus.value;
+});
 
 // Access the authenticated user's data
 const authStore = useAuthStore();
@@ -175,16 +187,21 @@ const saveRequestChanges = async () => {
     });
 
     if (response.status === 200) {
-      const index = requests.value.findIndex((req) => req.id === selectedRequest.value.id);
-      requests.value[index].status = selectedRequest.value.newStatus;
-      requests.value[index].start_time = selectedRequest.value.start_time;
-      editDialogVisible.value = false;
-      selectedRequest.value = null;
+      location.reload();
     }
   } catch (error) {
-    console.error('Error updating request:', error);
-    alert('Error updating request.');
+  if (error.response) {
+
+    const status = error.response.status;
+    const error_msg = error.response.data.error;
+    console.error(`Error Status: ${status}`);
+    alert(error_msg);
+  } else {
+
+    console.error("Error:", error.message);
+    alert("Something went wrong. Please try again later.");
   }
+}
 };
 </script>
 
@@ -219,7 +236,17 @@ h1 {
   justify-content: center;
 }
 
-.invalid-field {
-  border-color: red !important;
+.p-field {
+  margin-bottom: 1rem; /* Add spacing between fields */
 }
+
+.input-full-width {
+  width: 100%; /* Ensure inputs take full width of container */
+}
+
+.p-dialog {
+  width: 400px; /* Control dialog width */
+  max-width: 90%; /* Make it responsive */
+}
+
 </style>
