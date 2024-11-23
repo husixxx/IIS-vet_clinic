@@ -341,7 +341,6 @@ const animalInfoFields = [
         'Male',
         'Female',
       ],
-
     }
   },
   { 
@@ -377,7 +376,8 @@ const reservSchedulesFields = [
     component: DatePicker,
     props: {
       ...getDatePickerPros(true),
-      placeholder: "Enter start date"
+      placeholder: "Enter start date",
+      minDate: new Date()
     }
   },
   { 
@@ -386,7 +386,8 @@ const reservSchedulesFields = [
     component: DatePicker,
     props: {
       ...getDatePickerPros(true),
-      placeholder: "Enter end date"
+      placeholder: "Enter end date",
+      minDate: new Date()
     }
   }
 ];
@@ -396,20 +397,27 @@ const medicalRecordsFields = [
     label: 'Description',
     model: 'description',
     component: Textarea,
-    
+    props: {
+      placeholder: 'Enter description'
+    }
   },
   {
     label: 'Examination date',
     model: 'examinationDate',
     component: DatePicker,
-    props: getDatePickerPros(false),
-    
+    props: {
+      ...getDatePickerPros(true),
+      placeholder: "Enter examination date",
+      minDate: new Date()
+    }
   },
   {
     label: 'Examination type',
     model: 'examinationType',
     component: InputText,
-    
+    props: {
+      placeholder: 'Enter examination type'
+    }
   }
 ];
 
@@ -483,6 +491,13 @@ async function updateAnimalInfo() {
 }
 
 async function updateSchedule() {
+  if(new Date(selectedSchedule.startDate) >= new Date(selectedSchedule.endDate)) {
+    alert('Error! Start date can\'t be greater or equal than end date!')
+    selectedSchedule.startDate = undefined;
+    return;
+  }
+
+  console.log(selectedSchedule.startDate, getFormattedDate(selectedSchedule.startDate, true))
   const requestUrl = `/caretaker/update_walking_schedule?walking_schedule_id=${encodeURIComponent(selectedSchedule.id)}` +
                      `&start_time=${encodeURIComponent(getFormattedDate(selectedSchedule.startDate, true))}` +
                      `&end_time=${encodeURIComponent(getFormattedDate(selectedSchedule.endDate, true))}`;
@@ -492,6 +507,12 @@ async function updateSchedule() {
 }
 
 async function addSchedule() {
+  if(new Date(selectedSchedule.startDate) >= new Date(selectedSchedule.endDate)) {
+    alert('Error! Start date can\'t be greater or equal than end date!')
+    selectedSchedule.startDate = undefined;
+    return;
+  }
+  
   const requestUrl = `/caretaker/walking_schedule?animal_id=${encodeURIComponent(route.params.id)}` +
                       `&start_time=${encodeURIComponent(getFormattedDate(selectedSchedule.startDate, true))}` +
                       `&end_time=${encodeURIComponent(getFormattedDate(selectedSchedule.endDate, true))}`;
