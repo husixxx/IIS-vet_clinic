@@ -99,12 +99,11 @@ const selectedUser = reactive({
 });
 
 
-// Fields configuration for the form
 const fields = [
-  { id: 'name', label: 'Name', model: 'name', component: InputText },
-  { id: 'email', label: 'Email', model: 'email', component: InputText },
-  { id: 'username', label: 'Username', model: 'username', component: InputText },
-  { id: 'password', label: 'Password', model: 'password', component: InputText, props: { type: 'password' } },
+  { id: 'name', label: 'Name', model: 'name', component: InputText, props: { maxlength: 61 } },
+  { id: 'email', label: 'Email', model: 'email', component: InputText, props: { maxlength: 50 } },
+  { id: 'username', label: 'Username', model: 'username', component: InputText, props: { maxlength: 30 } },
+  { id: 'password', label: 'Password', model: 'password', component: InputText, props: { type: 'password', maxlength: 30 } },
 ];
 
 // Fetch all users on component mount

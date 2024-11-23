@@ -7,7 +7,7 @@
       <DataTable :value="requests" class="p-datatable-striped">
         <Column field="id" header="ID"></Column>
         <Column field="animal_id" header="Animal ID"></Column>
-        <Column field="animal_name" header="Animal Name"></Column> <!-- Added Animal Name -->
+        <Column field="animal_name" header="Animal Name"></Column>
         <Column field="start_time" header="Start Time"></Column>
         <Column field="description" header="Description"></Column>
         <Column field="status" header="Status">
@@ -36,8 +36,8 @@
         <!-- Edit Start Time -->
         <div class="p-field">
           <InputText v-model="selectedRequest.start_time" 
-          :invalid="!selectedRequest.start_time"
-          placeholder="DD/MM/YYYY, HH:MM:SS"/>
+                     maxlength="19"
+                     placeholder="DD/MM/YYYY HH:MM:SS"/>
         </div>
 
         <!-- Edit Status -->
@@ -47,15 +47,12 @@
           optionLabel="label"
           placeholder="Select Status"
           class="w-full"
-          :invalid="!selectedRequest.newStatus"
         />
       </div>
       <template #footer>
         <div class="dialog-footer">
           <Button label="Cancel" class="p-button-text" @click="cancelEdit" />
-          <!-- Disable Save button if start_time or newStatus is empty -->
-          <Button label="Save" class="p-button-primary" @click="saveRequestChanges" 
-            :disabled="!selectedRequest.start_time || !selectedRequest.newStatus || !selectedRequest.newStatus.value" />
+          <Button label="Save" class="p-button-primary" @click="saveRequestChanges" />
         </div>
       </template>
     </Dialog>
@@ -64,7 +61,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useAuthStore } from '../store/Authstore'; // Assuming you have a Pinia store for user authentication
+import { useAuthStore } from '../store/Authstore';
 import axiosClient from '../api/api';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
@@ -73,47 +70,62 @@ import Dialog from 'primevue/dialog';
 import Dropdown from 'primevue/dropdown';
 import InputText from 'primevue/inputtext';
 
+const convertCustomToStandard = (customDateTime) => {
+  const months = {
+    Jan: '01',
+    Feb: '02',
+    Mar: '03',
+    Apr: '04',
+    May: '05',
+    Jun: '06',
+    Jul: '07',
+    Aug: '08',
+    Sep: '09',
+    Oct: '10',
+    Nov: '11',
+    Dec: '12',
+  };
+
+  const [weekday, day, month, year, time] = customDateTime.split(' '); // Rozdelenie stringu
+  const formattedDate = `${day}/${months[month]}/${year} ${time}`; // Formátovanie na DD/MM/YYYY HH:MM:SS
+  return formattedDate;
+};
+
 // Access the authenticated user's data
 const authStore = useAuthStore();
-
-// Array to store veterinarian requests
 const requests = ref([]);
-
-// Status options for the dropdown
 const statusOptions = [
   { label: 'pending', value: 'pending' },
   { label: 'scheduled', value: 'scheduled' },
   { label: 'cancelled', value: 'cancelled' },
-  { label: 'completed', value: 'completed' }
+  { label: 'completed', value: 'completed' },
 ];
-
-// State to control the edit dialog visibility
 const editDialogVisible = ref(false);
+const selectedRequest = ref({ start_time: '', newStatus: null });
 
-// Currently selected request for editing
-const selectedRequest = ref(null);
+// Validate the string format of the date
+const isValidDateTime = (dateTimeStr) => {
+  const regex = /^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}:\d{2}$/;
+  return regex.test(dateTimeStr);
+};
 
 // Fetch requests when the component mounts
 onMounted(async () => {
   try {
-    // Get the veterinarian's ID from the authenticated user
     const vetId = authStore.getUser?.id;
 
-    // Make an API request to get requests by vet_id
     const response = await axiosClient.get(`/veterinarian/get_all_requests_by_vet_id`, {
-      params: {
-        vet_id: vetId,
-      },
-      withCredentials: true
+      params: { vet_id: vetId },
+      withCredentials: true,
     });
 
     if (response.data) {
       requests.value = response.data.map((request) => ({
         id: request.id,
         animal_id: request.animal_id,
-        animal_name: request.animal_name, // Include Animal Name
+        animal_name: request.animal_name,
         vet_id: request.vet_id,
-        start_time: new Date(request.start_time).toLocaleString(),
+        start_time: request.start_time, // Store as string directly
         description: request.description,
         status: request.status || 'N/A',
         newStatus: request.status,
@@ -124,34 +136,42 @@ onMounted(async () => {
   }
 });
 
-const openEditModal = async (request) => {
-  selectedRequest.value = { ...request }; // Clone the request
-  selectedRequest.value.newStatus = null; // Nastav status na prázdne pole
+const openEditModal = (request) => {
+  selectedRequest.value = {
+    ...request,
+    start_time: convertCustomToStandard(request.start_time), // Konverzia na DD/MM/YYYY HH:MM:SS
+    newStatus: request.status,
+  };
   editDialogVisible.value = true;
 };
 
-// Cancel editing
-const cancelEdit = async () => {
+const cancelEdit = () => {
   selectedRequest.value = null;
   editDialogVisible.value = false;
 };
 
-// Save the updated request (start time and status)
+const convertToBackendFormat = (frontendDateTime) => {
+  const [datePart, timePart] = frontendDateTime.split(' ');
+  const [day, month, year] = datePart.split('/');
+  return `${year}-${month}-${day} ${timePart}`; // Convert to 'YYYY-MM-DD HH:MM:SS'
+};
+
 const saveRequestChanges = async () => {
   try {
-    // Convert from 'MM/DD/YYYY, HH:MM:SS' (which is what .toLocaleString() gives) to 'YYYY-MM-DD HH:MM:SS'
-    const [datePart, timePart] = selectedRequest.value.start_time.split(', '); // Separate date and time
-    const [month, day, year] = datePart.split('/'); // Split the MM/DD/YYYY part
-    const formattedDateTime = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')} ${timePart}`; // Corrected the order of month and day
+    if (!isValidDateTime(selectedRequest.value.start_time)) {
+      alert('Invalid date format. Use DD/MM/YYYY HH:MM:SS.');
+      return;
+    }
 
-    // Make the request to the backend with the properly formatted date and status
+    const converstion = convertToBackendFormat(selectedRequest.value.start_time);
+
     const response = await axiosClient.post(`/veterinarian/schedule_request`, null, {
       params: {
         request_id: selectedRequest.value.id,
-        date_time: formattedDateTime, // Send as 'YYYY-MM-DD HH:MM:SS'
+        date_time: converstion, // Send as string
         status: selectedRequest.value.newStatus.value,
       },
-      withCredentials: true
+      withCredentials: true,
     });
 
     if (response.status === 200) {
@@ -160,12 +180,10 @@ const saveRequestChanges = async () => {
       requests.value[index].start_time = selectedRequest.value.start_time;
       editDialogVisible.value = false;
       selectedRequest.value = null;
-    } else {
-      console.error('Failed to update request');
     }
   } catch (error) {
-    console.error('Error: Invalid date format ', error);
-    alert('Error: Invalid date format ', error);
+    console.error('Error updating request:', error);
+    alert('Error updating request.');
   }
 };
 </script>
@@ -192,31 +210,15 @@ h1 {
   padding: 40px;
 }
 
-.p-button-sm {
-  margin-left: 10px;
-}
-
 .p-dialog .p-fluid {
   padding: 20px;
 }
 
-.w-full {
-  width: 100%;
-}
-
-/* Center the header text in the dialog */
-.centered-header .p-dialog-titlebar {
-  text-align: center;
-  justify-content: center;
-}
-
-/* Center buttons in the footer */
 .dialog-footer {
   display: flex;
   justify-content: center;
 }
 
-/* Red border for invalid fields */
 .invalid-field {
   border-color: red !important;
 }

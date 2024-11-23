@@ -8,7 +8,11 @@
         v-model="filters.name"
         placeholder="Insert Name"
         class="p-inputtext input-field"
-      />
+        :maxlength="50"
+        />
+        <small v-if="filters.name.length >= 50" class="max-input-text">
+          Maximum 50 characters allowed
+        </small>
     </div>
 
     <!-- Age input -->
@@ -19,8 +23,12 @@
         v-model="filters.age"
         placeholder="Insert Age"
         class="p-inputtext input-field no-spinner"
+        :maxlength="3"
         @keypress="allowOnlyIntegers"
       />
+      <small v-if="filters.age.length >= 3" class="max-input-text">
+        Maximum 3 characters allowed
+      </small>
     </div>
 
     <!-- Dropdown for Breed -->
@@ -60,7 +68,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted,computed } from 'vue';
 import axiosClient from '../api/api';  // Ensure axiosClient is correctly imported
 import InputText from 'primevue/inputtext';
 import Dropdown from 'primevue/dropdown';
