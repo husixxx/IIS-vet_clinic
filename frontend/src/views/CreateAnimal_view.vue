@@ -15,7 +15,7 @@
               placeholder="Enter the animal's name" 
               class="input-text" 
               :class="{'p-invalid': !name}" 
-              :maxlength="50"
+              :maxlength="30"
               />
           </div>
 

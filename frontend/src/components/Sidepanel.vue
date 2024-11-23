@@ -8,9 +8,9 @@
         v-model="filters.name"
         placeholder="Insert Name"
         class="p-inputtext input-field"
-        :maxlength="50"
+        :maxlength="30"
         />
-        <small v-if="filters.name.length >= 50" class="max-input-text">
+        <small v-if="filters.name.length >= 30" class="max-input-text">
           Maximum 50 characters allowed
         </small>
     </div>
