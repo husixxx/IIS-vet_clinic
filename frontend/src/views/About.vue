@@ -1,30 +1,30 @@
 <template>
     <div class="about-us">
       <!-- What We Do Section -->
-      <Fieldset legend="What We Do">
+      <Fieldset legend="Caring for Abandoned Dogs">
         <p class="m-0">
-          We provide a loving environment for abandoned animals such as rabbits, cats, dogs, and more. Our mission is to help these animals find care and a temporary home through volunteers who can walk and care for them.
+          At our shelter, we are committed to giving abandoned and stray dogs a second chance at life. Every dog that comes through our doors is treated with love and compassion, ensuring they receive the care they need to heal, both physically and emotionally.
         </p>
       </Fieldset>
   
       <!-- Animal Information Section -->
-      <Fieldset legend="Animal Information">
+      <Fieldset legend="Comprehensive Care and Well-being">
         <p class="m-0">
-          Each animal is identified by their name, species, and various attributes like age, photos, and more. Our system maintains detailed information on each animal’s history, including how they were found, their medical condition, vaccinations, and veterinary check-ups.
+          We provide a safe environment where every dog has access to proper nutrition, medical attention, and socialization. From regular veterinary check-ups to personalized care plans, we make it our mission to prioritize their well-being.
         </p>
       </Fieldset>
   
       <!-- Volunteer Opportunities Section -->
-      <Fieldset legend="Volunteer Opportunities">
+      <Fieldset legend="Volunteer-Led Dog Walking Program">
         <p class="m-0">
-          Verified volunteers can search for animals in need and make reservations to walk them based on available slots. Our system ensures a structured and easy process for volunteers to participate and contribute to the well-being of these animals.
+          Our verified volunteers play a vital role in enriching the lives of our dogs. Through our structured dog-walking program, volunteers give the dogs the physical exercise, attention, and companionship they need to stay happy and healthy.
         </p>
       </Fieldset>
   
       <!-- Join Our Mission Section -->
-      <Fieldset legend="Join Our Mission">
+      <Fieldset legend="Building a Community of Care">
         <p class="m-0">
-          Through this system, we aim to ensure that every animal receives the care they deserve, while giving volunteers a chance to make a difference. Join us in our mission to give these animals a better life.
+          We are more than just a shelter – we are a community. Our team of caretakers, veterinarians, and volunteers work together to ensure every dog has a bright future. By fostering this connection, we create a network of support for both the animals and the people who care for them.
         </p>
       </Fieldset>
     </div>
