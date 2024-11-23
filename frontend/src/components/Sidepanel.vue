@@ -11,7 +11,7 @@
         :maxlength="30"
         />
         <small v-if="filters.name.length >= 30" class="max-input-text">
-          Maximum 50 characters allowed
+          Maximum 30 characters allowed
         </small>
     </div>
 
