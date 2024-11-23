@@ -217,7 +217,7 @@ function confirmReservation(animalName, schedule) {
           alert('Error! You have no right to perform this operation!');
         }
       } catch (error) {
-        console.error('Error creating reservation: ', error);
+        // console.error('Error creating reservation: ', error);
         alert('Failed to create reservation');
       }
     },
@@ -244,7 +244,7 @@ function confirmAnimalDeletion() {
           alert('Error! You have no right to perform this operation!');
         }
       } catch (error) {
-        console.error('Error deleting animal: ', error);
+        // console.error('Error deleting animal: ', error);
         alert('Failed to delete animal');
       }
     },
@@ -264,7 +264,7 @@ const selectedAnimalInfo = reactive({
   history: '',
   description: '',
   sex: '',
-  // photo: '',
+  photo: '',
 });
 
 const showScheduleEditDialog = ref(false);
@@ -433,22 +433,35 @@ const sendReqAndProcessResponse = async (request, isSchedule, isUpdated, closeMo
     closeModalFn();
   } catch (error) {
     const action = isUpdated ? 'updat' : 'add';
-    console.error(`Error ${action}ing ${isSchedule ? 'schedule' : 'medical record'}:`, error);
+    // console.error(`Error ${action}ing ${isSchedule ? 'schedule' : 'medical record'}:`, error);
     alert(`Failed to ${action}e ${isSchedule ? 'schedule' : 'medical record'}.`);
   }
 }
 
 async function updateAnimalInfo() {
   try {
-    const response = await axiosClient.put(`/caretaker/update_animal?animal_id=${encodeURIComponent(selectedAnimalInfo.id)}` +
-                                            `&name=${encodeURIComponent(selectedAnimalInfo.name)}` +
-                                            `&breed=${encodeURIComponent(selectedAnimalInfo.breed)}` +
-                                            `&age=${encodeURIComponent(selectedAnimalInfo.age)}` +
-                                            `&history=${encodeURIComponent(selectedAnimalInfo.history)}` +
-                                            `&description=${encodeURIComponent(selectedAnimalInfo.description)}` +
-                                            `&sex=${encodeURIComponent(selectedAnimalInfo.sex)}`,
-                                            null,
-                                            { withCredentials: true });
+    // Prepare form data with the animal details
+    const formData = new FormData();
+    formData.append('animal_id', selectedAnimalInfo.id);
+    formData.append('name', selectedAnimalInfo.name);
+    formData.append('breed', selectedAnimalInfo.breed);
+    formData.append('age', selectedAnimalInfo.age);
+    formData.append('sex', selectedAnimalInfo.sex);
+    formData.append('history', selectedAnimalInfo.history);
+    formData.append('description', selectedAnimalInfo.description);
+    
+    // Append the photo file if available
+    if(selectedAnimalInfo.photo) {
+      formData.append('photo', selectedAnimalInfo.photo);
+    }
+
+    // Send form data using POST request
+    const response = await axiosClient.put('/caretaker/update_animal', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      withCredentials: true  // Zabezpečí, že cookies budú odoslané a prijaté
+    });
 
     if(response.status === SUCCESS_RESPONSE_CODE) {
       alert('Animal info updated successfully!');
@@ -458,8 +471,9 @@ async function updateAnimalInfo() {
 
     await fetchAnimalInfo();
     closeAnimalInfoEditDialog();
+
   } catch (error) {
-    console.error('Error updating animal info: ', error);
+    // console.error('Error updating animal info: ', error);
     alert('Failed to update animal info');
   }
 }
