@@ -243,14 +243,18 @@ function confirmAnimalDeletion() {
         } else if(response.status === UNKNOWN_OPERATION_RESPONSE_CODE) {
           alert('Error! You have no right to perform this operation!');
         }
+
+        // await router.push({ name: 'animal'});
+        router.push({ name: 'Animal'});
       } catch (error) {
         // console.error('Error deleting animal: ', error);
-        alert('Failed to delete animal');
+        alert('Failed to delete animal', error);
       }
     },
 
     reject: () => {
       alert('Not deleting animal');
+      // console.log(router.getRoutes());
     }
   })
 }
