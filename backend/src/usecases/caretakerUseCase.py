@@ -31,6 +31,7 @@ Methods:
     filter_animals: Filters animals based on given parameters
     change_reservation_status: Updates the status of a reservation
     delete_animal: Deletes an animal
+    delete_walking_schedule: Deletes a walking schedule
 """
 
 
@@ -52,6 +53,16 @@ class CaretakerUseCase:
             raise ValueError("Animal not found, hahaha, id == ", animal_id)
         
         self.public_repository.delete_animal(animal_id)
+
+
+    ### Delete Walking Schedule ###
+    def delete_walking_schedule(self, walking_schedule_id: int) -> None:
+        walking_schedule = self.schedule_repository.get_by_id(walking_schedule_id)
+
+        if not walking_schedule:
+            raise ValueError("Walking schedule with this id does not exist")
+
+        self.reservation_repository.delete(walking_schedule)
 
 
     ### Create Animal ###
