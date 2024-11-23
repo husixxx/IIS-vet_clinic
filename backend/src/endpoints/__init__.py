@@ -22,6 +22,7 @@ from .Caretaker import get_all_animals_bp
 from .Caretaker.UpdateWalkingSchedule import update_walking_schedule_bp
 from .Caretaker.UpdateAnimal import update_animal_bp
 from .Caretaker.DeleteAnimal import delete_animal_bp
+from .Caretaker.DeleteWalkingSchedule import delete_walking_schedule_bp
 # veterinarian
 from .Veterinarian import get_all_requests_by_vet_id_bp
 from .Veterinarian import schedule_request_bp
@@ -78,5 +79,6 @@ __all__ = [
     'sign_out_bp',
     'unverify_user_bp',
     'verify_user_bp',
-    'delete_animal_bp'
+    'delete_animal_bp',
+    'delete_walking_schedule_bp'
     ]
