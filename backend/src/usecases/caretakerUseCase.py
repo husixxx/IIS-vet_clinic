@@ -116,7 +116,7 @@ class CaretakerUseCase:
         walking_schedule.end_time = end_time
         self.schedule_repository.update(walking_schedule)
 
-    def update_animal(self, animal_id: int, name: str, breed: str, age: int, history: str, description: str, sex: str):
+    def update_animal(self, animal_id: int, name: str, breed: str, age: int, history: str, description: str, sex: str, photo: bytes):
         
         animal = self.animal_repository.get_by_id(animal_id)
 
@@ -129,6 +129,7 @@ class CaretakerUseCase:
         animal.history = history
         animal.description = description
         animal.sex = sex
+        animal.photo = photo
         self.animal_repository.update(animal)
 
     
