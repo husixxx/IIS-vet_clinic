@@ -65,7 +65,6 @@ const reservations = ref([]);
 
 // Status options for the dropdown
 const statusOptions = [
-  { label: 'pending', value: 'pending' },
   { label: 'approved', value: 'approved' },
   { label: 'canceled', value: 'canceled' },
   { label: 'completed', value: 'completed' }
