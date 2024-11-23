@@ -63,7 +63,7 @@
             <input
               type="file"
               @change="handleFileUpload"
-              accept="image/jpeg"
+              accept="image/*"
               class="file-input"
             />
           </div>
@@ -122,18 +122,15 @@ const sexOptions = [
   { label: 'Female', value: 'Female' }
 ];
 
-// Handle file upload
 const handleFileUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
-    const validTypes = ['image/jpeg'];
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif']; // Allowed types
     if (!validTypes.includes(file.type)) {
-      alert('Only JPEG photos are allowed.');
-      photoFile.value = null; // Reset the file if it's not a valid type
+      alert('Only JPEG, PNG, or GIF images are allowed.');
       event.target.value = ''; // Reset the file input
       return;
     }
-    photoFile.value = file; // Store the file
   }
 };
 
