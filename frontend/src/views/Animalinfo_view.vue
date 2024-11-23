@@ -1,5 +1,5 @@
 <template>
-  <div class="main-content">
+  <div class="main-content" v-if="animalInfo.name">
     <div class="photo-section">
       <img :src="animalPhoto" alt="Animal photo" />
     </div>
@@ -27,6 +27,12 @@
                   <Button
                     label="Edit schedule"
                     @click="openScheduleEditModal(slotProps.data)"
+                  />
+                  <Button
+                    label="Delete schedule"
+                    @click="confirmScheduleDeletion(slotProps.data)"
+                    class="p-button-danger"
+                    style="margin-top: 5px;"
                   />
                 </template>
               </Column>
@@ -70,7 +76,7 @@
           <p>{{ animalInfo?.history }}</p>
         </Fieldset>
       </div>
-  </div>
+    </div>
 
     <div class="medical-records-section">
       <h3 style="text-align: center;">Medical records</h3>
@@ -97,6 +103,10 @@
         </template>
       </Card>
     </div>
+  </div>
+
+  <div v-else class="main-content">
+    <h1 style="text-align: center; left: 50%; top: 50%;">Animal not found</h1>
   </div>
 
   <EditAddDialog
@@ -205,7 +215,7 @@ function confirmReservation(animalName, schedule) {
     icon: 'pi pi-question',
     accept: async () => {
       try {
-        const response = await axiosClient.post(`/volunteer/reservation?volunteer_id=${encodeURIComponent(authStore.getUser.id)}` +
+        let response = await axiosClient.post(`/volunteer/reservation?volunteer_id=${encodeURIComponent(authStore.getUser.id)}` +
                                                 `&animal_id=${encodeURIComponent(route.params.id)}` +
                                                 `&start_time=${encodeURIComponent(getFormattedDate(schedule.start_time, true))}` +
                                                 `&end_time=${encodeURIComponent(getFormattedDate(schedule.end_time, true))}`,
@@ -216,14 +226,19 @@ function confirmReservation(animalName, schedule) {
         } else if(response.status === UNKNOWN_OPERATION_RESPONSE_CODE) {
           alert('Error! You have no right to perform this operation!');
         }
+
+        // response = await axiosClient.delete(`/volunteer/delete_walking_schedule?walking_schedule_id=${encodeURIComponent(schedule.id)}`,
+        //                                     { withCredentials: true });
+
+        // await fetchAnimalInfo();
       } catch (error) {
         // console.error('Error creating reservation: ', error);
-        alert('Failed to create reservation');
+        alert('Failed to make reservation');
       }
     },
 
     reject: () => {
-      alert('Not creating reservation');
+      alert('Not making reservation');
     }
   })
 }
@@ -254,6 +269,33 @@ function confirmAnimalDeletion() {
 
     reject: () => {
       alert('Not deleting animal');
+      // console.log(router.getRoutes());
+    }
+  })
+}
+
+function confirmScheduleDeletion(schedule) {
+  confirm.require({
+    message: `Are you sure you want to delete this walking schedule?`,
+    header: 'Confirmation',
+    icon: 'pi pi-question',
+    accept: async () => {
+      try {
+        const response = await axiosClient.delete(`/caretaker/delete_walking_schedule?walking_schedule_id=${encodeURIComponent(schedule.id)}`,
+                                            { withCredentials: true });
+
+        if(response.status === SUCCESS_RESPONSE_CODE) {
+          alert('Walking schedule deleted successfully!');
+        }
+
+        await fetchAnimalInfo();
+      } catch (error) {
+        alert('Failed to delete walking schedule');
+      }
+    },
+
+    reject: () => {
+      alert('Not deleting walking schedule');
       // console.log(router.getRoutes());
     }
   })
@@ -406,7 +448,7 @@ const medicalRecordsFields = [
     model: 'examinationDate',
     component: DatePicker,
     props: {
-      ...getDatePickerPros(true),
+      ...getDatePickerPros(false),
       placeholder: "Enter examination date",
       minDate: new Date()
     }
@@ -512,7 +554,7 @@ async function addSchedule() {
     selectedSchedule.startDate = undefined;
     return;
   }
-  
+
   const requestUrl = `/caretaker/walking_schedule?animal_id=${encodeURIComponent(route.params.id)}` +
                       `&start_time=${encodeURIComponent(getFormattedDate(selectedSchedule.startDate, true))}` +
                       `&end_time=${encodeURIComponent(getFormattedDate(selectedSchedule.endDate, true))}`;
@@ -618,6 +660,8 @@ const fetchAnimalInfo = async () => {
     const response = await axiosClient.get(`/animal/info?animal_id=${encodeURIComponent(route.params.id)}`);
     animalInfo.value = response.data.animal;
 
+    // console.log(animalInfo)
+
     animalSchedules.value = response.data.schedules.map(schedule => {
       const startDateTimePart = schedule.start_time.replace(" GMT", "");
       const endtDateTimePart = schedule.end_time.replace(" GMT", "");
@@ -638,6 +682,7 @@ const fetchAnimalInfo = async () => {
       };
     });
   } catch (error) {
+    // console.log(animalInfo.value)
     console.error('Error fetching animal data:', error);
   }
 }
