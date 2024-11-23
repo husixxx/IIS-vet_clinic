@@ -125,16 +125,21 @@ const saveStatus = async () => {
       withCredentials: true
     });
     if (response.status === 200) {
-      const index = reservations.value.findIndex(res => res.id === selectedReservation.value.id);
-      reservations.value[index].status = selectedReservation.value.newStatus;
-      editDialogVisible.value = false;
-      selectedReservation.value = null;
-    } else {
-      console.error('Failed to update status');
+      location.reload();
     }
   } catch (error) {
-    console.error('Error updating status:', error);
+  if (error.response) {
+
+    const status = error.response.status;
+    const error_msg = error.response.data.error;
+    console.error(`Error Status: ${status}`);
+    alert(error_msg);
+  } else {
+
+    console.error("Error:", error.message);
+    alert("Something went wrong. Please try again later.");
   }
+}
 };
 </script>
 

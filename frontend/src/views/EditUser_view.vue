@@ -177,10 +177,9 @@ const deleteUser = async () => {
       withCredentials: true  // Zabezpečí, že cookies budú odoslané a prijaté
     });
     if (response.status === 200) {
-      alert('User deleted successfully!');
       closeDeleteDialog();
       // Refresh the user list
-      onMounted();
+      location.reload();
     }
   }catch (error) {
   if (error.response) {
@@ -270,7 +269,8 @@ h1 {
 }
 
 .p-button-success,
-.p-button-secondary {
+.p-button-secondary
+.p-button-danger {
   margin: 10px 5px; /* Spacing between the buttons */
 }
 
