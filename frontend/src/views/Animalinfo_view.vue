@@ -171,6 +171,8 @@ import 'primeicons/primeicons.css'
 import EditAddDialog from '../components/EditAddDialog.vue';
 import ConfirmDialog from 'primevue/confirmdialog';
 import { useConfirm } from "primevue/useconfirm";
+import InputNumber from 'primevue/inputnumber';
+import Dropdown from 'primevue/dropdown';
 
 const route = useRoute();
 const router = useRouter();
@@ -184,7 +186,7 @@ const animalMedicalRecords = ref([]);
 const confirm = useConfirm();
 
 const filteredAnimalInfoFields = computed(() =>
-  animalInfoFields.filter(field => field.model !== 'description' && field.model !== 'history')
+  animalInfoFields.filter(field => field.model !== 'description' && field.model !== 'history' && field.model !== 'photo')
 );
 
 const animalPhoto = computed(() => {
@@ -288,7 +290,7 @@ function getDatePickerPros(showTime) {
   dateFormat: "D, dd M yy",
   manualInput: false,
   showIcon: true,
-  iconDisplay: "input"
+  iconDisplay: "input",
   }
 
   if(showTime) {
@@ -305,31 +307,62 @@ const animalInfoFields = [
     label: 'Name',
     model: 'name',
     component: InputText,
-  },
-  { 
-    label: 'Age',
-    model: 'age',
-    component: InputText,
+    props: {
+      placeholder: 'Enter animal\'s name'
+    }
   },
   { 
     label: 'Breed',
     model: 'breed',
     component: InputText,
+    props: {
+      placeholder: 'Enter animal\'s breed'
+    }
+  },
+  { 
+    label: 'Age',
+    model: 'age',
+    component: InputNumber,
+    props: {
+      placeholder: 'Enter animal\'s age'
+    }
   },
   { 
     label: 'Sex',
     model: 'sex',
-    component: InputText,
+    component: Dropdown,
+    props: {
+      placeholder: 'Enter animal\'s sex',
+      options: [
+        'Male',
+        'Female',
+      ],
+
+    }
+  },
+  { 
+    label: 'Photo (JPEG only)',
+    model: 'photo', // No v-model as it's a plain file input
+    component: 'file', // Indicates that this is a file input
+    props: {
+      accept: 'image/jpeg',
+    }
   },
   { 
     label: 'Description',
     model: 'description',
     component: Textarea,
+    props: {
+      placeholder: 'Enter animal\'s description'
+    }
   },
   { 
     label: 'History',
     model: 'history',
     component: Textarea,
+    props: {
+      placeholder: 'Enter animal\'s history'
+    }
   }
 ];
 
@@ -338,13 +371,19 @@ const reservSchedulesFields = [
     label: 'Start date',
     model: 'startDate',
     component: DatePicker,
-    props: getDatePickerPros(true)
+    props: {
+      ...getDatePickerPros(true),
+      placeholder: "Enter start date"
+    }
   },
   { 
     label: 'End date ',
     model: 'endDate',
     component: DatePicker,
-    props: getDatePickerPros(true)
+    props: {
+      ...getDatePickerPros(true),
+      placeholder: "Enter end date"
+    }
   }
 ];
 
@@ -353,17 +392,20 @@ const medicalRecordsFields = [
     label: 'Description',
     model: 'description',
     component: Textarea,
+    
   },
   {
     label: 'Examination date',
     model: 'examinationDate',
     component: DatePicker,
-    props: getDatePickerPros(false)
+    props: getDatePickerPros(false),
+    
   },
   {
     label: 'Examination type',
     model: 'examinationType',
     component: InputText,
+    
   }
 ];
 
