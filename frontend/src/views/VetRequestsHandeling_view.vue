@@ -17,7 +17,14 @@
         </Column>
         <Column header="Actions">
           <template #body="slotProps">
-            <Button label="Edit" icon="pi pi-pencil" class="p-button-text p-button-sm" @click="openEditModal(slotProps.data)" />
+            <!-- Show edit button only for statuses 'pending' and 'scheduled' -->
+            <Button
+              v-if="['pending', 'scheduled'].includes(slotProps.data.status)"
+              label="Edit"
+              icon="pi pi-pencil"
+              class="p-button-text p-button-sm"
+              @click="openEditModal(slotProps.data)"
+            />
           </template>
         </Column>
       </DataTable>
@@ -46,13 +53,14 @@
 
         <!-- Edit Status -->
         <div class="p-field">
+          <!-- Dropdown na zmenu statusu -->
           <Dropdown
             v-model="selectedRequest.newStatus"
-            :options="statusOptions"
+            :options="availableStatusOptions"
             optionLabel="label"
             placeholder="Select Status"
             class="input-full-width"
-            :invalid="!selectedRequest.newStatus.value"
+            :disabled="!availableStatusOptions.length"
           />
         </div>
       </div>
@@ -66,8 +74,9 @@
   </div>
 </template>
 
+
 <script setup>
-import { ref, onMounted,computed } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useAuthStore } from '../store/Authstore';
 import axiosClient from '../api/api';
 import DataTable from 'primevue/datatable';
@@ -76,6 +85,19 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import Dropdown from 'primevue/dropdown';
 import InputText from 'primevue/inputtext';
+
+const statusOptionsMapping = {
+  pending: [
+    { label: 'scheduled', value: 'scheduled' },
+    { label: 'cancelled', value: 'cancelled' },
+  ],
+  scheduled: [
+    { label: 'completed', value: 'completed' },
+    { label: 'cancelled', value: 'cancelled' },
+  ],
+  cancelled: [],
+  completed: [],
+};
 
 const convertCustomToStandard = (customDateTime) => {
   const months = {
@@ -93,39 +115,31 @@ const convertCustomToStandard = (customDateTime) => {
     Dec: '12',
   };
 
-  const [weekday, day, month, year, time] = customDateTime.split(' '); // Rozdelenie stringu
-  const formattedDate = `${day}/${months[month]}/${year} ${time}`; // Formátovanie na DD/MM/YYYY HH:MM:SS
+  const [weekday, day, month, year, time] = customDateTime.split(' ');
+  const formattedDate = `${day}/${months[month]}/${year} ${time}`;
   return formattedDate;
 };
 
-// Computed property to validate form
+// Form validation
 const isFormValid = computed(() => {
-  return selectedRequest.value.start_time && selectedRequest.value.newStatus.value;
+  return selectedRequest.value.start_time && selectedRequest.value.newStatus?.value;
 });
 
-// Access the authenticated user's data
 const authStore = useAuthStore();
 const requests = ref([]);
-const statusOptions = [
-  { label: 'pending', value: 'pending' },
-  { label: 'scheduled', value: 'scheduled' },
-  { label: 'cancelled', value: 'cancelled' },
-  { label: 'completed', value: 'completed' },
-];
 const editDialogVisible = ref(false);
 const selectedRequest = ref({ start_time: '', newStatus: null });
+const availableStatusOptions = ref([]);
 
-// Validate the string format of the date
 const isValidDateTime = (dateTimeStr) => {
   const regex = /^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}:\d{2}$/;
   return regex.test(dateTimeStr);
 };
 
-// Fetch requests when the component mounts
+// Fetch requests
 onMounted(async () => {
   try {
     const vetId = authStore.getUser?.id;
-
     const response = await axiosClient.get(`/veterinarian/get_all_requests_by_vet_id`, {
       params: { vet_id: vetId },
       withCredentials: true,
@@ -137,7 +151,7 @@ onMounted(async () => {
         animal_id: request.animal_id,
         animal_name: request.animal_name,
         vet_id: request.vet_id,
-        start_time: request.start_time, // Store as string directly
+        start_time: request.start_time,
         description: request.description,
         status: request.status || 'N/A',
         newStatus: request.status,
@@ -148,12 +162,21 @@ onMounted(async () => {
   }
 });
 
+// Open edit modal
 const openEditModal = (request) => {
+
+  if (['cancelled', 'completed'].includes(request.status)) {
+    alert('Requests with status "cancelled" or "completed" cannot be edited.');
+    return;
+  }
+
   selectedRequest.value = {
     ...request,
-    start_time: convertCustomToStandard(request.start_time), // Konverzia na DD/MM/YYYY HH:MM:SS
+    start_time: convertCustomToStandard(request.start_time),
     newStatus: request.status,
   };
+
+  availableStatusOptions.value = statusOptionsMapping[request.status] || [];
   editDialogVisible.value = true;
 };
 
@@ -165,7 +188,7 @@ const cancelEdit = () => {
 const convertToBackendFormat = (frontendDateTime) => {
   const [datePart, timePart] = frontendDateTime.split(' ');
   const [day, month, year] = datePart.split('/');
-  return `${year}-${month}-${day} ${timePart}`; // Convert to 'YYYY-MM-DD HH:MM:SS'
+  return `${year}-${month}-${day} ${timePart}`;
 };
 
 const saveRequestChanges = async () => {
@@ -175,12 +198,12 @@ const saveRequestChanges = async () => {
       return;
     }
 
-    const converstion = convertToBackendFormat(selectedRequest.value.start_time);
+    const convertedDateTime = convertToBackendFormat(selectedRequest.value.start_time);
 
     const response = await axiosClient.post(`/veterinarian/schedule_request`, null, {
       params: {
         request_id: selectedRequest.value.id,
-        date_time: converstion, // Send as string
+        date_time: convertedDateTime,
         status: selectedRequest.value.newStatus.value,
       },
       withCredentials: true,
@@ -190,20 +213,19 @@ const saveRequestChanges = async () => {
       location.reload();
     }
   } catch (error) {
-  if (error.response) {
-
-    const status = error.response.status;
-    const error_msg = error.response.data.error;
-    console.error(`Error Status: ${status}`);
-    alert(error_msg);
-  } else {
-
-    console.error("Error:", error.message);
-    alert("Something went wrong. Please try again later.");
+    if (error.response) {
+      const status = error.response.status;
+      const error_msg = error.response.data.error;
+      console.error(`Error Status: ${status}`);
+      alert(error_msg);
+    } else {
+      console.error('Error:', error.message);
+      alert('Something went wrong. Please try again later.');
+    }
   }
-}
 };
 </script>
+
 
 <style scoped>
 .vet-requests-container {
