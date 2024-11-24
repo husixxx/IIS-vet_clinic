@@ -27,13 +27,12 @@ import axiosClient from '../api/api';
 const authStore = useAuthStore();
 
 onMounted(async () => {
-  // Skontrolujeme, či má používateľ aktívnu session iba ak nie je prihlásený
+  // Skontroluj session pri načítaní komponentu
   if (!authStore.isLoggedIn) {
     try {
       const response = await axiosClient.get('/authorization/check_session', { withCredentials: true });
 
       if (response.data.status === 'active') {
-        // Ak má používateľ aktívnu session, nastavíme používateľa v authStore
         const user = {
           username: response.data.username,
           id: response.data.user_id,
@@ -46,7 +45,23 @@ onMounted(async () => {
       console.error('Error checking session:', error);
     }
   }
+
+  // Synchronizuj autentifikáciu medzi tabmi
+  window.addEventListener('storage', (event) => {
+    if (event.key === 'authChange') {
+      const authState = JSON.parse(event.newValue || '{}');
+
+      if (authState.loggedIn) {
+        console.log('User logged in from another tab');
+        location.reload(); // Refresh stránky, aby sa obnovili dáta
+      } else {
+        console.log('User logged out from another tab');
+        location.reload(); // Refresh stránky, aby sa zrušila session
+      }
+    }
+  });
 });
+
 
 </script>
 
