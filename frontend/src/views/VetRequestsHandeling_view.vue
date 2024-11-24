@@ -35,9 +35,10 @@
       <div class="p-fluid">
         <!-- Edit Start Time -->
         <div class="p-field">
-          <InputText v-model="selectedRequest.start_time" 
+          <!-- <InputText v-model="selectedRequest.start_time" 
           :invalid="!selectedRequest.start_time"
-          placeholder="DD/MM/YYYY, HH:MM:SS"/>
+          placeholder="DD/MM/YYYY, HH:MM:SS"/> -->
+          <DatePicker v-model="selectedRequest.start_time" :invalid="!selectedRequest.start_time" dateFormat="D, dd M yy" :manualInput="false" fluid showIcon iconDisplay="input" hourFormat="24" placeholder="Enter request's date" :minDate="new Date()"/>
         </div>
 
         <!-- Edit Status -->
@@ -72,6 +73,8 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import Dropdown from 'primevue/dropdown';
 import InputText from 'primevue/inputtext';
+import DatePicker from 'primevue/datepicker';
+import { getFormattedDate } from '../utils/date';
 
 // Access the authenticated user's data
 const authStore = useAuthStore();
@@ -113,7 +116,7 @@ onMounted(async () => {
         animal_id: request.animal_id,
         animal_name: request.animal_name, // Include Animal Name
         vet_id: request.vet_id,
-        start_time: new Date(request.start_time).toLocaleString(),
+        start_time: request.start_time,
         description: request.description,
         status: request.status || 'N/A',
         newStatus: request.status,
@@ -126,7 +129,7 @@ onMounted(async () => {
 
 const openEditModal = async (request) => {
   selectedRequest.value = { ...request }; // Clone the request
-  selectedRequest.value.newStatus = null; // Nastav status na prázdne pole
+  // selectedRequest.value.newStatus = null; // Nastav status na prázdne pole
   editDialogVisible.value = true;
 };
 
@@ -140,15 +143,15 @@ const cancelEdit = async () => {
 const saveRequestChanges = async () => {
   try {
     // Convert from 'MM/DD/YYYY, HH:MM:SS' (which is what .toLocaleString() gives) to 'YYYY-MM-DD HH:MM:SS'
-    const [datePart, timePart] = selectedRequest.value.start_time.split(', '); // Separate date and time
-    const [month, day, year] = datePart.split('/'); // Split the MM/DD/YYYY part
-    const formattedDateTime = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')} ${timePart}`; // Corrected the order of month and day
+    // const [datePart, timePart] = selectedRequest.value.start_time.split(', '); // Separate date and time
+    // const [month, day, year] = datePart.split('/'); // Split the MM/DD/YYYY part
+    // const formattedDateTime = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')} ${timePart}`; // Corrected the order of month and day
 
     // Make the request to the backend with the properly formatted date and status
     const response = await axiosClient.post(`/veterinarian/schedule_request`, null, {
       params: {
         request_id: selectedRequest.value.id,
-        date_time: formattedDateTime, // Send as 'YYYY-MM-DD HH:MM:SS'
+        date_time: getFormattedDate(selectedRequest.value.start_time, true),
         status: selectedRequest.value.newStatus.value,
       },
       withCredentials: true
@@ -160,11 +163,12 @@ const saveRequestChanges = async () => {
       requests.value[index].start_time = selectedRequest.value.start_time;
       editDialogVisible.value = false;
       selectedRequest.value = null;
-    } else {
-      console.error('Failed to update request');
     }
+    // else {
+    //   console.error('Failed to update request');
+    // }
   } catch (error) {
-    console.error('Error: Invalid date format ', error);
+    // console.error('Error: Invalid date format ', error);
     alert('Error: Invalid date format ', error);
   }
 };
