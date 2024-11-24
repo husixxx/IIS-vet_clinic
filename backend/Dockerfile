@@ -20,5 +20,5 @@ ENV PYTHONPATH=/app/backend
 EXPOSE 10000
 
 # run gunicorn
-CMD ["sh", "-c", "cd backend && gunicorn -w 2 -b 0.0.0.0:10000 run:app"]
+CMD ["sh", "-c", "cd backend/src && flask db upgrade && cd .. && gunicorn -w 2 -b 0.0.0.0:10000 run:app"]
 
