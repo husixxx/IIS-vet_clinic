@@ -1,5 +1,5 @@
 <template>
-  <div class="create-vet-request-container">
+  <div v-if="isValidAnimal" class="create-vet-request-container">
     <Card>
       <template #title>Create request</template>
       <template #content>
@@ -29,6 +29,8 @@
       </template>
     </Card>
   </div>
+
+  <h1 v-else style="text-align: center; left: 50%; top: 50%;">Animal not found</h1>
 </template>
 
 <script setup>
@@ -52,23 +54,25 @@ const date = ref(null);
 const SUCCESS_RESPONSE_CODE = ref(200);
 const UNKNOWN_OPERATION_RESPONSE_CODE = ref(403);
 const route = useRoute();
+const isValidAnimal = ref();
 
 onMounted(async () => {
-    try {
-        const response = await axiosClient.get('/caretaker/veterinarians', { withCredentials: true});
+  try {
+    const response1 = await axiosClient.get(`/animal/info?animal_id=${encodeURIComponent(route.params.animalId)}`);
+    isValidAnimal.value = response1.data.animal.name;
+  } catch (error) {
+    alert('Error fetching animal data:', error);
+  }
 
-        if(response.status === UNKNOWN_OPERATION_RESPONSE_CODE) {
-          alert('Error! You have no right to perform this operation!');
-        }
-
-        veterinarians.value = response.data.map(vet => ({
-          ...vet,
-          nameAndUsername: `${vet.name} (${vet.username})`
-        }));
-        console.log(veterinarians);
-    } catch (error) {
-        console.error('Error fetching volunteers:', error);
-    }
+  try {
+    const response2 = await axiosClient.get('/caretaker/veterinarians', { withCredentials: true});
+    veterinarians.value = response2.data.map(vet => ({
+      ...vet,
+      nameAndUsername: `${vet.name} (${vet.username})`
+    }));
+  } catch (error) {
+    alert('Error fetching veterinarians:', error);
+  }
 });
 
 const searchVeterinarians = (event) => {

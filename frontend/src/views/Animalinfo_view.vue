@@ -685,7 +685,7 @@ const fetchAnimalInfo = async () => {
     });
   } catch (error) {
     // console.log(animalInfo.value)
-    console.error('Error fetching animal data:', error);
+    alert('Error fetching animal data:', error);
   }
 }
 
