@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from typing import TypeVar, Generic, List, Type, Optional
 from src import db
 from ..models import WalkingSchedule, MedicalRecord, Animal, Request, Reservation, User
@@ -224,3 +225,71 @@ class PublicRepository:
     def get_unverified_volunteers(self) -> List[User]:
         """Get all unverified volunteers."""
         return self.db_session.query(User).filter(User.verified == False).all()
+    
+    def check_walking_schedule(self, animal_id: int, start_time: str, end_time: str):
+        """Check if a schedule is not conflicting."""
+        
+        start_time_dt = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
+        end_time_dt = datetime.strptime(end_time, '%Y-%m-%d %H:%M:%S')
+        max_duration = timedelta(hours=2)
+        
+        if end_time_dt - start_time_dt > max_duration:
+            raise ValueError("Schedule duration exceeds 2 hours.")
+        
+        if start_time_dt < datetime.now():
+            raise ValueError("Schedule cannot be in the past.")
+        
+        if start_time_dt >= end_time_dt:
+            raise ValueError("End time cannot be before start time.")
+        
+        schedule = self.db_session.query(WalkingSchedule).filter(
+            WalkingSchedule.animal_id == animal_id,
+            WalkingSchedule.start_time < end_time_dt,
+            WalkingSchedule.end_time > start_time_dt
+        ).first()
+        
+        if schedule:
+            raise ValueError("Schedule conflicts with another schedule.")
+        
+    def check_update_walking_schedule(self, animal_id: int, start_time: str, end_time: str, schedule_id: int):
+        """Check if a schedule is not conflicting."""
+        
+        start_time_dt = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
+        end_time_dt = datetime.strptime(end_time, '%Y-%m-%d %H:%M:%S')
+        max_duration = timedelta(hours=2)
+        
+        if end_time_dt - start_time_dt > max_duration:
+            raise ValueError("Schedule duration exceeds 2 hours.")
+        
+        if start_time_dt < datetime.now():
+            raise ValueError("Schedule cannot be in the past.")
+        
+        if start_time_dt >= end_time_dt:
+            raise ValueError("End time cannot be before start time.")
+        
+        schedule = self.db_session.query(WalkingSchedule).filter(
+            WalkingSchedule.animal_id == animal_id,
+            WalkingSchedule.start_time < end_time_dt,
+            WalkingSchedule.end_time > start_time_dt,
+            WalkingSchedule.id != schedule_id
+        ).first()
+        
+        if schedule:
+            raise ValueError("Schedule conflicts with another schedule.")
+        
+    def remove_walking_schedule_by_approved_reservation(self, animal_id: int, start_time: str, end_time: str):
+        """Remove a walking schedule."""
+        schedule = self.db_session.query(WalkingSchedule).filter(
+            WalkingSchedule.animal_id == animal_id,
+            WalkingSchedule.start_time == start_time,
+            WalkingSchedule.end_time == end_time
+        ).first()
+        
+        if not schedule:
+            raise ValueError("Schedule not found.")
+        
+        self.db_session.delete(schedule)
+        self.db_session.commit()        
+        
+        
+    
