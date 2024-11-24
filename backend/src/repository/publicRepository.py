@@ -291,5 +291,12 @@ class PublicRepository:
         self.db_session.delete(schedule)
         self.db_session.commit()        
         
+    def get_walking_schedule(self, animal_id: int, start_time: str, end_time: str) -> Optional[WalkingSchedule]:
+        """Get a walking schedule."""
+        return self.db_session.query(WalkingSchedule).filter(
+            WalkingSchedule.animal_id == animal_id,
+            WalkingSchedule.start_time == start_time,
+            WalkingSchedule.end_time == end_time
+        ).first()
         
     
