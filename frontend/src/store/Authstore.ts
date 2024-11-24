@@ -70,6 +70,7 @@ export const useAuthStore = defineStore('auth', {
             this.user = null;  // Aktualizuj stav, keď sa používateľ odhlási
             console.log("User logged out from another tab");
           }
+          location.reload();
         }
       });
     },
