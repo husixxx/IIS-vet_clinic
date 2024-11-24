@@ -61,7 +61,17 @@ onMounted(async () => {
     const response1 = await axiosClient.get(`/animal/info?animal_id=${encodeURIComponent(route.params.animalId)}`);
     isValidAnimal.value = response1.data.animal.name;
   } catch (error) {
-    alert('Error fetching animal data:', error);
+    if (error.response) {
+
+      const status = error.response.status;
+      const error_msg = error.response.data.error;
+      console.error(`Error Status: ${status}`);
+      alert(error_msg);
+    } else {
+
+      console.error("Error:", error.message);
+      alert("Something went wrong. Please try again later.");
+    }
   }
 
   try {
@@ -71,7 +81,17 @@ onMounted(async () => {
       nameAndUsername: `${vet.name} (${vet.username})`
     }));
   } catch (error) {
-    alert('Error fetching veterinarians:', error);
+    if (error.response) {
+
+      const status = error.response.status;
+      const error_msg = error.response.data.error;
+      console.error(`Error Status: ${status}`);
+      alert(error_msg);
+    } else {
+
+      console.error("Error:", error.message);
+      alert("Something went wrong. Please try again later.");
+    }
   }
 });
 
@@ -108,8 +128,17 @@ const handleSendVetRequest = async () => {
     }
 
   } catch (error) {
-    console.error('Error sending vet request:', error);
-    alert('Failed to send vet request.');
+    if (error.response) {
+
+      const status = error.response.status;
+      const error_msg = error.response.data.error;
+      console.error(`Error Status: ${status}`);
+      alert(error_msg);
+    } else {
+
+      console.error("Error:", error.message);
+      alert("Something went wrong. Please try again later.");
+    }
   }
 }
 

@@ -238,8 +238,17 @@ function confirmReservation(animalName, schedule) {
 
         // await fetchAnimalInfo();
       } catch (error) {
-        // console.error('Error creating reservation: ', error);
-        alert('Wait until reservation will be approved by caretaker!');
+        if (error.response) {
+        
+          const status = error.response.status;
+          const error_msg = error.response.data.error;
+          console.error(`Error Status: ${status}`);
+          alert(error_msg);
+        } else {
+        
+          console.error("Error:", error.message);
+          alert("Something went wrong. Please try again later.");
+        }
       }
     },
 
@@ -268,8 +277,17 @@ function confirmAnimalDeletion() {
         // await router.push({ name: 'animal'});
         router.push({ name: 'Animal'});
       } catch (error) {
-        // console.error('Error deleting animal: ', error);
-        alert('Failed to delete animal', error);
+        if (error.response) {
+
+          const status = error.response.status;
+          const error_msg = error.response.data.error;
+          console.error(`Error Status: ${status}`);
+          alert(error_msg);
+        } else {
+
+          console.error("Error:", error.message);
+          alert("Something went wrong. Please try again later.");
+        }
       }
     },
 
@@ -296,7 +314,17 @@ function confirmScheduleDeletion(schedule) {
 
         await fetchAnimalInfo();
       } catch (error) {
-        alert('Failed to delete walking schedule');
+        if (error.response) {
+        
+          const status = error.response.status;
+          const error_msg = error.response.data.error;
+          console.error(`Error Status: ${status}`);
+          alert(error_msg);
+        } else {
+        
+          console.error("Error:", error.message);
+          alert("Something went wrong. Please try again later.");
+        }
       }
     },
 
@@ -498,9 +526,17 @@ const sendReqAndProcessResponse = async (request, isSchedule, isUpdated, closeMo
 
     closeModalFn();
   } catch (error) {
-    const action = isUpdated ? 'updat' : 'add';
-    // console.error(`Error ${action}ing ${isSchedule ? 'schedule' : 'medical record'}:`, error);
-    alert(`Failed to ${action}e ${isSchedule ? 'schedule' : 'medical record'}.`);
+    if (error.response) {
+
+      const status = error.response.status;
+      const error_msg = error.response.data.error;
+      console.error(`Error Status: ${status}`);
+      alert(error_msg);
+    } else {
+
+      console.error("Error:", error.message);
+      alert("Something went wrong. Please try again later.");
+    }
   }
 }
 
@@ -539,8 +575,17 @@ async function updateAnimalInfo() {
     closeAnimalInfoEditDialog();
 
   } catch (error) {
-    // console.error('Error updating animal info: ', error);
-    alert('Failed to update animal info');
+    if (error.response) {
+
+      const status = error.response.status;
+      const error_msg = error.response.data.error;
+      console.error(`Error Status: ${status}`);
+      alert(error_msg);
+    } else {
+
+      console.error("Error:", error.message);
+      alert("Something went wrong. Please try again later.");
+    }
   }
 }
 
@@ -720,8 +765,17 @@ const fetchAnimalInfo = async () => {
 
     console.log(animalSchedules);
   } catch (error) {
-    // console.log(animalInfo.value)
-    alert('Error fetching animal data:', error);
+    if (error.response) {
+
+      const status = error.response.status;
+      const error_msg = error.response.data.error;
+      console.error(`Error Status: ${status}`);
+      alert(error_msg);
+    } else {
+
+      console.error("Error:", error.message);
+      alert("Something went wrong. Please try again later.");
+    }
   }
 }
 
