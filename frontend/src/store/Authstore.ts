@@ -18,9 +18,8 @@ interface User {
 
 interface AuthState {
   user: User | null;  // Používateľ môže byť null, ak nie je prihlásený
-  syncInitialized: boolean;  // Zabezpečí, že listener sa pridá iba raz
+  syncInitialized: boolean;  // Kontrola, či je synchronizácia inicializovaná
 }
-
 
 export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
@@ -28,13 +27,15 @@ export const useAuthStore = defineStore('auth', {
     syncInitialized: false,  // Zabezpečí, že listener sa pridá iba raz
   }),
   getters: {
-    isLoggedIn: (state): boolean => !!state.user,
-    getUser: (state): User | null => state.user,
-    getRoleId: (state): number | null => state.user ? state.user.role_id : null,
+    isLoggedIn: (state): boolean => !!state.user,  // Kontrola prihlásenia
+    getUser: (state): User | null => state.user,  // Získanie používateľa
+    getRoleId: (state): number | null => state.user ? state.user.role_id : null,  // Získanie role používateľa
   },
   actions: {
     login(user: User) {
-      this.user = user;
+      this.user = user;  // Nastavenie používateľa po úspešnom prihlásení
+
+      // Synchronizácia s localStorage
       localStorage.setItem('authChange', JSON.stringify({
         loggedIn: true,
         user: this.user,
@@ -42,34 +43,40 @@ export const useAuthStore = defineStore('auth', {
       }));
     },
     async logout() {
-      this.user = null;
-      localStorage.setItem('authChange', JSON.stringify({
-        loggedIn: false,
-        user: null,
-        timestamp: Date.now(),
-      }));
-    },
-    syncAuthState() {
-      if (this.syncInitialized) return; // Listener už existuje
-      this.syncInitialized = true;
+      try {
+        // API volanie na odhlásenie
+        await axiosClient.post('/authorization/sign_out', null, { withCredentials: true });
+        
+        this.user = null;
 
+        // Synchronizácia s localStorage
+        localStorage.setItem('authChange', JSON.stringify({
+          loggedIn: false,
+          user: null,
+          timestamp: Date.now(),
+        }));
+      } catch (error) {
+        console.error("Error during sign out:", error);
+        alert('Error during sign out');
+      }
+    },
+    // Synchronizácia medzi tabmi/oknami
+    syncAuthState() {
+      if (this.syncInitialized) return; // Zabezpečíme, že listener je pridaný iba raz
+      this.syncInitialized = true;
       window.addEventListener('storage', (event) => {
         if (event.key === 'authChange') {
           const authState = JSON.parse(event.newValue || '{}');
-          if (authState.loggedIn && authState.user && !this.isLoggedIn) {
-            this.user = authState.user;
+          if (authState.loggedIn && authState.user) {
+            this.user = authState.user;  // Aktualizuj stav, keď sa používateľ prihlási
             console.log("User logged in from another tab");
-            location.reload(); // Refreš iba, ak sa prihlásil
-          }
-          if (!authState.loggedIn && this.isLoggedIn) {
-            this.user = null;
+          } else if (!authState.loggedIn) {
+            this.user = null;  // Aktualizuj stav, keď sa používateľ odhlási
             console.log("User logged out from another tab");
-            location.reload(); // Refreš iba, ak sa odhlásil
           }
         }
       });
     },
   },
 });
-
 
