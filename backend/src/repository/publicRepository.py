@@ -277,7 +277,19 @@ class PublicRepository:
         if schedule:
             raise ValueError("Schedule conflicts with another schedule.")
         
+    def remove_walking_schedule_by_approved_reservation(self, animal_id: int, start_time: str, end_time: str):
+        """Remove a walking schedule."""
+        schedule = self.db_session.query(WalkingSchedule).filter(
+            WalkingSchedule.animal_id == animal_id,
+            WalkingSchedule.start_time == start_time,
+            WalkingSchedule.end_time == end_time
+        ).first()
         
+        if not schedule:
+            raise ValueError("Schedule not found.")
+        
+        self.db_session.delete(schedule)
+        self.db_session.commit()        
         
         
     
