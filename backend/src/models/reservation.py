@@ -16,3 +16,11 @@ class Reservation(db.Model):
     def __repr__(self):
         return f'<Reservation for Animal ID {self.animal_id}>'
     
+    
+    
+    # Ked sa hodi approved 1 na approved, tak ostatne != id == cancelled
+    
+    # ve walking nezobrazoval ty  co su uz zebrane (rezervacia je approved)
+    
+    # vet
+    
