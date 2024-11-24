@@ -48,6 +48,10 @@
         <div class="tags non-prime-animal-info" v-for="(field, index) in filteredAnimalInfoFields" :key="index">
           <strong>{{ field.label }}:</strong> {{ animalInfo?.[field.model] }}
         </div>
+
+        <div v-if="authStore.getRoleId === UserRole.Volunteer || authStore.getRoleId === UserRole.Veterinarian || authStore.getRoleId === UserRole.Caretaker || authStore.getRoleId === UserRole.Admin" class="tags non-prime-animal-info">
+          <strong>ID:</strong> {{ animalInfo?.id }}
+        </div>
         
         <div class="tags" v-if="authStore.getRoleId === UserRole.Caretaker">
           <Button label="Edit animal information" style="width: 100%;" @click="openAnimalInfoEditModal(animalInfo)"/>
