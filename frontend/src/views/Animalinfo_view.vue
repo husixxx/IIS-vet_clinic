@@ -11,7 +11,7 @@
       <Card class="full-width-card">
         <template #content>
           <div class="p-fluid">
-            <DataTable :value="animalSchedules" class="full-width-table" tableStyle="width: 100%">
+            <DataTable :value="animalSchedules" class="full-width-table" tableStyle="width: 100%" v-if="animalSchedules.length">
               <Column field="start_time" header="Start date" style="width: 10%;"></Column>
               <Column field="end_time" header="End date" style="width: 10%;"></Column>
               <Column v-if="authStore.getRoleId === UserRole.Volunteer" header="" style="width: 5%; text-align: right;" headerStyle="text-align: right; padding-right: 30px;">
@@ -37,6 +37,7 @@
                 </template>
               </Column>
             </DataTable>
+            <h1 v-else style="text-align: center; left: 50%; top: 50%;">No avaliable schedules</h1>
           </div>
         </template>
       </Card>
@@ -84,7 +85,7 @@
       <Card class="full-width-card">
         <template #content>
           <div class="p-fluid">
-            <DataTable :value="animalMedicalRecords" class="full-width-table" tableStyle="width: 100%">
+            <DataTable :value="animalMedicalRecords" class="full-width-table" tableStyle="width: 100%" v-if="animalMedicalRecords.length">
               <Column field="description" header="Description" style="width: 45%;" bodyStyle="white-space: normal; word-break: break-word;"></Column>
               <Column field="examination_date" header="Examination date" style="width: 10%;"></Column>
               <Column field="examination_type" header="Examination type" style="width: 10%;"></Column>
@@ -99,6 +100,7 @@
                 </template>
               </Column>
             </DataTable>
+            <h1 v-else style="text-align: center; left: 50%; top: 50%;">No medical records</h1>
           </div>
         </template>
       </Card>
