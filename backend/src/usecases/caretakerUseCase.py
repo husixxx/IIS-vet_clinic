@@ -131,7 +131,7 @@ class CaretakerUseCase:
         if walking_schedule.reservated:
             raise ValueError("Cant update reservated walking schedule")
         
-        self.public_repository.check_update_walking_schedule(walking_schedule.animal_id, start_time, end_time)
+        self.public_repository.check_update_walking_schedule(walking_schedule.animal_id, start_time, end_time, walking_schedule.id)
         
         walking_schedule.start_time = start_time
         walking_schedule.end_time = end_time
@@ -150,7 +150,8 @@ class CaretakerUseCase:
         animal.history = history
         animal.description = description
         animal.sex = sex
-        animal.photo = photo
+        if photo:
+            animal.photo = photo
         self.animal_repository.update(animal)
 
     def verify_volunteer(self, id: int) -> User:
@@ -282,7 +283,7 @@ class CaretakerUseCase:
         reservation = self.reservation_repository.get_by_id(reservation_id)
         if reservation is None:
             raise Exception("No reservation")
-        if status not in ["pending", "approved", "cancelled", "completed"]:
+        elif status == "cancelled" and reservation.status == "approved":
             raise ValueError("Invalid status")
 
         schedule = self.public_repository.get_walking_schedule(
@@ -292,14 +293,14 @@ class CaretakerUseCase:
         if status == "approved":
             if not schedule:
                 raise ValueError("No matching schedule found")
-            if schedule.reserved:
+            if schedule.reservated:
                 raise ValueError("Schedule already reserved")
-            schedule.reserved = True
+            schedule.reservated = True
             self.schedule_repository.update(schedule)
 
         elif status in ["cancelled", "completed"] and reservation.status == "approved":
             if schedule:
-                schedule.reserved = False
+                schedule.reservated = False
                 self.schedule_repository.update(schedule)
 
         reservation.status = status

@@ -55,7 +55,7 @@ class VeterinarianUseCase:
         vet = self.user_repository.get_by_id(vet_id)
         if not vet:
             raise ValueError("Veterinarian not found")
-        if vet.role != "veterinarian":
+        if vet.role_id != 2:
             raise ValueError("User is not a veterinarian")
 
         animal = self.animal_repository.get_by_id(animal_id)

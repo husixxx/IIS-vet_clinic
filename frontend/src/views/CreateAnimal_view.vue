@@ -131,6 +131,8 @@ const handleFileUpload = (event) => {
       event.target.value = ''; // Reset the file input
       return;
     }
+
+    photoFile.value = file; // Store the file
   }
 };
 

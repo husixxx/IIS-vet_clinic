@@ -239,7 +239,7 @@ function confirmReservation(animalName, schedule) {
         // await fetchAnimalInfo();
       } catch (error) {
         // console.error('Error creating reservation: ', error);
-        alert('Failed to make reservation');
+        alert('Wait until reservation will be approved by caretaker!');
       }
     },
 
@@ -361,7 +361,7 @@ const animalInfoFields = [
     component: InputText,
     props: {
       placeholder: 'Enter animal\'s name',
-      maxlength: '30'
+      maxlength: 30
     }
   },
   { 
@@ -370,7 +370,7 @@ const animalInfoFields = [
     component: InputText,
     props: {
       placeholder: 'Enter animal\'s breed',
-      maxlength: '20'
+      maxlength: 20
     }
   },
   { 
@@ -379,9 +379,9 @@ const animalInfoFields = [
     component: InputNumber,
     props: {
       placeholder: 'Enter animal\'s age',
+      min: '0',
+      max: '999'
     },
-    min: '0',
-    max: '999'
   },
   { 
     label: 'Sex',
@@ -409,7 +409,7 @@ const animalInfoFields = [
     component: Textarea,
     props: {
       placeholder: 'Enter animal\'s description',
-      maxlength: '300'
+      maxlength: 300
     }
   },
   { 
@@ -418,7 +418,7 @@ const animalInfoFields = [
     component: Textarea,
     props: {
       placeholder: 'Enter animal\'s history',
-      maxlength: '300'
+      maxlength: 300
     }
   }
 ];
@@ -462,7 +462,7 @@ const medicalRecordsFields = [
     props: {
       ...getDatePickerPros(false),
       placeholder: "Enter examination date",
-      minDate: new Date()
+      maxDate: new Date()
     }
   },
   {
@@ -695,9 +695,12 @@ const fetchAnimalInfo = async () => {
 
     // console.log(animalInfo)
 
-    animalSchedules.value = response.data.schedules.map(schedule => {
+    animalSchedules.value = response.data.schedules
+      .filter(schedule => !schedule.reservated) // Only include schedules where reservated is false
+      .map(schedule => {
       const startDateTimePart = schedule.start_time.replace(" GMT", "");
       const endtDateTimePart = schedule.end_time.replace(" GMT", "");
+
 
       return {
         ...schedule,
@@ -714,6 +717,8 @@ const fetchAnimalInfo = async () => {
         examination_date: datePart
       };
     });
+
+    console.log(animalSchedules);
   } catch (error) {
     // console.log(animalInfo.value)
     alert('Error fetching animal data:', error);
