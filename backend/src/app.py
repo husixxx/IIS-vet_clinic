@@ -5,6 +5,7 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from . import db
+import os 
 
 from .models import *
 from .usecases import *
@@ -26,27 +27,22 @@ def create_app():
         },
     }
 
-    CORS(
-        app,
-        resources={
-            r"/*": {  # Allow all routes
-                "origins": [
-                    "http://127.0.0.1:5173",
-                    "http://localhost:5342",
-                    "http://localhost:5000",
-                    "http://localhost:5173",
-                ],
-                "supports_credentials": True,
-            }
-        },
-        supports_credentials=True,
-    )
+    
+
+    CORS(app, resources={r"/*": {"origins": "https://iis-vet-clinic-1.onrender.com"}}, supports_credentials=True)
+
 
     # Database
-    DATABASE_URI = "postgresql://husic:husic@postgres:5432/iis"
-    app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
+    # DATABASE_URI = "postgresql://husic:husic@postgres:5432/iis"
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+    # app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.secret_key = "husic"  # session secret key
+
+    app.config.update(
+        SESSION_COOKIE_SECURE=True,         
+        SESSION_COOKIE_SAMESITE="None"     # cross site
+    )
 
     # not sure if this is needed
     Migrate(app, db)

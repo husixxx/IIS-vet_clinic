@@ -18,11 +18,13 @@ interface User {
 
 interface AuthState {
   user: User | null;  // Používateľ môže byť null, ak nie je prihlásený
+  syncInitialized: boolean;  // Kontrola, či je synchronizácia inicializovaná
 }
 
 export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
     user: null,  // Na začiatku nie je prihlásený žiadny používateľ
+    syncInitialized: false,  // Zabezpečí, že listener sa pridá iba raz
   }),
   getters: {
     isLoggedIn: (state): boolean => !!state.user,  // Kontrola prihlásenia
@@ -32,15 +34,49 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     login(user: User) {
       this.user = user;  // Nastavenie používateľa po úspešnom prihlásení
+
+      // Synchronizácia s localStorage
+      localStorage.setItem('authChange', JSON.stringify({
+        loggedIn: true,
+        user: this.user,
+        timestamp: Date.now(),
+      }));
     },
     async logout() {
       try {
+        // API volanie na odhlásenie
         await axiosClient.post('/authorization/sign_out', null, { withCredentials: true });
+        
         this.user = null;
+
+        // Synchronizácia s localStorage
+        localStorage.setItem('authChange', JSON.stringify({
+          loggedIn: false,
+          user: null,
+          timestamp: Date.now(),
+        }));
       } catch (error) {
         console.error("Error during sign out:", error);
         alert('Error during sign out');
       }
-    }
+    },
+    // Synchronizácia medzi tabmi/oknami
+    syncAuthState() {
+      if (this.syncInitialized) return; // Zabezpečíme, že listener je pridaný iba raz
+      this.syncInitialized = true;
+      window.addEventListener('storage', (event) => {
+        if (event.key === 'authChange') {
+          const authState = JSON.parse(event.newValue || '{}');
+          if (authState.loggedIn && authState.user) {
+            this.user = authState.user;  // Aktualizuj stav, keď sa používateľ prihlási
+            console.log("User logged in from another tab");
+          } else if (!authState.loggedIn) {
+            this.user = null;  // Aktualizuj stav, keď sa používateľ odhlási
+            console.log("User logged out from another tab");
+          }
+        }
+      });
+    },
   },
 });
+

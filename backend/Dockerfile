@@ -15,6 +15,10 @@ COPY . .
 
 # set environment variables
 ENV FLASK_APP=backend/src/app.py
+ENV PYTHONPATH=/app/backend
+# expose port 5000
+EXPOSE 10000
 
-# run 
-CMD ["sh", "-c", "python backend/run.py"]
+# run gunicorn
+CMD ["sh", "-c", "cd backend && gunicorn -w 2 -b 0.0.0.0:10000 run:app"]
+

@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, current_app
 from werkzeug.security import *
-from flask_login import login_user
+from flask_login import login_user, current_user
 from src.models import User
 
 sign_in_bp = Blueprint("sign_in", __name__)
@@ -49,7 +49,10 @@ def sign_in():
 
     if not user.verified:
         return jsonify({"error": "Unauthorized"}), 401
-
+      
+    if current_user.is_authenticated:
+        return jsonify({"error": "Already authenticated"}), 400
+    
     login_user(user)
 
     return jsonify({"id": user.id, "username": user.username, "role_id": user.role_id}, 200)
