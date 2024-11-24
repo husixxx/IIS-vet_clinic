@@ -421,7 +421,7 @@ const reservSchedulesFields = [
     props: {
       ...getDatePickerPros(true),
       placeholder: "Enter start date",
-      minDate: new Date()
+      minDate: new Date(),
     }
   },
   { 
@@ -431,7 +431,7 @@ const reservSchedulesFields = [
     props: {
       ...getDatePickerPros(true),
       placeholder: "Enter end date",
-      minDate: new Date()
+      minDate: new Date(),
     }
   }
 ];
@@ -535,11 +535,15 @@ async function updateAnimalInfo() {
 }
 
 async function updateSchedule() {
-  if(new Date(selectedSchedule.startDate) >= new Date(selectedSchedule.endDate)) {
-    alert('Error! Start date can\'t be greater or equal than end date!')
+  const startDate = new Date(selectedSchedule.startDate);
+  const endDate = new Date(selectedSchedule.endDate);
+  // console.log(isDifferenceAtMostTwoHours(selectedSchedule.startDate, selectedSchedule.endDate))
+  if(startDate >= endDate || !isDifferenceAtMostTwoHours(selectedSchedule.startDate, selectedSchedule.endDate)) {
+    alert('Error! Start date can\'t be greater or equal than end date! The difference between time must be at most 2 hours!')
     selectedSchedule.startDate = undefined;
     return;
   }
+
 
   // console.log(selectedSchedule.startDate, getFormattedDate(selectedSchedule.startDate, true))
   const requestUrl = `/caretaker/update_walking_schedule?walking_schedule_id=${encodeURIComponent(selectedSchedule.id)}` +
@@ -550,9 +554,26 @@ async function updateSchedule() {
   await fetchAnimalInfo();
 }
 
+function isDifferenceAtMostTwoHours(startDate, endDate) {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  // Calculate the absolute difference in milliseconds
+  const differenceInMilliseconds = Math.abs(end - start);
+
+  // Convert milliseconds to hours
+  const differenceInHours = differenceInMilliseconds / (1000 * 60 * 60);
+
+  // Check if the difference is at most 2 hours
+  return differenceInHours <= 2;
+}
+
 async function addSchedule() {
-  if(new Date(selectedSchedule.startDate) >= new Date(selectedSchedule.endDate)) {
-    alert('Error! Start date can\'t be greater or equal than end date!')
+  const startDate = new Date(selectedSchedule.startDate);
+  const endDate = new Date(selectedSchedule.endDate);
+  // console.log(isDifferenceAtMostTwoHours(selectedSchedule.startDate, selectedSchedule.endDate))
+  if(startDate >= endDate || !isDifferenceAtMostTwoHours(selectedSchedule.startDate, selectedSchedule.endDate)) {
+    alert('Error! Start date can\'t be greater or equal than end date! The difference between time must be at most 2 hours!')
     selectedSchedule.startDate = undefined;
     return;
   }
