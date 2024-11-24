@@ -360,7 +360,8 @@ const animalInfoFields = [
     model: 'name',
     component: InputText,
     props: {
-      placeholder: 'Enter animal\'s name'
+      placeholder: 'Enter animal\'s name',
+      maxlength: '30'
     }
   },
   { 
@@ -368,7 +369,8 @@ const animalInfoFields = [
     model: 'breed',
     component: InputText,
     props: {
-      placeholder: 'Enter animal\'s breed'
+      placeholder: 'Enter animal\'s breed',
+      maxlength: '20'
     }
   },
   { 
@@ -376,8 +378,10 @@ const animalInfoFields = [
     model: 'age',
     component: InputNumber,
     props: {
-      placeholder: 'Enter animal\'s age'
-    }
+      placeholder: 'Enter animal\'s age',
+    },
+    min: '0',
+    max: '999'
   },
   { 
     label: 'Sex',
@@ -404,7 +408,8 @@ const animalInfoFields = [
     model: 'description',
     component: Textarea,
     props: {
-      placeholder: 'Enter animal\'s description'
+      placeholder: 'Enter animal\'s description',
+      maxlength: '300'
     }
   },
   { 
@@ -412,7 +417,8 @@ const animalInfoFields = [
     model: 'history',
     component: Textarea,
     props: {
-      placeholder: 'Enter animal\'s history'
+      placeholder: 'Enter animal\'s history',
+      maxlength: '300'
     }
   }
 ];
