@@ -11,7 +11,8 @@
                           @complete="searchVeterinarians" 
                           :virtualScrollerOptions="{ itemSize: 50 }"
                           optionLabel="nameAndUsername" dropdown
-                          :invalid="!selectedVeterinarian"/>
+                          :invalid="!selectedVeterinarian"
+                          placeholder="Enter vet's name or username"/>
           </div>
           <div class="p-field input-group">
             <label for="description" class="input-label">Description</label>
@@ -19,10 +20,10 @@
           </div>
           <div class="p-field input-group">
             <label for="date" class="input-label">Date</label>
-            <DatePicker class="input-text" v-model="date" :manualInput="false" dateFormat="D, dd M yy" showIcon fluid iconDisplay="input" :invalid="!date" showTime showSeconds hourFormat="24"/>
+            <DatePicker class="input-text" v-model="date" :manualInput="false" dateFormat="D, dd M yy" showIcon fluid iconDisplay="input" :invalid="!date" hourFormat="24" placeholder="Enter request's date" :minDate="new Date()"/>
           </div>
           <div class="p-field send-vet-request">
-            <Button label="Send request" @click="handleSendVetRequest" class="w-full" icon="pi pi-send" />
+            <Button label="Send request" @click="handleSendVetRequest" class="w-full" icon="pi pi-send" :disabled=" !selectedVeterinarian || !description || !date || !isValidVetUsername()" />
           </div>
         </div>
       </template>
@@ -76,6 +77,11 @@ const searchVeterinarians = (event) => {
     vet.name.toLowerCase().includes(query) || vet.username.toLowerCase().includes(query)
   );
 };
+
+const isValidVetUsername = () => {
+  console.log(selectedVeterinarian?.value?.username)
+  return veterinarians.value.some(vet => vet.username === selectedVeterinarian?.value?.username);
+}
 
 const handleSendVetRequest = async () => {
   try {

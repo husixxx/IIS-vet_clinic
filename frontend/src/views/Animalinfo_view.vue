@@ -539,7 +539,7 @@ async function updateSchedule() {
     return;
   }
 
-  console.log(selectedSchedule.startDate, getFormattedDate(selectedSchedule.startDate, true))
+  // console.log(selectedSchedule.startDate, getFormattedDate(selectedSchedule.startDate, true))
   const requestUrl = `/caretaker/update_walking_schedule?walking_schedule_id=${encodeURIComponent(selectedSchedule.id)}` +
                      `&start_time=${encodeURIComponent(getFormattedDate(selectedSchedule.startDate, true))}` +
                      `&end_time=${encodeURIComponent(getFormattedDate(selectedSchedule.endDate, true))}`;
