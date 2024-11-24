@@ -31,12 +31,12 @@
 		backend developer
 	</dd>
 	<dt>URL aplikace</dt>
-	<dd><a href="http://www.stud.fit.vutbr.cz/~xautor01/IIS">http://www.stud.fit.vutbr.cz/~xautor01/IIS</a></dd>
-	<dd>(pokud má aplikace více vstupních stránek, napište obdobně další URL)</dd>
+	<dd><a href="http://www.stud.fit.vutbr.cz/~xautor01/IIS">https://iis-vet-clinic-1.onrender.com/</a></dd>
+	<!-- <dd>(pokud má aplikace více vstupních stránek, napište obdobně další URL)</dd> -->
 </dl>
 
 <h2>Uživatelé systému pro testování</h2>
-<p>Uveďte prosím existující zástupce všech rolí uživatelů.</strong>.</p>
+<!-- <p>Uveďte prosím existující zástupce všech rolí uživatelů.</strong>.</p> -->
 <table>
 <tbody><tr><th>Login</th><th>Heslo</th><th>Role</th></tr>
 <tr><td>admin</td><td>admin</td><td>Administrátor</td></tr>
@@ -45,7 +45,7 @@
 <tr><td>dobrovolnik</td><td>dobrovolnik</td><td>Dobrovolník</td></tr>
 </tbody></table>
 
-<p>(Diagram případů užití není nutné vkládat, pokud IS implementuje role a případy užití definované zadáním.)</p> 
+<!-- <p>(Diagram případů užití není nutné vkládat, pokud IS implementuje role a případy užití definované zadáním.)</p>  -->
 
 <h3>Video</h3>
 
@@ -55,7 +55,36 @@
 </p> 
 
 <h2>Implementace</h2>
-<p>Stručná dokumentace k implementaci, která popisuje, které části projektu (např. PHP skripty) implementují jednotlivé případy použití..</p>
+<!-- <p>Stručná dokumentace k implementaci, která popisuje, které části projektu (např. PHP skripty) implementují jednotlivé případy použití..</p> -->
+<ul>
+	<li><b>administrátor:</b></li>
+	<ul>
+		<li>spravuje uživatele: vytváří pečovatele a veterináře pomoci endpoint definovaných v zdrojových souborech <i>CreateCaretaker.py</i> a <i>CreateVeterinarian.py</i>.</li>
+		<li>upravuje údaje uživatele na zakladě jeho identifikátoru: endpoint <i>UpdateUser.py</i>.</li>
+		<li>maže uživatele na zakladě jeho identifikátoru: endpoint <i>DeleteUser.py</i>.</li>
+	</ul>
+	<li><b>pečovatel:</b></li>
+	<ul>
+		<li>spravuje zvířata: <i>CreateAnimal.py</i>, <i>UpdateAnimal.py</i>, <i>DeleteAnimal.py</i>.</li>
+		<li>vytváří rozvrhy pro venčení: <i>CreateWalkingSchedule.py</i>.</li>
+		<li>ověřuje dobrovolníky: <i>VerifyVolunteer.py</i>.</li>
+		<li>schvaluje rezervace zvířat na venčení, eviduje zapůjčení a vrácení: <i>ChangeReservationStatus.py</i>.</li>
+	</ul>
+	<li><b>veterinář:</b></li>
+	<ul>
+		<li>vyřizuje požadavky od pečovatele: <i>ScheduleRequest.py</i>.</li>
+		<li>spravuje zdravotní záznamy zvířat: <i>CreateMedicalRecord.py</i>, <i>UpdateMedicalRecord.py</i>.</li>
+	</ul>
+	<li><b>dobrovolník:</b></li>
+	<ul>
+		<li>rezervuje zvířata na venčení: <i>CreateReservation.py</i>.</li>
+		<li>vidí historii svých venčení: <i>GetReservationsByVolunteerId.py</i>.</li>
+	</ul>
+	<li><b>neregistrovaný uživatel:</b></li>
+	<ul>
+		<li>prochází informace o útulku a zvířatech: <i>FilterAnimals.py</i>, <i>GetAnimalInfoById.py</i>.</li>
+	</ul>
+</ul>
 
 <h3>Databáze</h3>
 
