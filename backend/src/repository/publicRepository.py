@@ -331,36 +331,38 @@ class PublicRepository:
                 Request.animal_id == animal_id,
                 Request.veterinarian_id == vet_id,
                 Request.request_date == request_date_dt,
+                Request.status == "scheduled"
             )
             .first()
         )
 
         if request:
             raise ValueError(
-                "Request for this animal with this veterinarian at this time already exists."
+                "Scheduled request for this animal with this veterinarian at this time already exists."
             )
 
         animal_requests = (
             self.db_session.query(Request)
             .filter(
-                Request.animal_id == animal_id, Request.request_date == request_date_dt
+                Request.animal_id == animal_id, Request.request_date == request_date_dt, Request.status == "scheduled"
             )
             .all()
         )
 
         if animal_requests:
-            raise ValueError("Request for this animal at this time already exists.")
+            raise ValueError("Scheduled request for this animal at this time already exists.")
 
         vet_requests = (
             self.db_session.query(Request)
             .filter(
                 Request.veterinarian_id == vet_id,
                 Request.request_date == request_date_dt,
+                Request.status == "scheduled"
             )
             .all()
         )
 
         if vet_requests:
             raise ValueError(
-                "Request for this veterinarian at this time already exists."
+                "Scheduled request for this veterinarian at this time already exists."
             )

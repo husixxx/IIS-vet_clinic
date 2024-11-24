@@ -86,7 +86,7 @@ class CaretakerUseCase:
         if not self.animal_repository.get_by_id(animal_id):
             raise Exception("Animal not found.")
         
-        PublicRepository.check_walking_schedule(animal_id, start_time, end_time)
+        self.public_repository.check_walking_schedule(animal_id, start_time, end_time)
         
         walking_schedule = WalkingSchedule(
             animal_id=animal_id,
@@ -106,7 +106,10 @@ class CaretakerUseCase:
         if not walking_schedule:
             raise ValueError("Walking schedule not found")
         
-        PublicRepository.check_update_walking_schedule(walking_schedule.animal_id, start_time, end_time)
+        if walking_schedule.reservated:
+            raise ValueError("Cant update reservated walking schedule")
+        
+        self.public_repository.check_update_walking_schedule(walking_schedule.animal_id, start_time, end_time)
         
         walking_schedule.start_time = start_time
         walking_schedule.end_time = end_time

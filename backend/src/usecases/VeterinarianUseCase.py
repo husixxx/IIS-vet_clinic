@@ -16,10 +16,28 @@ class VeterinarianUseCase:
 
     def schedule_request(self, request_id: int, date_time: str, status: str) -> Request:
         request = self.request_repository.get_by_id(request_id)
+        
         if not request:
             raise ValueError("Request with this id does not exist")
         if status not in ["scheduled", "completed", "cancelled", "pending"]:
             raise ValueError("Invalid status")
+        datetime_dt = datetime.strptime(date_time, "%Y-%m-%d %H:%M:%S")
+        if datetime_dt < datetime.now():
+            raise ValueError("Date cannot be in the past")
+        
+        if status == "scheduled" and request.status != "pending":
+            
+            raise ValueError("Can only schedule pending requests")
+            
+        if status == "completed" and request.status != "scheduled":
+            raise ValueError("Can only complete scheduled requests")
+            
+        if status == "cancelled" and request.status not in ["pending", "scheduled"]:
+            raise ValueError("Can only cancel pending or scheduled requests")
+            
+        if request.status in ["cancelled", "completed"]:
+            raise ValueError("Cannot modify cancelled or completed requests")
+
         request.status = status
         request.request_date = date_time
         self.request_repository.update(request)
