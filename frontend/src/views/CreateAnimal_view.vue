@@ -15,7 +15,8 @@
               placeholder="Enter the animal's name" 
               class="input-text" 
               :class="{'p-invalid': !name}" 
-            />
+              :maxlength="30"
+              />
           </div>
 
           <div class="p-field input-group">
@@ -26,7 +27,8 @@
               placeholder="Enter the breed" 
               class="input-text" 
               :class="{'p-invalid': !breed}" 
-            />
+              :maxlength="20"
+              />
           </div>
 
           <div class="p-field input-group">
@@ -37,7 +39,9 @@
               placeholder="Enter the age" 
               class="input-text" 
               :invalid="!age"
-            />
+              min="0"
+              max="999"
+              />
           </div>
 
           <div class="p-field input-group">
@@ -59,7 +63,7 @@
             <input
               type="file"
               @change="handleFileUpload"
-              accept="image/jpeg"
+              accept="image/*"
               class="file-input"
             />
           </div>
@@ -67,13 +71,13 @@
           <!-- History (optional) -->
           <div class="p-field input-group">
             <label for="history" class="input-label">History</label>
-            <Textarea id="history" v-model="history" placeholder="Enter animal's history" class="input-text" rows="5" :invalid="!history" />
+            <Textarea id="history" v-model="history" placeholder="Enter animal's history" class="input-text" rows="5" :maxlength="300" :invalid="!history"/>
           </div>
 
           <!-- Description (optional) -->
           <div class="p-field input-group">
             <label for="description" class="input-label">Description</label>
-            <Textarea id="description" v-model="description" placeholder="Enter description" class="input-text" rows="5" :invalid="!description" />
+            <Textarea id="description" v-model="description" placeholder="Enter description" class="input-text" rows="5" :maxlength="300" :invalid="!description"/>
           </div>
 
           <!-- Submit Button -->
@@ -104,8 +108,6 @@ import Card from 'primevue/card';
 import axiosClient from '../api/api';  // Ensure correct path to your API client
 
 const router = useRouter();
-
-// Form fields
 const name = ref('');
 const breed = ref('');
 const age = ref(null);
@@ -120,18 +122,15 @@ const sexOptions = [
   { label: 'Female', value: 'Female' }
 ];
 
-// Handle file upload
 const handleFileUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
-    const validTypes = ['image/jpeg'];
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif']; // Allowed types
     if (!validTypes.includes(file.type)) {
-      alert('Only JPEG photos are allowed.');
-      photoFile.value = null; // Reset the file if it's not a valid type
+      alert('Only JPEG, PNG, or GIF images are allowed.');
       event.target.value = ''; // Reset the file input
       return;
     }
-    photoFile.value = file; // Store the file
   }
 };
 

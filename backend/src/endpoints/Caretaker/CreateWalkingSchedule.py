@@ -83,3 +83,5 @@ def create_walking_schedule():
         )
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400

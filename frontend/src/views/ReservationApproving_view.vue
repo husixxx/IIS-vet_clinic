@@ -7,16 +7,23 @@
       <DataTable :value="reservations" class="p-datatable-striped">
         <Column field="id" header="ID"></Column>
         <Column field="animal_id" header="Animal ID"></Column>
-        <Column field="animal_name" header="Animal Name"></Column> <!-- Added Animal Name -->
+        <Column field="animal_name" header="Animal Name"></Column>
         <Column field="volunteer_username" header="Volunteer Username"></Column>
         <Column field="start_time" header="Start Time"></Column>
         <Column field="end_time" header="End Time"></Column>
         <Column header="Status">
           <template #body="slotProps">
             <div>
-              <!-- Check if status is a string or an object -->
+              <!-- Display the current status -->
               <span>{{ typeof slotProps.data.status === 'string' ? slotProps.data.status : slotProps.data.status.value }}</span>
-              <Button label="Edit" icon="pi pi-pencil" class="p-button-text p-button-sm" @click="openEditModal(slotProps.data)" />
+              <!-- Show edit button based on status -->
+              <Button
+                v-if="canEditStatus(slotProps.data.status)"
+                label="Edit"
+                icon="pi pi-pencil"
+                class="p-button-text p-button-sm"
+                @click="openEditModal(slotProps.data)"
+              />
             </div>
           </template>
         </Column>
@@ -35,7 +42,7 @@
       <div class="p-fluid">
         <Dropdown
           v-model="selectedReservation.newStatus"
-          :options="statusOptions"
+          :options="getStatusOptions(selectedReservation?.status)"
           optionLabel="label"
           placeholder="Select Status"
           class="w-full"
@@ -44,8 +51,12 @@
       </div>
       <template #footer>
         <Button label="Cancel" class="p-button-text" @click="cancelEdit" />
-        <Button label="Save" class="p-button-primary" @click="saveStatus" 
-        :disabled="!selectedReservation.newStatus"/>
+        <Button
+          label="Save"
+          class="p-button-primary"
+          @click="saveStatus"
+          :disabled="!selectedReservation.newStatus"
+        />
       </template>
     </Dialog>
   </div>
@@ -64,12 +75,15 @@ import Dropdown from 'primevue/dropdown';
 const reservations = ref([]);
 
 // Status options for the dropdown
-const statusOptions = [
-  { label: 'pending', value: 'pending' },
-  { label: 'approved', value: 'approved' },
-  { label: 'canceled', value: 'canceled' },
-  { label: 'completed', value: 'completed' }
-];
+const allStatusOptions = {
+  pending: [
+    { label: 'approved', value: 'approved' },
+    { label: 'cancelled', value: 'cancelled' }
+  ],
+  approved: [
+    { label: 'completed', value: 'completed' }
+  ]
+};
 
 // State to control the edit dialog visibility
 const editDialogVisible = ref(false);
@@ -81,12 +95,12 @@ const selectedReservation = ref(null);
 onMounted(async () => {
   try {
     const response = await axiosClient.get('/caretaker/get_all_reservations', {
-      withCredentials: true  // Zabezpečí, že cookies budú odoslané a prijaté
+      withCredentials: true // Ensure cookies are sent and received
     });
 
     if (response.data) {
       reservations.value = response.data.map(reservation => ({
-        id: reservation.id,  // Now using the correct reservation id
+        id: reservation.id, // Now using the correct reservation id
         animal_id: reservation.animal_id,
         animal_name: reservation.animal_name, // Include Animal Name
         volunteer_username: reservation.volunteer_username, // Update volunteer ID to username
@@ -101,15 +115,25 @@ onMounted(async () => {
   }
 });
 
+// Get dropdown options based on current status
+const getStatusOptions = (status) => {
+  return allStatusOptions[status] || [];
+};
+
+// Check if the reservation's status can be edited
+const canEditStatus = (status) => {
+  return status === 'pending' || status === 'approved';
+};
+
 // Open the edit modal
-const openEditModal = async (reservation) => {
+const openEditModal = (reservation) => {
   selectedReservation.value = { ...reservation }; // Clone the reservation
   selectedReservation.value.newStatus = null;
   editDialogVisible.value = true;
 };
 
 // Cancel editing
-const cancelEdit = async () => {
+const cancelEdit = () => {
   selectedReservation.value = null;
   editDialogVisible.value = false;
 };
@@ -117,7 +141,7 @@ const cancelEdit = async () => {
 // Save the new status
 const saveStatus = async () => {
   try {
-    const response = await axiosClient.post(`/caretaker/change_reservation_status`, null, {
+    const response = await axiosClient.post('/caretaker/change_reservation_status', null, {
       params: {
         id: selectedReservation.value.id,
         status: selectedReservation.value.newStatus.value
@@ -125,15 +149,18 @@ const saveStatus = async () => {
       withCredentials: true
     });
     if (response.status === 200) {
-      const index = reservations.value.findIndex(res => res.id === selectedReservation.value.id);
-      reservations.value[index].status = selectedReservation.value.newStatus;
-      editDialogVisible.value = false;
-      selectedReservation.value = null;
-    } else {
-      console.error('Failed to update status');
+      location.reload();
     }
   } catch (error) {
-    console.error('Error updating status:', error);
+    if (error.response) {
+      const status = error.response.status;
+      const error_msg = error.response.data.error;
+      console.error(`Error Status: ${status}`);
+      alert(error_msg);
+    } else {
+      console.error('Error:', error.message);
+      alert('Something went wrong. Please try again later.');
+    }
   }
 };
 </script>

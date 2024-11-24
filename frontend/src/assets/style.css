@@ -24,6 +24,11 @@ h1 {
   color: #10b981;
 }
 
+.max-input-text {
+  color: #10b981;
+  font-size: 0.8em;
+}
+
 .create-vet-request-container, .sign-up-container, .sign-in-container {
   display: flex;
   justify-content: center;

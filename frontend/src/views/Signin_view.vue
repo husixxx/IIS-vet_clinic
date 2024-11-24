@@ -14,6 +14,7 @@
               v-model="username" 
               placeholder="Enter your username" 
               class="input-text" 
+              :maxlength="30"
             />
           </div>
 
@@ -27,7 +28,8 @@
               toggleMask
               class="input-text" 
               :feedback="false" 
-            /> <!-- feedback=false disables password strength meter -->
+              @input="checkPasswordLength"
+            />
           </div>
 
           <!-- Sign In Button -->
@@ -62,6 +64,13 @@ import Button from 'primevue/button';
 import axiosClient from '../api/api';  // Ensure the axiosClient is correctly imported
 import { useAuthStore } from '../store/Authstore';  // Import the authStore
 
+// Function to ensure password length does not exceed 30 characters
+const checkPasswordLength = (event) => {
+  if (password.value.length > 30) {
+    password.value = password.value.slice(0, 30); // Trim the value to 30 characters
+    event.target.value = password.value; // Update the input value to reflect the trimmed value
+  }
+};
 
 // Reactive references for the form fields
 const username = ref('');

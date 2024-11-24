@@ -7,7 +7,7 @@ class Reservation(db.Model):
     volunteer_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
-    status = db.Column(db.Enum('pending','approved','canceled','completed', default='pending', name='reservation_status'))
+    status = db.Column(db.Enum('pending','approved','cancelled','completed', default='pending', name='reservation_status'))
     
     
     volunteer = db.relationship('User', backref='reservations', lazy=True)
@@ -15,4 +15,12 @@ class Reservation(db.Model):
     
     def __repr__(self):
         return f'<Reservation for Animal ID {self.animal_id}>'
+    
+    
+    
+    # Ked sa hodi approved 1 na approved, tak ostatne != id == cancelled
+    
+    # ve walking nezobrazoval ty  co su uz zebrane (rezervacia je approved)
+    
+    # vet
     

@@ -99,12 +99,11 @@ const selectedUser = reactive({
 });
 
 
-// Fields configuration for the form
 const fields = [
-  { id: 'name', label: 'Name', model: 'name', component: InputText },
-  { id: 'email', label: 'Email', model: 'email', component: InputText },
-  { id: 'username', label: 'Username', model: 'username', component: InputText },
-  { id: 'password', label: 'Password', model: 'password', component: InputText, props: { type: 'password' } },
+  { id: 'name', label: 'Name', model: 'name', component: InputText, props: { maxlength: 61 } },
+  { id: 'email', label: 'Email', model: 'email', component: InputText, props: { maxlength: 50 } },
+  { id: 'username', label: 'Username', model: 'username', component: InputText, props: { maxlength: 30 } },
+  { id: 'password', label: 'Password', model: 'password', component: InputText, props: { type: 'password', maxlength: 30 } },
 ];
 
 // Fetch all users on component mount
@@ -178,10 +177,9 @@ const deleteUser = async () => {
       withCredentials: true  // Zabezpečí, že cookies budú odoslané a prijaté
     });
     if (response.status === 200) {
-      alert('User deleted successfully!');
       closeDeleteDialog();
       // Refresh the user list
-      onMounted();
+      location.reload();
     }
   }catch (error) {
   if (error.response) {
@@ -271,7 +269,8 @@ h1 {
 }
 
 .p-button-success,
-.p-button-secondary {
+.p-button-secondary
+.p-button-danger {
   margin: 10px 5px; /* Spacing between the buttons */
 }
 

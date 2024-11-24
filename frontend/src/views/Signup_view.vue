@@ -15,6 +15,8 @@
               placeholder="Enter your first name" 
               class="input-text" 
               :class="{'p-invalid': !firstName}" 
+              :maxlength="30"
+
             />
           </div>
 
@@ -27,6 +29,7 @@
               placeholder="Enter your last name" 
               class="input-text" 
               :class="{'p-invalid': !lastName}" 
+              :maxlength="30"
             />
           </div>
 
@@ -39,6 +42,7 @@
               placeholder="Enter your username" 
               class="input-text" 
               :class="{'p-invalid': !username}" 
+              :maxlength="30"
             />
           </div>
 
@@ -51,6 +55,7 @@
               placeholder="Enter your email" 
               class="input-text" 
               :class="{'p-invalid': !email || !isEmailValid}" 
+              :maxlength="50"
             />
           </div>
 
@@ -64,6 +69,7 @@
             toggleMask 
             class="input-text" 
             :invalid="!password"
+            @input="checkPasswordLength"
           />
         </div>
 
@@ -105,6 +111,14 @@ const lastName = ref('');
 const username = ref('');
 const email = ref('');
 const password = ref('');
+
+// Function to ensure password length does not exceed 30 characters
+const checkPasswordLength = (event) => {
+  if (password.value.length > 30) {
+    password.value = password.value.slice(0, 30); // Trim the value to 30 characters
+    event.target.value = password.value; // Update the input value to reflect the trimmed value
+  }
+};
 
 // Regular expression for validating email format
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

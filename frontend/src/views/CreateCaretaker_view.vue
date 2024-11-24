@@ -14,6 +14,7 @@
               v-model="firstName" 
               placeholder="Enter first name" 
               class="input-text" 
+              :maxlength="30"
               :class="{'p-invalid': !firstName}" 
             />
           </div>
@@ -25,6 +26,7 @@
               v-model="lastName" 
               placeholder="Enter last name" 
               class="input-text" 
+              :maxlength="30"
               :class="{'p-invalid': !lastName}" 
             />
           </div>
@@ -36,6 +38,7 @@
               v-model="username" 
               placeholder="Enter username" 
               class="input-text" 
+              :maxlength="30"
               :class="{'p-invalid': !username}" 
             />
           </div>
@@ -47,6 +50,7 @@
               v-model="email" 
               placeholder="Enter email" 
               class="input-text" 
+              :maxlength="50"
               :class="{'p-invalid': !email || !isEmailValid}"  
             />
           </div>
@@ -59,7 +63,8 @@
               v-model="password" 
               placeholder="Enter password" 
               class="input-text" 
-              :class="{'p-invalid': !password}" 
+              :class="{'p-invalid': !password}"
+              :maxlength="30" 
             />
           </div>
 

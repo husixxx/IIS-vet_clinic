@@ -7,7 +7,7 @@
       <DataTable :value="requests" class="p-datatable-striped">
         <Column field="id" header="ID"></Column>
         <Column field="animal_id" header="Animal ID"></Column>
-        <Column field="animal_name" header="Animal Name"></Column> <!-- Added Animal Name -->
+        <Column field="animal_name" header="Animal Name"></Column>
         <Column field="start_time" header="Start Time"></Column>
         <Column field="description" header="Description"></Column>
         <Column field="status" header="Status">
@@ -17,7 +17,14 @@
         </Column>
         <Column header="Actions">
           <template #body="slotProps">
-            <Button label="Edit" icon="pi pi-pencil" class="p-button-text p-button-sm" @click="openEditModal(slotProps.data)" />
+            <!-- Show edit button only for statuses 'pending' and 'scheduled' -->
+            <Button
+              v-if="['pending', 'scheduled'].includes(slotProps.data.status)"
+              label="Edit"
+              icon="pi pi-pencil"
+              class="p-button-text p-button-sm"
+              @click="openEditModal(slotProps.data)"
+            />
           </template>
         </Column>
       </DataTable>
@@ -42,30 +49,32 @@
         </div>
 
         <!-- Edit Status -->
-        <Dropdown
-          v-model="selectedRequest.newStatus"
-          :options="statusOptions"
-          optionLabel="label"
-          placeholder="Select Status"
-          class="w-full"
-          :invalid="!selectedRequest.newStatus"
-        />
+        <div class="p-field">
+          <!-- Dropdown na zmenu statusu -->
+          <Dropdown
+            v-model="selectedRequest.newStatus"
+            :options="availableStatusOptions"
+            optionLabel="label"
+            placeholder="Select Status"
+            class="input-full-width"
+            :disabled="!availableStatusOptions.length"
+          />
+        </div>
       </div>
       <template #footer>
         <div class="dialog-footer">
           <Button label="Cancel" class="p-button-text" @click="cancelEdit" />
-          <!-- Disable Save button if start_time or newStatus is empty -->
-          <Button label="Save" class="p-button-primary" @click="saveRequestChanges" 
-            :disabled="!selectedRequest.start_time || !selectedRequest.newStatus || !selectedRequest.newStatus.value" />
+          <Button label="Save" class="p-button-primary" :disabled="!isFormValid" @click="saveRequestChanges" />
         </div>
       </template>
     </Dialog>
   </div>
 </template>
 
+
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useAuthStore } from '../store/Authstore'; // Assuming you have a Pinia store for user authentication
+import { ref, onMounted, computed } from 'vue';
+import { useAuthStore } from '../store/Authstore';
 import axiosClient from '../api/api';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
@@ -76,45 +85,70 @@ import InputText from 'primevue/inputtext';
 import DatePicker from 'primevue/datepicker';
 import { getFormattedDate } from '../utils/date';
 
-// Access the authenticated user's data
+const statusOptionsMapping = {
+  pending: [
+    { label: 'scheduled', value: 'scheduled' },
+    { label: 'cancelled', value: 'cancelled' },
+  ],
+  scheduled: [
+    { label: 'completed', value: 'completed' },
+    { label: 'cancelled', value: 'cancelled' },
+  ],
+  cancelled: [],
+  completed: [],
+};
+
+const convertCustomToStandard = (customDateTime) => {
+  const months = {
+    Jan: '01',
+    Feb: '02',
+    Mar: '03',
+    Apr: '04',
+    May: '05',
+    Jun: '06',
+    Jul: '07',
+    Aug: '08',
+    Sep: '09',
+    Oct: '10',
+    Nov: '11',
+    Dec: '12',
+  };
+
+  const [weekday, day, month, year, time] = customDateTime.split(' ');
+  const formattedDate = `${day}/${months[month]}/${year} ${time}`;
+  return formattedDate;
+};
+
+// Form validation
+const isFormValid = computed(() => {
+  return selectedRequest.value.start_time && selectedRequest.value.newStatus?.value;
+});
+
 const authStore = useAuthStore();
-
-// Array to store veterinarian requests
 const requests = ref([]);
-
-// Status options for the dropdown
-const statusOptions = [
-  { label: 'pending', value: 'pending' },
-  { label: 'scheduled', value: 'scheduled' },
-  { label: 'cancelled', value: 'cancelled' },
-  { label: 'completed', value: 'completed' }
-];
-
-// State to control the edit dialog visibility
 const editDialogVisible = ref(false);
+const selectedRequest = ref({ start_time: '', newStatus: null });
+const availableStatusOptions = ref([]);
 
-// Currently selected request for editing
-const selectedRequest = ref(null);
+const isValidDateTime = (dateTimeStr) => {
+  const regex = /^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}:\d{2}$/;
+  return regex.test(dateTimeStr);
+};
 
-// Fetch requests when the component mounts
+// Fetch requests
 onMounted(async () => {
   try {
-    // Get the veterinarian's ID from the authenticated user
     const vetId = authStore.getUser?.id;
-
-    // Make an API request to get requests by vet_id
     const response = await axiosClient.get(`/veterinarian/get_all_requests_by_vet_id`, {
-      params: {
-        vet_id: vetId,
-      },
-      withCredentials: true
+      params: { vet_id: vetId },
+      withCredentials: true,
     });
 
     if (response.data) {
       requests.value = response.data.map((request) => ({
         id: request.id,
         animal_id: request.animal_id,
-        animal_name: request.animal_name, // Include Animal Name
+        animal_name: request.animal_name,
         vet_id: request.vet_id,
         start_time: request.start_time,
         description: request.description,
@@ -127,19 +161,35 @@ onMounted(async () => {
   }
 });
 
-const openEditModal = async (request) => {
-  selectedRequest.value = { ...request }; // Clone the request
-  // selectedRequest.value.newStatus = null; // Nastav status na prázdne pole
+// Open edit modal
+const openEditModal = (request) => {
+
+  if (['cancelled', 'completed'].includes(request.status)) {
+    alert('Requests with status "cancelled" or "completed" cannot be edited.');
+    return;
+  }
+
+  selectedRequest.value = {
+    ...request,
+    // start_time: convertCustomToStandard(request.start_time),
+    // newStatus: request.status,
+  };
+
+  availableStatusOptions.value = statusOptionsMapping[request.status] || [];
   editDialogVisible.value = true;
 };
 
-// Cancel editing
-const cancelEdit = async () => {
+const cancelEdit = () => {
   selectedRequest.value = null;
   editDialogVisible.value = false;
 };
 
-// Save the updated request (start time and status)
+const convertToBackendFormat = (frontendDateTime) => {
+  const [datePart, timePart] = frontendDateTime.split(' ');
+  const [day, month, year] = datePart.split('/');
+  return `${year}-${month}-${day} ${timePart}`;
+};
+
 const saveRequestChanges = async () => {
   try {
     // Convert from 'MM/DD/YYYY, HH:MM:SS' (which is what .toLocaleString() gives) to 'YYYY-MM-DD HH:MM:SS'
@@ -147,14 +197,13 @@ const saveRequestChanges = async () => {
     // const [month, day, year] = datePart.split('/'); // Split the MM/DD/YYYY part
     // const formattedDateTime = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')} ${timePart}`; // Corrected the order of month and day
 
-    // Make the request to the backend with the properly formatted date and status
     const response = await axiosClient.post(`/veterinarian/schedule_request`, null, {
       params: {
         request_id: selectedRequest.value.id,
         date_time: getFormattedDate(selectedRequest.value.start_time, true),
         status: selectedRequest.value.newStatus.value,
       },
-      withCredentials: true
+      withCredentials: true,
     });
 
     if (response.status === 200) {
@@ -173,6 +222,7 @@ const saveRequestChanges = async () => {
   }
 };
 </script>
+
 
 <style scoped>
 .vet-requests-container {
@@ -196,32 +246,26 @@ h1 {
   padding: 40px;
 }
 
-.p-button-sm {
-  margin-left: 10px;
-}
-
 .p-dialog .p-fluid {
   padding: 20px;
 }
 
-.w-full {
-  width: 100%;
-}
-
-/* Center the header text in the dialog */
-.centered-header .p-dialog-titlebar {
-  text-align: center;
-  justify-content: center;
-}
-
-/* Center buttons in the footer */
 .dialog-footer {
   display: flex;
   justify-content: center;
 }
 
-/* Red border for invalid fields */
-.invalid-field {
-  border-color: red !important;
+.p-field {
+  margin-bottom: 1rem; /* Add spacing between fields */
 }
+
+.input-full-width {
+  width: 100%; /* Ensure inputs take full width of container */
+}
+
+.p-dialog {
+  width: 400px; /* Control dialog width */
+  max-width: 90%; /* Make it responsive */
+}
+
 </style>

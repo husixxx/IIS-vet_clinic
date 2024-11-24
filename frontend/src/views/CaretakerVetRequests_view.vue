@@ -82,11 +82,7 @@ const cancelVetRequest = async (vetRequestId) => {
     });
 
     if (response.status === 200) {
-      // Update the request status to 'cancelled' in the table
-      const index = requests.value.findIndex((req) => req.id === vetRequestId);
-      if (index !== -1) {
-        requests.value[index].status = 'cancelled';
-      }
+      location.reload();
     }
   } catch (error) {
   if (error.response) {
