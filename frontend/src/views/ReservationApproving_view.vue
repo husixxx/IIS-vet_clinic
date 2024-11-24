@@ -81,7 +81,8 @@ const allStatusOptions = {
     { label: 'cancelled', value: 'cancelled' }
   ],
   approved: [
-    { label: 'completed', value: 'completed' }
+    { label: 'completed', value: 'completed' },
+    { label: 'cancelled', value: 'cancelled' }
   ]
 };
 
