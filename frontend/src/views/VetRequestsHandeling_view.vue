@@ -42,13 +42,10 @@
       <div class="p-fluid">
         <!-- Edit Start Time -->
         <div class="p-field">
-          <InputText
-            v-model="selectedRequest.start_time"
-            maxlength="19"
-            placeholder="DD/MM/YYYY HH:MM:SS"
-            class="input-full-width"
-            :class="{'p-invalid': !selectedRequest.start_time}"
-          />
+          <!-- <InputText v-model="selectedRequest.start_time" 
+          :invalid="!selectedRequest.start_time"
+          placeholder="DD/MM/YYYY, HH:MM:SS"/> -->
+          <DatePicker v-model="selectedRequest.start_time" :invalid="!selectedRequest.start_time" dateFormat="D, dd M yy" :manualInput="false" fluid showIcon iconDisplay="input" hourFormat="24" placeholder="Enter request's date" :minDate="new Date()"/>
         </div>
 
         <!-- Edit Status -->
@@ -85,6 +82,8 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import Dropdown from 'primevue/dropdown';
 import InputText from 'primevue/inputtext';
+import DatePicker from 'primevue/datepicker';
+import { getFormattedDate } from '../utils/date';
 
 const statusOptionsMapping = {
   pending: [
@@ -172,8 +171,8 @@ const openEditModal = (request) => {
 
   selectedRequest.value = {
     ...request,
-    start_time: convertCustomToStandard(request.start_time),
-    newStatus: request.status,
+    // start_time: convertCustomToStandard(request.start_time),
+    // newStatus: request.status,
   };
 
   availableStatusOptions.value = statusOptionsMapping[request.status] || [];
@@ -193,35 +192,33 @@ const convertToBackendFormat = (frontendDateTime) => {
 
 const saveRequestChanges = async () => {
   try {
-    if (!isValidDateTime(selectedRequest.value.start_time)) {
-      alert('Invalid date format. Use DD/MM/YYYY HH:MM:SS.');
-      return;
-    }
-
-    const convertedDateTime = convertToBackendFormat(selectedRequest.value.start_time);
+    // Convert from 'MM/DD/YYYY, HH:MM:SS' (which is what .toLocaleString() gives) to 'YYYY-MM-DD HH:MM:SS'
+    // const [datePart, timePart] = selectedRequest.value.start_time.split(', '); // Separate date and time
+    // const [month, day, year] = datePart.split('/'); // Split the MM/DD/YYYY part
+    // const formattedDateTime = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')} ${timePart}`; // Corrected the order of month and day
 
     const response = await axiosClient.post(`/veterinarian/schedule_request`, null, {
       params: {
         request_id: selectedRequest.value.id,
-        date_time: convertedDateTime,
+        date_time: getFormattedDate(selectedRequest.value.start_time, true),
         status: selectedRequest.value.newStatus.value,
       },
       withCredentials: true,
     });
 
     if (response.status === 200) {
-      location.reload();
+      const index = requests.value.findIndex((req) => req.id === selectedRequest.value.id);
+      requests.value[index].status = selectedRequest.value.newStatus;
+      requests.value[index].start_time = selectedRequest.value.start_time;
+      editDialogVisible.value = false;
+      selectedRequest.value = null;
     }
+    // else {
+    //   console.error('Failed to update request');
+    // }
   } catch (error) {
-    if (error.response) {
-      const status = error.response.status;
-      const error_msg = error.response.data.error;
-      console.error(`Error Status: ${status}`);
-      alert(error_msg);
-    } else {
-      console.error('Error:', error.message);
-      alert('Something went wrong. Please try again later.');
-    }
+    // console.error('Error: Invalid date format ', error);
+    alert('Error: Invalid date format ', error);
   }
 };
 </script>

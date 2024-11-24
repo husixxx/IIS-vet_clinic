@@ -1,5 +1,5 @@
 <template>
-  <div class="create-vet-request-container">
+  <div v-if="isValidAnimal" class="create-vet-request-container">
     <Card>
       <template #title>Create request</template>
       <template #content>
@@ -11,7 +11,8 @@
                           @complete="searchVeterinarians" 
                           :virtualScrollerOptions="{ itemSize: 50 }"
                           optionLabel="nameAndUsername" dropdown
-                          :invalid="!selectedVeterinarian"/>
+                          :invalid="!selectedVeterinarian"
+                          placeholder="Enter vet's name or username"/>
           </div>
           <div class="p-field input-group">
             <label for="description" class="input-label">Description</label>
@@ -19,15 +20,17 @@
           </div>
           <div class="p-field input-group">
             <label for="date" class="input-label">Date</label>
-            <DatePicker class="input-text" v-model="date" :manualInput="false" dateFormat="D, dd M yy" showIcon fluid iconDisplay="input" :invalid="!date" showTime showSeconds hourFormat="24"/>
+            <DatePicker class="input-text" v-model="date" :manualInput="false" dateFormat="D, dd M yy" showIcon fluid iconDisplay="input" :invalid="!date" hourFormat="24" placeholder="Enter request's date" :minDate="new Date()"/>
           </div>
           <div class="p-field send-vet-request">
-            <Button label="Send request" @click="handleSendVetRequest" class="w-full" icon="pi pi-send" />
+            <Button label="Send request" @click="handleSendVetRequest" class="w-full" icon="pi pi-send" :disabled=" !selectedVeterinarian || !description || !date || !isValidVetUsername()" />
           </div>
         </div>
       </template>
     </Card>
   </div>
+
+  <h1 v-else style="text-align: center; left: 50%; top: 50%;">Animal not found</h1>
 </template>
 
 <script setup>
@@ -51,23 +54,25 @@ const date = ref(null);
 const SUCCESS_RESPONSE_CODE = ref(200);
 const UNKNOWN_OPERATION_RESPONSE_CODE = ref(403);
 const route = useRoute();
+const isValidAnimal = ref();
 
 onMounted(async () => {
-    try {
-        const response = await axiosClient.get('/caretaker/veterinarians', { withCredentials: true});
+  try {
+    const response1 = await axiosClient.get(`/animal/info?animal_id=${encodeURIComponent(route.params.animalId)}`);
+    isValidAnimal.value = response1.data.animal.name;
+  } catch (error) {
+    alert('Error fetching animal data:', error);
+  }
 
-        if(response.status === UNKNOWN_OPERATION_RESPONSE_CODE) {
-          alert('Error! You have no right to perform this operation!');
-        }
-
-        veterinarians.value = response.data.map(vet => ({
-          ...vet,
-          nameAndUsername: `${vet.name} (${vet.username})`
-        }));
-        console.log(veterinarians);
-    } catch (error) {
-        console.error('Error fetching volunteers:', error);
-    }
+  try {
+    const response2 = await axiosClient.get('/caretaker/veterinarians', { withCredentials: true});
+    veterinarians.value = response2.data.map(vet => ({
+      ...vet,
+      nameAndUsername: `${vet.name} (${vet.username})`
+    }));
+  } catch (error) {
+    alert('Error fetching veterinarians:', error);
+  }
 });
 
 const searchVeterinarians = (event) => {
@@ -76,6 +81,11 @@ const searchVeterinarians = (event) => {
     vet.name.toLowerCase().includes(query) || vet.username.toLowerCase().includes(query)
   );
 };
+
+const isValidVetUsername = () => {
+  console.log(selectedVeterinarian?.value?.username)
+  return veterinarians.value.some(vet => vet.username === selectedVeterinarian?.value?.username);
+}
 
 const handleSendVetRequest = async () => {
   try {

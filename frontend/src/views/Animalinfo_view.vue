@@ -1,7 +1,7 @@
 <template>
-  <div class="main-content">
+  <div class="main-content" v-if="animalInfo.name">
     <div class="photo-section">
-      <img src="../assets/cat3.jpg" alt="Animal photo" />
+      <img :src="animalPhoto" alt="Animal photo" />
     </div>
 
     <div class="animal-schedules">
@@ -11,7 +11,7 @@
       <Card class="full-width-card">
         <template #content>
           <div class="p-fluid">
-            <DataTable :value="animalSchedules" class="full-width-table" tableStyle="width: 100%">
+            <DataTable :value="animalSchedules" class="full-width-table" tableStyle="width: 100%" v-if="animalSchedules.length">
               <Column field="start_time" header="Start date" style="width: 10%;"></Column>
               <Column field="end_time" header="End date" style="width: 10%;"></Column>
               <Column v-if="authStore.getRoleId === UserRole.Volunteer" header="" style="width: 5%; text-align: right;" headerStyle="text-align: right; padding-right: 30px;">
@@ -28,9 +28,16 @@
                     label="Edit schedule"
                     @click="openScheduleEditModal(slotProps.data)"
                   />
+                  <Button
+                    label="Delete schedule"
+                    @click="confirmScheduleDeletion(slotProps.data)"
+                    class="p-button-danger"
+                    style="margin-top: 5px;"
+                  />
                 </template>
               </Column>
             </DataTable>
+            <h1 v-else style="text-align: center; left: 50%; top: 50%;">No avaliable schedules</h1>
           </div>
         </template>
       </Card>
@@ -38,8 +45,12 @@
 
     <div class="animal-info">
       <div class="tags-column">
-        <div class="tags" v-for="(field, index) in filteredAnimalInfoFields" :key="index">
+        <div class="tags non-prime-animal-info" v-for="(field, index) in filteredAnimalInfoFields" :key="index">
           <strong>{{ field.label }}:</strong> {{ animalInfo?.[field.model] }}
+        </div>
+
+        <div v-if="authStore.getRoleId === UserRole.Volunteer || authStore.getRoleId === UserRole.Veterinarian || authStore.getRoleId === UserRole.Caretaker || authStore.getRoleId === UserRole.Admin" class="tags non-prime-animal-info">
+          <strong>ID:</strong> {{ animalInfo?.id }}
         </div>
         
         <div class="tags" v-if="authStore.getRoleId === UserRole.Caretaker">
@@ -52,6 +63,14 @@
             style="width: 100%;"
           />
         </div>
+        <div class="tags" v-if="authStore.getRoleId === UserRole.Caretaker">
+          <Button
+            @click="confirmAnimalDeletion()"
+            label="Delete animal"
+            style="width: 100%;"
+            class="p-button-danger"
+          />
+        </div>
       </div>
 
       <div class="animal-fieldsets">
@@ -62,7 +81,7 @@
           <p>{{ animalInfo?.history }}</p>
         </Fieldset>
       </div>
-  </div>
+    </div>
 
     <div class="medical-records-section">
       <h3 style="text-align: center;">Medical records</h3>
@@ -70,7 +89,7 @@
       <Card class="full-width-card">
         <template #content>
           <div class="p-fluid">
-            <DataTable :value="animalMedicalRecords" class="full-width-table" tableStyle="width: 100%">
+            <DataTable :value="animalMedicalRecords" class="full-width-table" tableStyle="width: 100%" v-if="animalMedicalRecords.length">
               <Column field="description" header="Description" style="width: 45%;" bodyStyle="white-space: normal; word-break: break-word;"></Column>
               <Column field="examination_date" header="Examination date" style="width: 10%;"></Column>
               <Column field="examination_type" header="Examination type" style="width: 10%;"></Column>
@@ -85,10 +104,15 @@
                 </template>
               </Column>
             </DataTable>
+            <h1 v-else style="text-align: center; left: 50%; top: 50%;">No medical records</h1>
           </div>
         </template>
       </Card>
     </div>
+  </div>
+
+  <div v-else class="main-content">
+    <h1 style="text-align: center; left: 50%; top: 50%;">Animal not found</h1>
   </div>
 
   <EditAddDialog
@@ -163,21 +187,32 @@ import 'primeicons/primeicons.css'
 import EditAddDialog from '../components/EditAddDialog.vue';
 import ConfirmDialog from 'primevue/confirmdialog';
 import { useConfirm } from "primevue/useconfirm";
+import InputNumber from 'primevue/inputnumber';
+import Dropdown from 'primevue/dropdown';
 
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
 const user = authStore.getUser;
 const userRole = authStore.getRoleId;
-const animalInfo = ref();
+const animalInfo = ref({});
 const animalSchedules = ref([]);
 const animalMedicalRecords = ref([]);
 
 const confirm = useConfirm();
 
 const filteredAnimalInfoFields = computed(() =>
-  animalInfoFields.filter(field => field.model !== 'description' && field.model !== 'history')
+  animalInfoFields.filter(field => field.model !== 'description' && field.model !== 'history' && field.model !== 'photo')
 );
+
+const animalPhoto = computed(() => {
+  if(animalInfo.value && animalInfo.value.photo) {
+    return `data:image/jpeg;base64,${animalInfo.value.photo}`;
+  }
+
+  return null;
+});
+
 
 function confirmReservation(animalName, schedule) {
   confirm.require({
@@ -186,7 +221,7 @@ function confirmReservation(animalName, schedule) {
     icon: 'pi pi-question',
     accept: async () => {
       try {
-        const response = await axiosClient.post(`/volunteer/reservation?volunteer_id=${encodeURIComponent(authStore.getUser.id)}` +
+        let response = await axiosClient.post(`/volunteer/reservation?volunteer_id=${encodeURIComponent(authStore.getUser.id)}` +
                                                 `&animal_id=${encodeURIComponent(route.params.id)}` +
                                                 `&start_time=${encodeURIComponent(getFormattedDate(schedule.start_time, true))}` +
                                                 `&end_time=${encodeURIComponent(getFormattedDate(schedule.end_time, true))}`,
@@ -197,14 +232,77 @@ function confirmReservation(animalName, schedule) {
         } else if(response.status === UNKNOWN_OPERATION_RESPONSE_CODE) {
           alert('Error! You have no right to perform this operation!');
         }
+
+        // response = await axiosClient.delete(`/volunteer/delete_walking_schedule?walking_schedule_id=${encodeURIComponent(schedule.id)}`,
+        //                                     { withCredentials: true });
+
+        // await fetchAnimalInfo();
       } catch (error) {
-        console.error('Error creating reservation: ', error);
-        alert('Failed to create reservation');
+        // console.error('Error creating reservation: ', error);
+        alert('Wait until reservation will be approved by caretaker!');
       }
     },
 
     reject: () => {
-      alert('Not creating reservation');
+      alert('Not making reservation');
+    }
+  })
+}
+
+function confirmAnimalDeletion() {
+  confirm.require({
+    message: `Are you sure you want to delete ${animalInfo?.name}`,
+    header: 'Confirmation',
+    icon: 'pi pi-question',
+    accept: async () => {
+      try {
+        const response = await axiosClient.delete(`/caretaker/delete_animal?animal_id=${route.params.id}`,
+                                                  { withCredentials: true });
+
+        if(response.status === SUCCESS_RESPONSE_CODE) {
+          alert('Animal deleted successfully!');
+        } else if(response.status === UNKNOWN_OPERATION_RESPONSE_CODE) {
+          alert('Error! You have no right to perform this operation!');
+        }
+
+        // await router.push({ name: 'animal'});
+        router.push({ name: 'Animal'});
+      } catch (error) {
+        // console.error('Error deleting animal: ', error);
+        alert('Failed to delete animal', error);
+      }
+    },
+
+    reject: () => {
+      alert('Not deleting animal');
+      // console.log(router.getRoutes());
+    }
+  })
+}
+
+function confirmScheduleDeletion(schedule) {
+  confirm.require({
+    message: `Are you sure you want to delete this walking schedule?`,
+    header: 'Confirmation',
+    icon: 'pi pi-question',
+    accept: async () => {
+      try {
+        const response = await axiosClient.delete(`/caretaker/delete_walking_schedule?walking_schedule_id=${encodeURIComponent(schedule.id)}`,
+                                            { withCredentials: true });
+
+        if(response.status === SUCCESS_RESPONSE_CODE) {
+          alert('Walking schedule deleted successfully!');
+        }
+
+        await fetchAnimalInfo();
+      } catch (error) {
+        alert('Failed to delete walking schedule');
+      }
+    },
+
+    reject: () => {
+      alert('Not deleting walking schedule');
+      // console.log(router.getRoutes());
     }
   })
 }
@@ -218,6 +316,7 @@ const selectedAnimalInfo = reactive({
   history: '',
   description: '',
   sex: '',
+  photo: '',
 });
 
 const showScheduleEditDialog = ref(false);
@@ -243,7 +342,7 @@ function getDatePickerPros(showTime) {
   dateFormat: "D, dd M yy",
   manualInput: false,
   showIcon: true,
-  iconDisplay: "input"
+  iconDisplay: "input",
   }
 
   if(showTime) {
@@ -260,31 +359,67 @@ const animalInfoFields = [
     label: 'Name',
     model: 'name',
     component: InputText,
-  },
-  { 
-    label: 'Age',
-    model: 'age',
-    component: InputText,
+    props: {
+      placeholder: 'Enter animal\'s name',
+      maxlength: 30
+    }
   },
   { 
     label: 'Breed',
     model: 'breed',
     component: InputText,
+    props: {
+      placeholder: 'Enter animal\'s breed',
+      maxlength: 20
+    }
+  },
+  { 
+    label: 'Age',
+    model: 'age',
+    component: InputNumber,
+    props: {
+      placeholder: 'Enter animal\'s age',
+      min: '0',
+      max: '999'
+    },
   },
   { 
     label: 'Sex',
     model: 'sex',
-    component: InputText,
+    component: Dropdown,
+    props: {
+      placeholder: 'Enter animal\'s sex',
+      options: [
+        'Male',
+        'Female',
+      ],
+    }
+  },
+  { 
+    label: 'Photo (JPEG only)',
+    model: 'photo', // No v-model as it's a plain file input
+    component: 'file', // Indicates that this is a file input
+    props: {
+      accept: 'image/jpeg',
+    }
   },
   { 
     label: 'Description',
     model: 'description',
     component: Textarea,
+    props: {
+      placeholder: 'Enter animal\'s description',
+      maxlength: 300
+    }
   },
   { 
     label: 'History',
     model: 'history',
     component: Textarea,
+    props: {
+      placeholder: 'Enter animal\'s history',
+      maxlength: 300
+    }
   }
 ];
 
@@ -293,13 +428,21 @@ const reservSchedulesFields = [
     label: 'Start date',
     model: 'startDate',
     component: DatePicker,
-    props: getDatePickerPros(true)
+    props: {
+      ...getDatePickerPros(true),
+      placeholder: "Enter start date",
+      minDate: new Date(),
+    }
   },
   { 
     label: 'End date ',
     model: 'endDate',
     component: DatePicker,
-    props: getDatePickerPros(true)
+    props: {
+      ...getDatePickerPros(true),
+      placeholder: "Enter end date",
+      minDate: new Date(),
+    }
   }
 ];
 
@@ -308,17 +451,27 @@ const medicalRecordsFields = [
     label: 'Description',
     model: 'description',
     component: Textarea,
+    props: {
+      placeholder: 'Enter description'
+    }
   },
   {
     label: 'Examination date',
     model: 'examinationDate',
     component: DatePicker,
-    props: getDatePickerPros(false)
+    props: {
+      ...getDatePickerPros(false),
+      placeholder: "Enter examination date",
+      maxDate: new Date()
+    }
   },
   {
     label: 'Examination type',
     model: 'examinationType',
     component: InputText,
+    props: {
+      placeholder: 'Enter examination type'
+    }
   }
 ];
 
@@ -344,25 +497,37 @@ const sendReqAndProcessResponse = async (request, isSchedule, isUpdated, closeMo
     }
 
     closeModalFn();
-  
   } catch (error) {
     const action = isUpdated ? 'updat' : 'add';
-    console.error(`Error ${action}ing ${isSchedule ? 'schedule' : 'medical record'}:`, error);
+    // console.error(`Error ${action}ing ${isSchedule ? 'schedule' : 'medical record'}:`, error);
     alert(`Failed to ${action}e ${isSchedule ? 'schedule' : 'medical record'}.`);
   }
 }
 
 async function updateAnimalInfo() {
   try {
-    const response = await axiosClient.put(`/caretaker/update_animal?animal_id=${encodeURIComponent(selectedAnimalInfo.id)}` +
-                                            `&name=${encodeURIComponent(selectedAnimalInfo.name)}` +
-                                            `&breed=${encodeURIComponent(selectedAnimalInfo.breed)}` +
-                                            `&age=${encodeURIComponent(selectedAnimalInfo.age)}` +
-                                            `&history=${encodeURIComponent(selectedAnimalInfo.history)}` +
-                                            `&description=${encodeURIComponent(selectedAnimalInfo.description)}` +
-                                            `&sex=${encodeURIComponent(selectedAnimalInfo.sex)}`,
-                                            null,
-                                            { withCredentials: true });
+    // Prepare form data with the animal details
+    const formData = new FormData();
+    formData.append('animal_id', selectedAnimalInfo.id);
+    formData.append('name', selectedAnimalInfo.name);
+    formData.append('breed', selectedAnimalInfo.breed);
+    formData.append('age', selectedAnimalInfo.age);
+    formData.append('sex', selectedAnimalInfo.sex);
+    formData.append('history', selectedAnimalInfo.history);
+    formData.append('description', selectedAnimalInfo.description);
+    
+    // Append the photo file if available
+    if(selectedAnimalInfo.photo) {
+      formData.append('photo', selectedAnimalInfo.photo);
+    }
+
+    // Send form data using POST request
+    const response = await axiosClient.put('/caretaker/update_animal', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      withCredentials: true  // Zabezpečí, že cookies budú odoslané a prijaté
+    });
 
     if(response.status === SUCCESS_RESPONSE_CODE) {
       alert('Animal info updated successfully!');
@@ -370,48 +535,87 @@ async function updateAnimalInfo() {
       alert('Error! You have no right to perform this operation!');
     }
 
+    await fetchAnimalInfo();
     closeAnimalInfoEditDialog();
 
   } catch (error) {
-    console.error('Error updating animal info: ', error);
+    // console.error('Error updating animal info: ', error);
     alert('Failed to update animal info');
   }
 }
 
-function updateSchedule() {
+async function updateSchedule() {
+  const startDate = new Date(selectedSchedule.startDate);
+  const endDate = new Date(selectedSchedule.endDate);
+  // console.log(isDifferenceAtMostTwoHours(selectedSchedule.startDate, selectedSchedule.endDate))
+  if(startDate >= endDate || !isDifferenceAtMostTwoHours(selectedSchedule.startDate, selectedSchedule.endDate)) {
+    alert('Error! Start date can\'t be greater or equal than end date! The difference between time must be at most 2 hours!')
+    selectedSchedule.startDate = undefined;
+    return;
+  }
+
+
+  // console.log(selectedSchedule.startDate, getFormattedDate(selectedSchedule.startDate, true))
   const requestUrl = `/caretaker/update_walking_schedule?walking_schedule_id=${encodeURIComponent(selectedSchedule.id)}` +
                      `&start_time=${encodeURIComponent(getFormattedDate(selectedSchedule.startDate, true))}` +
                      `&end_time=${encodeURIComponent(getFormattedDate(selectedSchedule.endDate, true))}`;
                      
-  sendReqAndProcessResponse(requestUrl, true, true, closeScheduleEditModal);
+  await sendReqAndProcessResponse(requestUrl, true, true, closeScheduleEditModal);
+  await fetchAnimalInfo();
 }
 
-function addSchedule() {
+function isDifferenceAtMostTwoHours(startDate, endDate) {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  // Calculate the absolute difference in milliseconds
+  const differenceInMilliseconds = Math.abs(end - start);
+
+  // Convert milliseconds to hours
+  const differenceInHours = differenceInMilliseconds / (1000 * 60 * 60);
+
+  // Check if the difference is at most 2 hours
+  return differenceInHours <= 2;
+}
+
+async function addSchedule() {
+  const startDate = new Date(selectedSchedule.startDate);
+  const endDate = new Date(selectedSchedule.endDate);
+  // console.log(isDifferenceAtMostTwoHours(selectedSchedule.startDate, selectedSchedule.endDate))
+  if(startDate >= endDate || !isDifferenceAtMostTwoHours(selectedSchedule.startDate, selectedSchedule.endDate)) {
+    alert('Error! Start date can\'t be greater or equal than end date! The difference between time must be at most 2 hours!')
+    selectedSchedule.startDate = undefined;
+    return;
+  }
+
   const requestUrl = `/caretaker/walking_schedule?animal_id=${encodeURIComponent(route.params.id)}` +
                       `&start_time=${encodeURIComponent(getFormattedDate(selectedSchedule.startDate, true))}` +
                       `&end_time=${encodeURIComponent(getFormattedDate(selectedSchedule.endDate, true))}`;
 
-  sendReqAndProcessResponse(requestUrl, true, false, closeScheduleAddModal);
+  await sendReqAndProcessResponse(requestUrl, true, false, closeScheduleAddModal);
+  await fetchAnimalInfo();
 }
 
-function updateMedicalRecord() {
+async function updateMedicalRecord() {
   const requestUrl = `/caretaker/update_medical_record?medical_record_id=${encodeURIComponent(selectedMedicalRecord.id)}` +
                      `&veterinarian_id=${encodeURIComponent(authStore.getUser.id)}` +
                      `&examination_date=${encodeURIComponent(getFormattedDate(selectedMedicalRecord.examinationDate))}` +
                      `&examination_type=${encodeURIComponent(selectedMedicalRecord.examinationType)}` +
                      `&description=${encodeURIComponent(selectedMedicalRecord.description)}`;
 
-  sendReqAndProcessResponse(requestUrl, false, true, closeMedicalRecordEditModal);
+  await sendReqAndProcessResponse(requestUrl, false, true, closeMedicalRecordEditModal);
+  await fetchAnimalInfo();
 };
 
-function addMedicalRecord() {
+async function addMedicalRecord() {
   const requestUrl = `/veterinarian/create_medical_record?animal_id=${encodeURIComponent(route.params.id)}` +
                      `&veterinarian_id=${encodeURIComponent(authStore.getUser.id)}` +
                      `&description=${encodeURIComponent(selectedMedicalRecord.description)}` +
                      `&examination_date=${encodeURIComponent(getFormattedDate(selectedMedicalRecord.examinationDate))}` +
                      `&examination_type=${encodeURIComponent(selectedMedicalRecord.examinationType)}`;
                      
-  sendReqAndProcessResponse(requestUrl, false, false, closeMedicalRecordAddModal);
+  await sendReqAndProcessResponse(requestUrl, false, false, closeMedicalRecordAddModal);
+  await fetchAnimalInfo();
 };
 
 const openAnimalInfoEditModal = async (animalInfo) => {
@@ -484,14 +688,19 @@ const closeMedicalRecordEditModal = async () => {
   showMedicalRecordsEditDialog.value = false;
 };
 
-onMounted(async () => {
+const fetchAnimalInfo = async () => {
   try {
     const response = await axiosClient.get(`/animal/info?animal_id=${encodeURIComponent(route.params.id)}`);
     animalInfo.value = response.data.animal;
 
-    animalSchedules.value = response.data.schedules.map(schedule => {
+    // console.log(animalInfo)
+
+    animalSchedules.value = response.data.schedules
+      .filter(schedule => !schedule.reservated) // Only include schedules where reservated is false
+      .map(schedule => {
       const startDateTimePart = schedule.start_time.replace(" GMT", "");
       const endtDateTimePart = schedule.end_time.replace(" GMT", "");
+
 
       return {
         ...schedule,
@@ -507,17 +716,24 @@ onMounted(async () => {
         ...record,
         examination_date: datePart
       };
-  });
+    });
 
-    // console.log(animalSchedules.value);
+    console.log(animalSchedules);
   } catch (error) {
-    console.error('Error fetching animal data:', error);
+    // console.log(animalInfo.value)
+    alert('Error fetching animal data:', error);
   }
-});
+}
+
+onMounted(fetchAnimalInfo);
 
 </script>
   
 <style scoped>
+
+.non-prime-animal-info {
+  color: var(--p-fieldset-color);
+}
 
 .animal-schedules {
   grid-row: 2 / span 1;

@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from src.usecases import VeterinarianUseCase
-from ..services import is_valid_timestamp
+from ..services import is_valid_date
 from flask_login import login_required, current_user
 
 
@@ -56,7 +56,7 @@ def create_medical_record():
     examination_date = request.args.get("examination_date")
     examination_type = request.args.get("examination_type")
 
-    if not is_valid_timestamp(examination_date):
+    if not is_valid_date(examination_date):
         return jsonify({"error": "Invalid date"}), 400
 
     use_case = VeterinarianUseCase()

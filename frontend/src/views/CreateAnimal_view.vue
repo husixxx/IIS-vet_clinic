@@ -71,13 +71,13 @@
           <!-- History (optional) -->
           <div class="p-field input-group">
             <label for="history" class="input-label">History</label>
-            <Textarea id="history" v-model="history" placeholder="Enter animal's history" class="input-text" rows="5" :maxlength="300"/>
+            <Textarea id="history" v-model="history" placeholder="Enter animal's history" class="input-text" rows="5" :maxlength="300" :invalid="!history"/>
           </div>
 
           <!-- Description (optional) -->
           <div class="p-field input-group">
             <label for="description" class="input-label">Description</label>
-            <Textarea id="description" v-model="description" placeholder="Enter description" class="input-text" rows="5" :maxlength="300"/>
+            <Textarea id="description" v-model="description" placeholder="Enter description" class="input-text" rows="5" :maxlength="300" :invalid="!description"/>
           </div>
 
           <!-- Submit Button -->
@@ -131,12 +131,14 @@ const handleFileUpload = (event) => {
       event.target.value = ''; // Reset the file input
       return;
     }
+
+    photoFile.value = file; // Store the file
   }
 };
 
 // Form validation (check if required fields are filled)
 const isFormValid = computed(() => {
-  return name.value && breed.value && age.value && sex.value;  // Only required fields are checked
+  return name.value && breed.value && age.value && sex.value && description.value && history.value;  // Only required fields are checked
 });
 
 // Handle create animal logic

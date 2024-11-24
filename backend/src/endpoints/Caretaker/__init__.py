@@ -11,6 +11,8 @@ from .GetAllAnimals import get_all_animals_bp
 from .GetAllVetRequests import get_all_vet_requests_bp
 from .CancelVetRequest import cancel_vet_request_bp
 from .UpdateAnimal import update_animal_bp
+from .DeleteAnimal import delete_animal_bp
+from .DeleteWalkingSchedule import delete_walking_schedule_bp
 
 __all__ = [
     'get_all_reservations_bp',
@@ -25,5 +27,7 @@ __all__ = [
     'get_all_animals_bp',
     'get_all_vet_requests_bp',
     'cancel_vet_request_bp',
-    'update_animal_bp'
+    'update_animal_bp',
+    'delete_animal_bp',
+    'delete_walking_schedule_bp'
 ]

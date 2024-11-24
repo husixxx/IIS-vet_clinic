@@ -17,4 +17,4 @@ COPY . .
 ENV FLASK_APP=backend/src/app.py
 
 # run 
-CMD ["sh", "-c", "flask db upgrade --directory backend/src/migrations && python backend/run.py"]
+CMD ["sh", "-c", "python backend/run.py"]

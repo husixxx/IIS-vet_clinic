@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from typing import TypeVar, Generic, List, Type, Optional
 from src import db
 from ..models import WalkingSchedule, MedicalRecord, Animal, Request, Reservation, User
@@ -21,6 +22,7 @@ Methods:
     delete_volunteer: Removes a volunteer and their associated reservations
     delete_veterinarian: Removes a veterinarian and handles their associated records
     delete_user: Removes a user from the system
+    delete_animal: Removes an animal from the system
 
 Note:
     This repository handles operations that involve multiple entities
@@ -175,6 +177,7 @@ class PublicRepository:
         )
 
         for reservation in reservations:
+            reservation.volunteer_id = None
             self.db_session.delete(reservation)
 
         self.db_session.delete(volunteer)
@@ -217,6 +220,23 @@ class PublicRepository:
         self.db_session.delete(user)
         self.db_session.commit()
 
+
+    def delete_animal(self, animal_id: int):
+        animal = self.db_session.query(Animal).filter(Animal.id == animal_id).first()
+        if not animal:
+            raise ValueError("Animal not found")
+        
+        # Delete related records manually
+        self.db_session.query(WalkingSchedule).filter(WalkingSchedule.animal_id == animal_id).delete(synchronize_session=False)
+        self.db_session.query(Reservation).filter(Reservation.animal_id == animal_id).delete(synchronize_session=False)
+        self.db_session.query(Request).filter(Request.animal_id == animal_id).delete(synchronize_session=False)
+        self.db_session.query(MedicalRecord).filter(MedicalRecord.animal_id == animal_id).delete(synchronize_session=False)
+
+        # Delete the animal
+        self.db_session.delete(animal)
+        self.db_session.commit()
+
+
     def get_by_username(self, username: str) -> User:
         """Get a single record of user by username."""
         return self.db_session.query(User).filter(User.username == username).first()
@@ -224,3 +244,144 @@ class PublicRepository:
     def get_unverified_volunteers(self) -> List[User]:
         """Get all unverified volunteers."""
         return self.db_session.query(User).filter(User.verified == False).all()
+
+    def check_walking_schedule(self, animal_id: int, start_time: str, end_time: str):
+        """Check if a schedule is not conflicting."""
+
+        start_time_dt = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S")
+        end_time_dt = datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S")
+        max_duration = timedelta(hours=2)
+
+        if end_time_dt - start_time_dt > max_duration:
+            raise ValueError("Schedule duration exceeds 2 hours.")
+
+        if start_time_dt < datetime.now():
+            raise ValueError("Schedule cannot be in the past.")
+
+        if start_time_dt >= end_time_dt:
+            raise ValueError("End time cannot be before start time.")
+
+        schedule = (
+            self.db_session.query(WalkingSchedule)
+            .filter(
+                WalkingSchedule.animal_id == animal_id,
+                WalkingSchedule.start_time < end_time_dt,
+                WalkingSchedule.end_time > start_time_dt,
+            )
+            .first()
+        )
+
+        if schedule:
+            raise ValueError("Schedule conflicts with another schedule.")
+
+    def check_update_walking_schedule(
+        self, animal_id: int, start_time: str, end_time: str, schedule_id: int
+    ):
+        """Check if a schedule is not conflicting."""
+
+        start_time_dt = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S")
+        end_time_dt = datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S")
+        max_duration = timedelta(hours=2)
+
+        if end_time_dt - start_time_dt > max_duration:
+            raise ValueError("Schedule duration exceeds 2 hours.")
+
+        if start_time_dt < datetime.now():
+            raise ValueError("Schedule cannot be in the past.")
+
+        if start_time_dt >= end_time_dt:
+            raise ValueError("End time cannot be before start time.")
+
+        schedule = (
+            self.db_session.query(WalkingSchedule)
+            .filter(
+                WalkingSchedule.animal_id == animal_id,
+                WalkingSchedule.start_time < end_time_dt,
+                WalkingSchedule.end_time > start_time_dt,
+                WalkingSchedule.id != schedule_id,
+            )
+            .first()
+        )
+
+        if schedule:
+            raise ValueError("Schedule conflicts with another schedule.")
+
+    def remove_walking_schedule_by_approved_reservation(
+        self, animal_id: int, start_time: str, end_time: str
+    ):
+        """Remove a walking schedule."""
+        schedule = (
+            self.db_session.query(WalkingSchedule)
+            .filter(
+                WalkingSchedule.animal_id == animal_id,
+                WalkingSchedule.start_time == start_time,
+                WalkingSchedule.end_time == end_time,
+            )
+            .first()
+        )
+
+        if not schedule:
+            raise ValueError("Schedule not found.")
+
+        self.db_session.delete(schedule)
+        self.db_session.commit()
+
+    def get_walking_schedule(
+        self, animal_id: int, start_time: str, end_time: str
+    ) -> Optional[WalkingSchedule]:
+        """Get a walking schedule."""
+        return (
+            self.db_session.query(WalkingSchedule)
+            .filter(
+                WalkingSchedule.animal_id == animal_id,
+                WalkingSchedule.start_time == start_time,
+                WalkingSchedule.end_time == end_time,
+            )
+            .first()
+        )
+
+    def check_vet_request(self, animal_id: int, vet_id: int, request_date: str):
+        """Check if a vet request is not conflicting."""
+
+        request_date_dt = datetime.strptime(request_date, "%Y-%m-%d %H:%M:%S")
+        request = (
+            self.db_session.query(Request)
+            .filter(
+                Request.animal_id == animal_id,
+                Request.veterinarian_id == vet_id,
+                Request.request_date == request_date_dt,
+                Request.status == "scheduled"
+            )
+            .first()
+        )
+
+        if request:
+            raise ValueError(
+                "Scheduled request for this animal with this veterinarian at this time already exists."
+            )
+
+        animal_requests = (
+            self.db_session.query(Request)
+            .filter(
+                Request.animal_id == animal_id, Request.request_date == request_date_dt, Request.status == "scheduled"
+            )
+            .all()
+        )
+
+        if animal_requests:
+            raise ValueError("Scheduled request for this animal at this time already exists.")
+
+        vet_requests = (
+            self.db_session.query(Request)
+            .filter(
+                Request.veterinarian_id == vet_id,
+                Request.request_date == request_date_dt,
+                Request.status == "scheduled"
+            )
+            .all()
+        )
+
+        if vet_requests:
+            raise ValueError(
+                "Scheduled request for this veterinarian at this time already exists."
+            )

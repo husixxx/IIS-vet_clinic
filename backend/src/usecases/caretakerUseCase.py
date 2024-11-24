@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from src.models import WalkingSchedule, Animal, User, Request, Reservation
 from src.repository import Repository, PublicRepository
 
@@ -30,6 +31,8 @@ Methods:
     cancel_vet_request: Cancels a veterinary request
     filter_animals: Filters animals based on given parameters
     change_reservation_status: Updates the status of a reservation
+    delete_animal: Deletes an animal
+    delete_walking_schedule: Deletes a walking schedule
 """
 
 
@@ -42,6 +45,26 @@ class CaretakerUseCase:
         self.request_repository = Repository(Request)
         self.reservation_repository = Repository(Reservation)
         self.public_repository = PublicRepository()
+
+    ### Delete Animal ###
+    def delete_animal(self, animal_id: int):
+        animal = self.animal_repository.get_by_id(animal_id)
+
+        if not animal:
+            raise ValueError("Animal not found, hahaha, id == ", animal_id)
+        
+        self.public_repository.delete_animal(animal_id)
+
+
+    ### Delete Walking Schedule ###
+    def delete_walking_schedule(self, walking_schedule_id: int) -> None:
+        walking_schedule = self.schedule_repository.get_by_id(walking_schedule_id)
+
+        if not walking_schedule:
+            raise ValueError("Walking schedule with this id does not exist")
+
+        self.reservation_repository.delete(walking_schedule)
+
 
     ### Create Animal ###
     def create_animal(
@@ -81,9 +104,11 @@ class CaretakerUseCase:
     def create_walking_schedule(
         self, animal_id: int, start_time: str, end_time: str
     ) -> WalkingSchedule:
-        
+
         if not self.animal_repository.get_by_id(animal_id):
             raise Exception("Animal not found.")
+        
+        self.public_repository.check_walking_schedule(animal_id, start_time, end_time)
         
         walking_schedule = WalkingSchedule(
             animal_id=animal_id,
@@ -93,34 +118,42 @@ class CaretakerUseCase:
 
         self.schedule_repository.add(walking_schedule)
         return walking_schedule
-    
-    def update_walking_schedule(self, walking_shcedule_id: int, start_time: str, end_time: str):
-        
+
+    def update_walking_schedule(
+        self, walking_shcedule_id: int, start_time: str, end_time: str
+    ):
+
         walking_schedule = self.schedule_repository.get_by_id(walking_shcedule_id)
 
         if not walking_schedule:
             raise ValueError("Walking schedule not found")
         
+        if walking_schedule.reservated:
+            raise ValueError("Cant update reservated walking schedule")
+        
+        self.public_repository.check_update_walking_schedule(walking_schedule.animal_id, start_time, end_time, walking_schedule.id)
+        
         walking_schedule.start_time = start_time
         walking_schedule.end_time = end_time
         self.schedule_repository.update(walking_schedule)
 
-    def update_animal(self, animal_id: int, name: str, breed: str, age: int, history: str, description: str, sex: str):
+    def update_animal(self, animal_id: int, name: str, breed: str, age: int, history: str, description: str, sex: str, photo: bytes):
         
         animal = self.animal_repository.get_by_id(animal_id)
 
         if not animal:
             raise ValueError("Animal not found")
-        
+
         animal.name = name
         animal.breed = breed
         animal.age = age
         animal.history = history
         animal.description = description
         animal.sex = sex
+        if photo:
+            animal.photo = photo
         self.animal_repository.update(animal)
 
-    
     def verify_volunteer(self, id: int) -> User:
         volunteer = self.user_repository.get_by_id(id)
         if volunteer is None:
@@ -131,7 +164,7 @@ class CaretakerUseCase:
         volunteer.role_id = 1
         self.user_repository.update(volunteer)
         return volunteer
-    
+
     def unverify_volunteer(self, id: int) -> User:
         volunteer = self.user_repository.get_by_id(id)
         if volunteer is None:
@@ -177,11 +210,23 @@ class CaretakerUseCase:
         veterinarian = self.public_repository.get_by_username(veterinarian_username)
         animal = self.animal_repository.get_by_id(animal_id)
         
+        
+        datetime_dt = datetime.strptime(request_date, "%Y-%m-%d %H:%M:%S")
+        
+        if datetime_dt < datetime.now():
+            raise ValueError("Request cant be in the past")
+        
+        max_future_date = datetime.now() + timedelta(days=30)
+        if datetime_dt > max_future_date:
+            raise ValueError("Request cant be more than 30 days in the future")
+
+        self.public_repository.check_vet_request(animal_id, veterinarian.id, request_date)
+        
         if animal is None:
             raise Exception("Animal not found.")
         if veterinarian is None or veterinarian.role_id != 2:
             raise Exception("Veterinarian not found.")
-        
+
         new_request = Request(
             animal_id=animal_id,
             veterinarian_id=veterinarian.id,
@@ -238,8 +283,28 @@ class CaretakerUseCase:
         reservation = self.reservation_repository.get_by_id(reservation_id)
         if reservation is None:
             raise Exception("No reservation")
-        if status not in ["pending", "approved", "cancelled", "completed"]:
+        elif status == "cancelled" and reservation.status == "approved":
             raise ValueError("Invalid status")
+
+        schedule = self.public_repository.get_walking_schedule(
+            reservation.animal_id, reservation.start_time, reservation.end_time
+        )
+
+        if status == "approved":
+            if not schedule:
+                raise ValueError("No matching schedule found")
+            if schedule.reservated:
+                raise ValueError("Schedule already reserved")
+            schedule.reservated = True
+            self.schedule_repository.update(schedule)
+
+        elif status in ["cancelled", "completed"] and reservation.status == "approved":
+            if schedule:
+                schedule.reservated = False
+                self.schedule_repository.update(schedule)
+
         reservation.status = status
         self.reservation_repository.update(reservation)
         return reservation
+
+    
