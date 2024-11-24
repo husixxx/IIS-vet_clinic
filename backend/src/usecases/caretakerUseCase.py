@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from src.models import WalkingSchedule, Animal, User, Request, Reservation
 from src.repository import Repository, PublicRepository
 
@@ -190,7 +191,19 @@ class CaretakerUseCase:
 
         veterinarian = self.public_repository.get_by_username(veterinarian_username)
         animal = self.animal_repository.get_by_id(animal_id)
+        
+        
+        datetime_dt = datetime.strptime(request_date, "%Y-%m-%d %H:%M:%S")
+        
+        if datetime_dt < datetime.now():
+            raise ValueError("Request cant be in the past")
+        
+        max_future_date = datetime.now() + timedelta(days=30)
+        if datetime_dt > max_future_date:
+            raise ValueError("Request cant be more than 30 days in the future")
 
+        self.public_repository.check_vet_request(animal_id, veterinarian.id, request_date)
+        
         if animal is None:
             raise Exception("Animal not found.")
         if veterinarian is None or veterinarian.role_id != 2:
@@ -275,3 +288,5 @@ class CaretakerUseCase:
         reservation.status = status
         self.reservation_repository.update(reservation)
         return reservation
+
+    
