@@ -29,13 +29,13 @@ def create_app():
 
     
 
-    CORS(app, resources={r"/*": {"origins": "https://iis-vet-clinic-1.onrender.com"}}, supports_credentials=True)
+    CORS(app, resources={r"/*": {"origins": ["https://iis-vet-clinic-1.onrender.com", "http://localhost:5173", "http://127.0.0.1:5173"]}}, supports_credentials=True)
 
 
     # Database
-    # DATABASE_URI = "postgresql://husic:husic@postgres:5432/iis"
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
-    # app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
+    DATABASE_URI = "postgresql://husic:husic@postgres:5432/iis"
+    # app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+    app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.secret_key = "husic"  # session secret key
 
