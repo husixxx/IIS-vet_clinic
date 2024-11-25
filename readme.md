@@ -1,3 +1,4 @@
+### Authors: xhuska03, xjanek05, xklyme00
 ### 1. Nastavit systémovou proměnnou DATABASE_URL, ve které bude připojovací string do databáze.
 ### 2. V souboru /frontend/src/api/api.ts nastavit axiosBaseUrl na příslušnou adresu hostovaného backendu.
 ### 3. Pro backend je připravený Dockerfile (/backend/Dockerfile), který lze použít pro vytvoření image a nasazení na server.
