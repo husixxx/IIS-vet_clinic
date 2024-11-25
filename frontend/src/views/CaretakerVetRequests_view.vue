@@ -49,6 +49,18 @@ import Button from 'primevue/button';
 // Array to store caretaker vet requests
 const requests = ref([]);
 
+// Helper function to format the date in UTC
+const formatDateToUTC = (dateStr) => {
+  const date = new Date(dateStr); // Parse the date string
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+  const day = String(date.getUTCDate()).padStart(2, '0');
+  const hours = String(date.getUTCHours()).padStart(2, '0');
+  const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+  const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+  return `${day}/${month}/${year}, ${hours}:${minutes}:${seconds}`; // Format in DD/MM/YYYY, HH:MM:SS
+};
+
 // Fetch requests when the component mounts
 onMounted(async () => {
   try {
@@ -60,7 +72,7 @@ onMounted(async () => {
         id: request.id,
         animal_id: request.animal_id,
         animal_name: request.animal_name, // Include Animal Name
-        request_date: new Date(request.request_date).toLocaleString(),
+        request_date: formatDateToUTC(request.request_date), // Convert date to UTC format
         description: request.description,
         status: request.status || 'N/A',
         veterinarian_username: request.veterinarian_username,
@@ -85,20 +97,19 @@ const cancelVetRequest = async (vetRequestId) => {
       location.reload();
     }
   } catch (error) {
-  if (error.response) {
-
-    const status = error.response.status;
-    const error_msg = error.response.data.error;
-    console.error(`Error Status: ${status}`);
-    alert(error_msg);
-  } else {
-
-    console.error("Error:", error.message);
-    alert("Something went wrong. Please try again later.");
+    if (error.response) {
+      const status = error.response.status;
+      const error_msg = error.response.data.error;
+      console.error(`Error Status: ${status}`);
+      alert(error_msg);
+    } else {
+      console.error("Error:", error.message);
+      alert("Something went wrong. Please try again later.");
+    }
   }
-}
 };
 </script>
+
 
 <style scoped>
 .caretaker-vet-requests-container {
