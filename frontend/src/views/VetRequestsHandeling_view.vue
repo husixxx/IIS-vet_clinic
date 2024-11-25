@@ -42,15 +42,18 @@
       <div class="p-fluid">
         <!-- Edit Start Time -->
         <div class="p-field">
-          <!-- <InputText v-model="selectedRequest.start_time" 
-          :invalid="!selectedRequest.start_time"
-          placeholder="DD/MM/YYYY, HH:MM:SS"/> -->
-          <DatePicker v-model="selectedRequest.start_time" :invalid="!selectedRequest.start_time" dateFormat="D, dd M yy" :manualInput="false" fluid showIcon iconDisplay="input" hourFormat="24" placeholder="Enter request's date" :minDate="new Date()"/>
+          <InputText
+            v-model="selectedRequest.start_time"
+            maxlength="19"
+            placeholder="DD/MM/YYYY HH:MM:SS"
+            class="input-full-width"
+            :class="{ 'p-invalid': !selectedRequest.start_time }"
+          />
         </div>
 
         <!-- Edit Status -->
         <div class="p-field">
-          <!-- Dropdown na zmenu statusu -->
+          <!-- Dropdown for status change -->
           <Dropdown
             v-model="selectedRequest.newStatus"
             :options="availableStatusOptions"
@@ -71,7 +74,6 @@
   </div>
 </template>
 
-
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useAuthStore } from '../store/Authstore';
@@ -82,9 +84,8 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import Dropdown from 'primevue/dropdown';
 import InputText from 'primevue/inputtext';
-import DatePicker from 'primevue/datepicker';
-import { getFormattedDate } from '../utils/date';
 
+// Status options mapping
 const statusOptionsMapping = {
   pending: [
     { label: 'scheduled', value: 'scheduled' },
@@ -94,10 +95,11 @@ const statusOptionsMapping = {
     { label: 'completed', value: 'completed' },
     { label: 'cancelled', value: 'cancelled' },
   ],
-  cancelled: [],
-  completed: [],
+  cancelled: [], // No actions available
+  completed: [], // No actions available
 };
 
+// Convert custom date to standard format
 const convertCustomToStandard = (customDateTime) => {
   const months = {
     Jan: '01',
@@ -130,6 +132,7 @@ const editDialogVisible = ref(false);
 const selectedRequest = ref({ start_time: '', newStatus: null });
 const availableStatusOptions = ref([]);
 
+// Validate datetime format
 const isValidDateTime = (dateTimeStr) => {
   const regex = /^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}:\d{2}$/;
   return regex.test(dateTimeStr);
@@ -139,7 +142,7 @@ const isValidDateTime = (dateTimeStr) => {
 onMounted(async () => {
   try {
     const vetId = authStore.getUser?.id;
-    const response = await axiosClient.get(`/veterinarian/get_all_requests_by_vet_id`, {
+    const response = await axiosClient.get('/veterinarian/get_all_requests_by_vet_id', {
       params: { vet_id: vetId },
       withCredentials: true,
     });
@@ -163,7 +166,6 @@ onMounted(async () => {
 
 // Open edit modal
 const openEditModal = (request) => {
-
   if (['cancelled', 'completed'].includes(request.status)) {
     alert('Requests with status "cancelled" or "completed" cannot be edited.');
     return;
@@ -171,58 +173,62 @@ const openEditModal = (request) => {
 
   selectedRequest.value = {
     ...request,
-    // start_time: convertCustomToStandard(request.start_time),
-    // newStatus: request.status,
+    start_time: convertCustomToStandard(request.start_time),
+    newStatus: request.status,
   };
 
   availableStatusOptions.value = statusOptionsMapping[request.status] || [];
   editDialogVisible.value = true;
 };
 
+// Cancel editing
 const cancelEdit = () => {
   selectedRequest.value = null;
   editDialogVisible.value = false;
 };
 
+// Convert date to backend format
 const convertToBackendFormat = (frontendDateTime) => {
   const [datePart, timePart] = frontendDateTime.split(' ');
   const [day, month, year] = datePart.split('/');
   return `${year}-${month}-${day} ${timePart}`;
 };
 
+// Save changes
 const saveRequestChanges = async () => {
   try {
-    // Convert from 'MM/DD/YYYY, HH:MM:SS' (which is what .toLocaleString() gives) to 'YYYY-MM-DD HH:MM:SS'
-    // const [datePart, timePart] = selectedRequest.value.start_time.split(', '); // Separate date and time
-    // const [month, day, year] = datePart.split('/'); // Split the MM/DD/YYYY part
-    // const formattedDateTime = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')} ${timePart}`; // Corrected the order of month and day
+    if (!isValidDateTime(selectedRequest.value.start_time)) {
+      alert('Invalid date format. Use DD/MM/YYYY HH:MM:SS.');
+      return;
+    }
 
-    const response = await axiosClient.post(`/veterinarian/schedule_request`, null, {
+    const convertedDateTime = convertToBackendFormat(selectedRequest.value.start_time);
+
+    const response = await axiosClient.post('/veterinarian/schedule_request', null, {
       params: {
         request_id: selectedRequest.value.id,
-        date_time: getFormattedDate(selectedRequest.value.start_time, true),
+        date_time: convertedDateTime,
         status: selectedRequest.value.newStatus.value,
       },
       withCredentials: true,
     });
 
     if (response.status === 200) {
-      const index = requests.value.findIndex((req) => req.id === selectedRequest.value.id);
-      requests.value[index].status = selectedRequest.value.newStatus;
-      requests.value[index].start_time = selectedRequest.value.start_time;
-      editDialogVisible.value = false;
-      selectedRequest.value = null;
+      location.reload();
     }
-    // else {
-    //   console.error('Failed to update request');
-    // }
   } catch (error) {
-    // console.error('Error: Invalid date format ', error);
-    alert('Error: Invalid date format ', error);
+    if (error.response) {
+      const status = error.response.status;
+      const error_msg = error.response.data.error;
+      console.error(`Error Status: ${status}`);
+      alert(error_msg);
+    } else {
+      console.error('Error:', error.message);
+      alert('Something went wrong. Please try again later.');
+    }
   }
 };
 </script>
-
 
 <style scoped>
 .vet-requests-container {
@@ -256,16 +262,15 @@ h1 {
 }
 
 .p-field {
-  margin-bottom: 1rem; /* Add spacing between fields */
+  margin-bottom: 1rem;
 }
 
 .input-full-width {
-  width: 100%; /* Ensure inputs take full width of container */
+  width: 100%;
 }
 
 .p-dialog {
-  width: 400px; /* Control dialog width */
-  max-width: 90%; /* Make it responsive */
+  width: 400px;
+  max-width: 90%;
 }
-
 </style>

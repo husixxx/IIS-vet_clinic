@@ -6,24 +6,24 @@
         <div class="p-fluid">
           <div class="p-field input-group">
             <label for="veterinarian" class="input-label">Veterinarian</label>
-            <AutoComplete v-model="selectedVeterinarian" 
-                          :suggestions="filteredVeterinarians" 
-                          @complete="searchVeterinarians" 
-                          :virtualScrollerOptions="{ itemSize: 50 }"
-                          optionLabel="nameAndUsername" dropdown
-                          :invalid="!selectedVeterinarian"
-                          placeholder="Enter vet's name or username"/>
+            <AutoComplete v-model="selectedVeterinarian" :suggestions="filteredVeterinarians"
+              @complete="searchVeterinarians" :virtualScrollerOptions="{ itemSize: 50 }" optionLabel="nameAndUsername"
+              dropdown :invalid="!selectedVeterinarian" placeholder="Enter vet's name or username" />
           </div>
           <div class="p-field input-group">
             <label for="description" class="input-label">Description</label>
-            <Textarea id="description" v-model="description" placeholder="Enter request's description" class="input-text" rows="5" :invalid="!description"/>
+            <Textarea id="description" v-model="description" placeholder="Enter request's description"
+              class="input-text" rows="5" :invalid="!description" />
           </div>
           <div class="p-field input-group">
-            <label for="date" class="input-label">Date</label>
-            <DatePicker class="input-text" v-model="date" :manualInput="false" dateFormat="D, dd M yy" showIcon fluid iconDisplay="input" :invalid="!date" hourFormat="24" placeholder="Enter request's date" :minDate="new Date()"/>
+            <label for="date" class="input-label">Date and Time</label>
+            <DatePicker class="input-text" v-model="date" :manualInput="false" dateFormat="D, dd M yy"
+              timeFormat="HH:mm" showTime hourFormat="24" showIcon fluid iconDisplay="input" :invalid="!date"
+              placeholder="Enter request's date and time" :minDate="new Date()" />
           </div>
           <div class="p-field send-vet-request">
-            <Button label="Send request" @click="handleSendVetRequest" class="w-full" icon="pi pi-send" :disabled=" !selectedVeterinarian || !description || !date || !isValidVetUsername()" />
+            <Button label="Send request" @click="handleSendVetRequest" class="w-full" icon="pi pi-send"
+              :disabled="!selectedVeterinarian || !description || !date || !isValidVetUsername()" />
           </div>
         </div>
       </template>
@@ -39,7 +39,7 @@ import { ref, onMounted } from 'vue';
 import Card from 'primevue/card';
 import Button from 'primevue/button';
 import axiosClient from '../api/api';
-import AutoComplete  from 'primevue/autocomplete';
+import AutoComplete from 'primevue/autocomplete';
 import Textarea from 'primevue/textarea';
 import DatePicker from 'primevue/datepicker';
 import 'primeicons/primeicons.css'
@@ -75,7 +75,7 @@ onMounted(async () => {
   }
 
   try {
-    const response2 = await axiosClient.get('/caretaker/veterinarians', { withCredentials: true});
+    const response2 = await axiosClient.get('/caretaker/veterinarians', { withCredentials: true });
     veterinarians.value = response2.data.map(vet => ({
       ...vet,
       nameAndUsername: `${vet.name} (${vet.username})`
@@ -111,19 +111,19 @@ const handleSendVetRequest = async () => {
   try {
     console.log(date.value);
     const response = await axiosClient.post(
-      `/caretaker/vet_request?animal_id=${encodeURIComponent(route.params.animalId)}` + 
+      `/caretaker/vet_request?animal_id=${encodeURIComponent(route.params.animalId)}` +
       `&veterinarian_username=${encodeURIComponent(selectedVeterinarian.value.username)}` +
       `&request_date=${encodeURIComponent(getFormattedDate(date.value, true))}&description=${encodeURIComponent(description.value)}`,
       null,
-      { withCredentials: true}
+      { withCredentials: true }
     );
 
-    if(response.status === SUCCESS_RESPONSE_CODE.value) {
+    if (response.status === SUCCESS_RESPONSE_CODE.value) {
       selectedVeterinarian.value = '';
       description.value = '';
       date.value = '';
       alert('Veterinarian request created successfully!');
-    } else if(response.status === UNKNOWN_OPERATION_RESPONSE_CODE) {
+    } else if (response.status === UNKNOWN_OPERATION_RESPONSE_CODE) {
       alert('Error! You have no right to perform this operation!');
     }
 
@@ -145,9 +145,7 @@ const handleSendVetRequest = async () => {
 </script>
 
 <style scoped>
-
 .w-full {
   width: 100%;
 }
-
 </style>
