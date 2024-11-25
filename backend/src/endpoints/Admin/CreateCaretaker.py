@@ -64,4 +64,4 @@ def create_caretaker():
     except ValueError as e:
         return jsonify({"error": str(e)}), 409  # user exists
     except Exception as e:
-        return jsonify({"error": str(e)}), 400  # bad request
+        return jsonify({"error": "Wait please."}), 400  # bad request

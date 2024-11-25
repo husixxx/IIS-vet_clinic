@@ -65,4 +65,4 @@ def create_veterinarian():
     except ValueError as e:
         return jsonify({"error": str(e)}), 409  # user exists
     except Exception as e:
-        return jsonify({"error": str(e)}), 400  # invalid input
+        return jsonify({"error": "Wait please."}), 400  # invalid input
