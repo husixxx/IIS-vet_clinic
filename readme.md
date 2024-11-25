@@ -1,19 +1,5 @@
-### To start database on docker 
-`docker-compose up -d`
-
-### To intialize enviroment
-
-`python3 -m venv venv` <- create it in root directory
-
-`source venv/bin/activate`  <- activate enviroment
-
-`pip install -r requirements.txt`  <- download requierments for project
-
-###  Run program
-You need to be in source directory and run 
-`python(your version) app.py`
-
-### Seed Roles
-You need to run script to seed roles
-`python src/seed_roles.py`
-
+### 1. Nastavit systémovou proměnnou DATABASE_URL, ve které bude připojovací string do databáze.
+### 2. V souboru /frontend/src/api/api.ts nastavit axiosBaseUrl na příslušnou adresu hostovaného backendu.
+### 3. Pro backend je připravený Dockerfile (/backend/Dockerfile), který lze použít pro vytvoření image a nasazení na server.
+### 4. Pro frontend je připravený Dockerfile (/frontend/Dockerfile), který lze použít pro vytvoření image a nasazení na server.
+### 5. Inicializace tabulek a vytvoření schématu databáze proběhne automaticky při prvním spuštění backendu. Vytvoří se také administrátorský účet a uživatelské role.
