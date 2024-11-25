@@ -140,7 +140,7 @@ const updateUser = async () => {
       alert('User updated successfully!');
       closeEditModal();
       // Refresh the user list
-      onMounted();
+      location.reload();
     }
   } 
   catch (error) {
