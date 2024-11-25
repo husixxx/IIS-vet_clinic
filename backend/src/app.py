@@ -4,6 +4,7 @@ from flasgger import Swagger
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from datetime import timedelta
 from . import db
 import os 
 
@@ -56,10 +57,12 @@ def create_app():
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
-
+    
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=2)
+    
     @app.before_request
     def make_session_not_permanent():
-        session.permanent = False  # Session vyprší po zavretí prehliadača
+        session.permanent = True  # Session vyprší po zavretí prehliadača
 
     # Create tables
     with app.app_context():
