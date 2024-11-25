@@ -30,7 +30,7 @@ def create_app():
 
     
 
-    CORS(app, resources={r"/*": {"origins": ["https://iis-vet-clinic-1.onrender.com", "http://localhost:5173", "http://127.0.0.1:5173"]}}, supports_credentials=True)
+    CORS(app, resources={r"/*": {"origins": ["https://iis-vet-clinic-1.onrender.com"]}}, supports_credentials=True)
 
 
     # Database
@@ -58,7 +58,7 @@ def create_app():
     def load_user(user_id):
         return User.query.get(int(user_id))
     
-    # app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=2)
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=2)
     
     @app.before_request
     def make_session_not_permanent():
