@@ -58,7 +58,7 @@ def create_app():
     def load_user(user_id):
         return User.query.get(int(user_id))
     
-    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=2)
+    # app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=2)
     
     @app.before_request
     def make_session_not_permanent():
